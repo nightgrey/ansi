@@ -7,7 +7,7 @@ complete overview, check out the
 [API reference](https://nightgrey.github.io/ansi/).
 
 **Note**: This project does not have complete feature-parity with the original
-Go library and I would probably not recommend using it for production use.
+Go library. See [comparison & differences](#comparison--differences) for more. Additionally, I would probably not recommend using it for production use.
 
 **Installation**
 
