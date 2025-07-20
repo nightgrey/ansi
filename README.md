@@ -4,22 +4,34 @@ An almost complete TypeScript port of the excellent
 [charmbracelet/x/ansi](https://github.com/charmbracelet/x/tree/main/ansi)
 library, providing utilities for working with ANSI escape sequences. To have a
 complete overview, check out the
-[documentation](https://nightgrey.github.io/ansi/).
+[API reference](https://nightgrey.github.io/ansi/).
 
 **Note**: This project does not have complete feature-parity with the original
 Go library and I would probably not recommend using it for production use.
 
+**Installation**
+
+```bash
+bun install @nightgrey/ansi
+# or
+pnpm install @nightgrey/ansi
+# or
+yarn add @nightgrey/ansi
+# or
+npm add @nightgrey/ansi
+```
+
 # Table of Contents
-- [Example usage](#example-usage)
-- [Installation](#installation)
-- [Documentation](https://nightgrey.github.io/ansi/)
+- [Usage](#usage)
 - [NPM](https://www.npmjs.com/package/@nightgrey/ansi)
-- [Attribution](#attribution)
-- [Differences](#differences)
+- [Comparison & Differences](#comparison--differences)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+## Usage
 
-
-
-## Example usage
+You can find the complete API reference at
+[nightgrey.github.io/ansi](https://nightgrey.github.io/ansi/)!
 
 ```ts
 import {
@@ -32,7 +44,7 @@ import {
     cursorPosition,
     strip,
     Modes,
-    width,
+    stringWidth,
     CSI,
     BEL,
     ESC
@@ -60,7 +72,7 @@ stdout.write(cursorPosition(10, 10)) // Set absolute cursor position to (10, 10)
 
 // Text processing
 stdout.write(strip("\u001B[4mUnicorn\u001B[0m")); // `Unicorn`
-stdout.write(width('\u001B[1m古\u001B[22m')); // 2
+stdout.write(stringWidth('\u001B[1m古\u001B[22m')); // 2
 
 // Parsing
 const parsed = [...parser(tokenizer(String.raw`\x1b[31mHello\x1b[0m World`))];
@@ -117,32 +129,9 @@ stdout.write(BEL.toCharacter()); // "G"
 stdout.write(BEL.toCaret()); // "^G"
 
 // ... and more :)
-
 ```
 
-## Installation
-
-```bash
-bun install @nightgrey/ansi
-# or
-pnpm install @nightgrey/ansi
-# or
-yarn add @nightgrey/ansi
-# or
-npm add @nightgrey/ansi
-```
-
-# Documentation
-
-You can find the documentation at
-[nightgrey.github.io/ansi](https://nightgrey.github.io/ansi/)!
-
-# Attribution
-
-This project is a TypeScript port of
-[charmbracelet/x/ansi](https://github.com/charmbracelet/x/tree/main/ansi). See
-[LICENSES.md](./LICENSES.md) for full licensing information.
-## Differences
+# Comparison & Differences
 
 **In general**
 - For functions that just return strings, we use the exact same implementation
@@ -192,7 +181,6 @@ Features that are not implemented the same way.
   x/ansi uses the native Go color type and `github.com/lucasb-eyer/go-colorful`
   to parse and convert colors. We use `@thi.ng/color` under the hood.
 
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
@@ -201,10 +189,16 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 [MIT License](LICENSE)
 
+This project is a TypeScript port of
+[charmbracelet/x/ansi](https://github.com/charmbracelet/x/tree/main/ansi). See
+[LICENSES.md](./LICENSES.md) for full licensing information.
+
+
 ## Acknowledgments
 
 - [charmbracelet/x/ansi](https://github.com/charmbracelet/x/tree/main/ansi) from
   [charmbracelet](https://github.com/charmbracelet)
+- [@thi.ng](https://github.com/thi-ng/umbrella) from [postspectacular](https://github.com/postspectacular)
 - [@ansi-tools/parser](https://www.npmjs.com/package/@ansi-tools/parser) from
   [~webpro](https://www.npmjs.com/~webpro)
 - [sindresorhus](https://www.npmjs.com/~sindresorhus) for their awesome
