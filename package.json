@@ -4,10 +4,10 @@
   "description": "A library providing utilities for working with ANSI escape sequences (ported from charmbracelet/x/ansi)",
   "homepage": "https://nightgrey.github.io/ansi",
   "repository": {
-    "url": "https://github.com/nightgrey-io/ansi",
+    "url": "https://github.com/nightgrey/ansi",
     "type": "github"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
