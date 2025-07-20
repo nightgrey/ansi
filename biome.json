@@ -1,0 +1,57 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"root": true,
+	"files": {
+		"ignoreUnknown": false
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "space",
+		"useEditorconfig": true,
+		"lineWidth": 80
+		
+	},
+	"linter": { 
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUnusedImports": "error"
+			},
+			"style": {
+				"useNodejsImportProtocol": "error"
+			}
+		},
+		"domains": {
+			"test":"recommended"
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"overrides": [
+		{ 
+			"includes": ["**/*.md"],
+			"formatter": {
+				"lineWidth": 80,
+				"indentStyle": "tab"
+			}
+		}
+	],
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"recommended": true,
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
+}

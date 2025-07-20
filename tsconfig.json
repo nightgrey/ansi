@@ -1,0 +1,28 @@
+{
+  "files": null,
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+
+    "lib": ["ESNext"],
+
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "rewriteRelativeImportExtensions": true,
+    "importHelpers": true,
+    "useDefineForClassFields": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "isolatedModules": true,
+  },
+
+  "include": ["src"]
+}

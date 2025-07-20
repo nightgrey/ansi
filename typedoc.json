@@ -1,0 +1,10 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src/index.ts"],
+    "cleanOutputDir": true,
+    "titleLink": "@nightgrey/ansi",
+    "githubPages": true,
+    "jsDocCompatibility": false,
+    "sourceLinkTemplate": "https://github.com/nightgrey/ansi/tree/main/{path}#L{line}",
+
+}
