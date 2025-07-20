@@ -2,9 +2,13 @@
     "$schema": "https://typedoc.org/schema.json",
     "entryPoints": ["./src/index.ts"],
     "cleanOutputDir": true,
-    "titleLink": "@nightgrey/ansi",
+    "titleLink": "https://nightgrey.github.io/ansi",
     "githubPages": true,
     "jsDocCompatibility": false,
     "sourceLinkTemplate": "https://github.com/nightgrey/ansi/tree/main/{path}#L{line}",
-
+    "hostedBaseUrl": "https://nightgrey.github.io/ansi",
+    "navigationLinks": {
+        "NPM": "https://www.npmjs.com/package/@nightgrey/ansi",
+        "GitHub": "https://github.com/nightgrey/ansi"
+    },
 }
