@@ -39,6 +39,14 @@ export abstract class ControlCharacter extends String {
    */
   abstract readonly literal: string;
 
+    /**
+     * String representation of the control character.
+     * @example `"\x1B"`
+     */
+  get string() {
+    return this.valueOf();
+  }
+
   [Symbol.toPrimitive](hint: string) {
     if (hint === "number") return this.hex;
     return this.toString();
