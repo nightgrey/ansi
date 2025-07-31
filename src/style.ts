@@ -3,13 +3,12 @@ import { CSI } from "./c1";
 import {
   type AnsiColor,
   BasicColor,
-  DefaultColor,
   isBasicColor,
   isDefaultColor,
   isIndexedColor,
   type MaybeColor,
 } from "./color";
-import { srgb2553 } from "./color-utils/srgb-255";
+import { srgb2553 } from "./utils/srgb-255";
 
 /**
  * RESET_STYLE is a `SGR` (Select Graphic Rendition) style sequence that resets

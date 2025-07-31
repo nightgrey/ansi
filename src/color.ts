@@ -4,9 +4,9 @@ import {
   type SRGB,
   srgb,
 } from "@thi.ng/color";
-import { ansiSrgb } from "./color-utils/ansi-srgb";
-import { INDEXED_TO_BASIC } from "./color-utils/constants";
-import { srgbIndexedColor } from "./color-utils/srgb-ansi";
+import { ansiSrgb } from "./utils/ansi-srgb";
+import { INDEXED_TO_BASIC } from "./utils/constants";
+import { srgbIndexedColor } from "./utils/srgb-ansi";
 
 /** Represents the default color. */
 export const DefaultColor = -1 as const;
