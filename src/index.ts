@@ -24,6 +24,7 @@ export * from "./parser.ts";
 export * from "./passthrough.ts";
 export * from "./paste.ts";
 export * from "./regex.ts";
+export * from "./graphemes.ts";
 export * from "./runes.ts";
 export * from "./screen.ts";
 export * from "./sgr.ts";

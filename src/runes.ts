@@ -1,124 +1,39 @@
-import { stringWidth } from "./width";
+import {isAmbiguous, isFullWidth, isWide} from "./utils/unicode";
 
-type SegmenterOptions = Intl.SegmenterOptions & { maxChunkLength?: number };
-
-// https://github.com/jonschlinkert/intl-segmenter
-class Segmenter extends Intl.Segmenter {
-  #locales;
-  #options;
-
-  constructor(locales?: Intl.LocalesArgument, options: SegmenterOptions = {}) {
-    super(locales, options);
-    this.#locales = locales;
-    this.#options = options;
-  }
-
-  // @ts-expect-error
-  *segment(input: string): Intl.Segments {
-    const { maxChunkLength = 100, ...options } = this.#options;
-    let position = 0;
-
-    while (position < input.length) {
-      const remainingText = input.slice(position);
-      const chunkSize = Math.min(maxChunkLength, remainingText.length);
-      const potentialChunk = remainingText.slice(0, chunkSize);
-
-      // Find a safe position to break the string
-      const breakPoint = this.findSafeBreakPoint(potentialChunk);
-      const chunk = potentialChunk.slice(0, breakPoint);
-
-      // Process the chunk with Intl.Segmenter. Using this approach instead
-      // of super.segment() to avoid any potential side effects.
-      const segmenter = new Intl.Segmenter(this.#locales, { ...options });
-      const segments = segmenter.segment(chunk);
-
-      for (const segment of segments) {
-        yield segment;
-      }
-
-      position += breakPoint;
-    }
-  }
-
-  findSafeBreakPoint(input: string): number {
-    // Work backwards from the end of the input
-    for (let i = input.length - 1; i >= 0; i--) {
-      // Check for whitespace or simple ASCII characters
-      if (/\s/.test(input[i]) || /^[\x20-\x7E]$/.test(input[i])) {
-        return i + 1;
-      }
-    }
-
-    // If no safe break points were found, return the full length
-    return input.length;
-  }
-
-  getSegments(input: string): Intl.SegmentData[] {
-    const array = [];
-
-    // A for loop is much faster than Array.from, it doesn't cause a
-    // maximum call stack error for large strings. Also, optimizations
-    // in v8 make using `push` much faster than pre-allocating an array,
-    // like `Array(input.length)` and setting the values at each index.
-    for (const segment of this.segment(input)) {
-      array.push(segment);
-    }
-
-    return array;
-  }
-
-  static getSegments(
-    input: string,
-    locales?: Intl.LocalesArgument,
-    options?: SegmenterOptions,
-  ): Intl.SegmentData[] {
-    const segmenter = new Segmenter(locales, options);
-    return segmenter.getSegments(input);
-  }
-}
 
 /**
- * Generator function that yields grapheme clusters (runes) from a string.
- * Uses the Intl.Segmenter API to properly handle Unicode grapheme boundaries.
+ * Splits a string into runes (Unicode points).
+ *
+ * @example
+ * ```ts
+ * import { runes } from './runes';
+ *
+ * for (const rune of runes("Hello 🌍 世界")) {
+ *     console.log(rune);
+ * }
+ *
+ * // ['H', 'e', 'l', 'l', 'o', ' ', '🌍', ' ', '世', '界']
+ * ```
+ * @param string
  */
-export function* runes(string: string) {
-  const segmenter = new Segmenter();
-
-  for (const { segment } of segmenter.segment(string)) {
-    yield segment;
-  }
-
-  return;
+export function runes(string: string) {
+    return string[Symbol.iterator]();
 }
-
-export const graphemes = runes;
 
 /**
  * Splits a string into an array of grapheme clusters (runes).
  */
 export const splitByRunes = (string: string) => {
-  return Array.from(runes(string));
+    const out: string[] = [];
+
+    for (const rune of string) {
+        out.push(rune);
+    }
+
+    return out;
 };
 
-export const splitByGraphemes = splitByRunes;
-
-/**
- * Returns the maximum display width of any grapheme cluster in the string.
- */
-export function maxRuneWidth(string: string): number {
-  let maxWidth = 0;
-
-  for (const rune of runes(string)) {
-    const w = stringWidth(rune);
-    if (w > maxWidth) {
-      maxWidth = w;
-    }
-  }
-
-  return maxWidth;
-}
-
-export const maxGraphemeWidth = maxRuneWidth;
+export { maxGraphemeWidth as maxRuneWidth } from "./graphemes";
 
 /**
  * Returns the first grapheme cluster (rune) from a string, or empty string if none.
@@ -127,4 +42,69 @@ export function firstRune(string: string): string {
   return runes(string).next().value ?? "";
 }
 
-export const firstGrapheme = firstRune;
+const CONTROL_CHARS_REGEX = /^[\x00-\x1F\x7F-\x9F]$/;
+const IGNORABLE_REGEX = /^\p{Default_Ignorable_Code_Point}$/u;
+const EMOJI_REGEX = /\p{RGI_Emoji}/v;
+
+
+/**
+ * Returns the width of a Unicode code point in cells. This is the number of
+ * cells that the string will occupy when printed in a terminal. ANSI escape
+ * codes are ignored and wide characters (such as East Asians and emojis) are
+ * accounted for.
+ */
+export function runeWidth(character: string) {
+    const codePoint = character.codePointAt(0);
+    if (!codePoint) return 0
+
+    // Fast path: ASCII printable characters (most common case)
+    if (codePoint >= 0x20 && codePoint <= 0x7E) {
+        return 1
+    }
+
+    // Control characters
+    if (CONTROL_CHARS_REGEX.test(character)) {
+        return 0
+    }
+
+    // Surrogate pairs (invalid in this context)
+    if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+        return 0
+    }
+
+    // Zero-width and COMBINING characters (combined check)
+    if ((
+        (codePoint >= 0x0300 && codePoint <= 0x036F) ||
+        (codePoint >= 0x1AB0 && codePoint <= 0x1AFF) ||
+        (codePoint >= 0x1DC0 && codePoint <= 0x1DFF) ||
+        (codePoint >= 0x20D0 && codePoint <= 0x20FF) ||
+        (codePoint >= 0xFE20 && codePoint <= 0xFE2F) ||
+        (codePoint >= 0xFE00 && codePoint <= 0xFE0F) ||
+        (codePoint >= 0x200B && codePoint <= 0x200F) ||
+        codePoint === 0xFEFF
+    )) {
+        return 0
+    }
+
+    // Default ignorable code points (covers many edge cases)
+    if (IGNORABLE_REGEX.test(character)) {
+        return 0
+    }
+
+    // Emoji check (wide characters)
+    if (EMOJI_REGEX.test(character)) {
+        return 2
+    }
+
+    // East Asian width check
+    if (isFullWidth(codePoint) || isWide(codePoint)) {
+        return 2
+    }
+
+    if (isAmbiguous(codePoint)) {
+        return 1
+    }
+
+    // Default case
+    return 1;
+}
