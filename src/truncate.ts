@@ -1,4 +1,4 @@
-import ansiTruncate, { type Options } from "ansi-truncate"
+import ansiTruncate, { type Options } from "ansi-truncate";
 export type TruncateOptions = Options;
 
 /**

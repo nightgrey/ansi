@@ -28,4 +28,3 @@ export const DECKPAM = KEYPAD_APPLICATION_MODE;
  */
 export const KEYPAD_NUMERIC_MODE = "\x1b>";
 export const DECKPNM = KEYPAD_NUMERIC_MODE;
- 

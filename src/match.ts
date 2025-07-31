@@ -1,4 +1,4 @@
-import {COMPLEX_REGEX, SIMPLE_REGEX} from "./regex";
+import { COMPLEX_REGEX, SIMPLE_REGEX } from "./regex";
 
 /**
  * Checks the given string for ANSI escape sequences with {@link SIMPLE_REGEX}.

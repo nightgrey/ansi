@@ -21,7 +21,7 @@
 
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": true,
+    "isolatedModules": true
   },
 
   "include": ["src"]

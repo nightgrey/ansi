@@ -1,4 +1,9 @@
-import {type CODE, parser as _parser, type TOKEN, tokenizer as _tokenizer} from "@ansi-tools/parser";
+import {
+  type CODE,
+  parser as _parser,
+  type TOKEN,
+  tokenizer as _tokenizer,
+} from "@ansi-tools/parser";
 
 /**
  * Parser for ANSI escape sequence tokens.

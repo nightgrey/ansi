@@ -1,5 +1,5 @@
-import {Segmenter} from "./utils/segmenter";
-import {runeWidth} from "./runes";
+import { Segmenter } from "./utils/segmenter";
+import { runeWidth } from "./runes";
 
 const SEGMENTER = new Segmenter();
 
@@ -29,18 +29,17 @@ export function* graphemes(string: string) {
   return;
 }
 
-
 /**
  * Splits a string into an array of grapheme clusters
  */
 export const splitByGraphemes = (string: string) => {
-    const out: string[] = [];
+  const out: string[] = [];
 
-    for (const { segment } of SEGMENTER.segment(string)) {
-        out.push(segment);
-    }
+  for (const { segment } of SEGMENTER.segment(string)) {
+    out.push(segment);
+  }
 
-    return out;
+  return out;
 };
 
 /**
@@ -59,7 +58,6 @@ export function maxGraphemeWidth(string: string): number {
   return maxWidth;
 }
 
-
 export function firstGrapheme(string: string) {
-    return SEGMENTER.segment(string).next().value?.segment ?? "";
+  return SEGMENTER.segment(string).next().value?.segment ?? "";
 }

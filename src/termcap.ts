@@ -8,13 +8,13 @@ const encoder = new TextEncoder();
  * @returns The uppercase hex-encoded string
  */
 function stringToHex(str: string): string {
-    const out: string[] = [];
+  const out: string[] = [];
 
-    for (const byte of encoder.encode(str)) {
-        out.push(byte.toString(16).padStart(2, "0"));
-    }
+  for (const byte of encoder.encode(str)) {
+    out.push(byte.toString(16).padStart(2, "0"));
+  }
 
-    return out.join("").toUpperCase();
+  return out.join("").toUpperCase();
 }
 
 /**

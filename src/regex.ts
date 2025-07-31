@@ -7,8 +7,8 @@ const TERMINATORS = `(?:${BEL.toLiteral()}|${ESC.toLiteral()}|${ST.toLiteral()}|
  * Pattern for the {@link COMPLEX_REGEX} regular expression.
  */
 export const COMPLEX_PATTERN = [
-    `[${CSI.toLiteral()}][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${TERMINATORS})`,
-    "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
+  `[${CSI.toLiteral()}][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${TERMINATORS})`,
+  "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
 ].join("|");
 
 /**

@@ -1,4 +1,4 @@
-import {tokenizer} from "./parser";
+import { tokenizer } from "./parser";
 
 /**
  * Split a string along ANSI escape sequences.
@@ -15,12 +15,12 @@ import {tokenizer} from "./parser";
  *
  */
 export function split(string: string) {
-    let out: string[] = [];
+  const out: string[] = [];
 
-    for (const token of tokenizer(string)) {
-        if (token.type !== "TEXT") continue;
-        out.push(token.raw)
-    }
+  for (const token of tokenizer(string)) {
+    if (token.type !== "TEXT") continue;
+    out.push(token.raw);
+  }
 
-    return out;
+  return out;
 }

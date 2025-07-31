@@ -59,7 +59,7 @@ export function tmuxPassthrough(seq: string): string {
 
   for (let i = 0; i < seq.length; i++) {
     if (seq[i] === ESC.toString()) {
-      result += ESC.toString()
+      result += ESC.toString();
     }
     result += seq[i];
   }

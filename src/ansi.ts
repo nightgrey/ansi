@@ -39,10 +39,10 @@ export abstract class ControlCharacter extends String {
    */
   abstract readonly literal: string;
 
-    /**
-     * String representation of the control character.
-     * @example `"\x1B"`
-     */
+  /**
+   * String representation of the control character.
+   * @example `"\x1B"`
+   */
   get string() {
     return this.valueOf();
   }

@@ -1,8 +1,7 @@
-import {strip} from "./strip";
-import {graphemes} from "./graphemes";
-import {runeWidth} from "./runes";
+import { strip } from "./strip";
+import { graphemes } from "./graphemes";
+import { runeWidth } from "./runes";
 export type { Options } from "string-width";
-
 
 /**
  * Returns the width of a string in cells. This is the number of
@@ -27,11 +26,11 @@ export type { Options } from "string-width";
  * ```
  */
 export function stringWidth(string: string) {
-    let width = 0;
+  let width = 0;
 
-    for (const character of graphemes(strip(string))) {
-        width += runeWidth(character);
-    }
+  for (const character of graphemes(strip(string))) {
+    width += runeWidth(character);
+  }
 
-    return width
+  return width;
 }
