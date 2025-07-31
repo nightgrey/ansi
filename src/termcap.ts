@@ -1,15 +1,20 @@
 import { TextEncoder } from "node:util";
 
+const encoder = new TextEncoder();
+
 /**
  * Converts a string to uppercase hexadecimal representation.
  * @param str - The string to encode
  * @returns The uppercase hex-encoded string
  */
 function stringToHex(str: string): string {
-  return Array.from(new TextEncoder().encode(str))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("")
-    .toUpperCase();
+    const out: string[] = [];
+
+    for (const byte of encoder.encode(str)) {
+        out.push(byte.toString(16).padStart(2, "0"));
+    }
+
+    return out.join("").toUpperCase();
 }
 
 /**
