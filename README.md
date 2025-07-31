@@ -28,10 +28,10 @@ npm add @nightgrey/ansi
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
-## Usage
 
+## Usage
 You can find the complete API reference at
-[nightgrey.github.io/ansi](https://nightgrey.github.io/ansi/)!
+[nightgrey.github.io/ansi](https://nightgrey.github.io/ansi/).
 
 ```ts
 import {
