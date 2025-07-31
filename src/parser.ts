@@ -1,7 +1,9 @@
-import { parser as _parser, tokenizer as _tokenizer } from "@ansi-tools/parser";
+import {type CODE, parser as _parser, type TOKEN, tokenizer as _tokenizer} from "@ansi-tools/parser";
 
 /**
- * Parser for ANSI escape sequences.
+ * Parser for ANSI escape sequence tokens.
+ *
+ * @see {@link tokenizer}
  *
  * @example
  * ```ts
@@ -47,11 +49,10 @@ import { parser as _parser, tokenizer as _tokenizer } from "@ansi-tools/parser";
  * });
  * ```
  */
-export const parser = _parser;
+export const parser = _parser as (tokens: Iterator<TOKEN>) => Generator<CODE>;
 
 /**
- * Tokenizer for ANSI escape sequences.
- *
+ * Tokenizes for ANSI escape sequences.
  * @see {@link parser}
  */
 export const tokenizer = _tokenizer;
