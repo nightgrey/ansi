@@ -14,9 +14,9 @@
 		"indentStyle": "space",
 		"useEditorconfig": true,
 		"lineWidth": 80
-		
+
 	},
-	"linter": { 
+	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
@@ -37,7 +37,7 @@
 		}
 	},
 	"overrides": [
-		{ 
+		{
 			"includes": ["**/*.md"],
 			"formatter": {
 				"lineWidth": 80,
