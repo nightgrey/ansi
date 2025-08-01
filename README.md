@@ -138,11 +138,10 @@ stdout.write(BEL.toCaret()); // "^G"
   and return the same string.
 - For anything else, we try to match the Go implementation, but how that is
   achieved can sometimes not be identical, just from the language differences.
-  For example, Go has `runes`, which we use the `Intl.Segmenter` API for.
+  For example, Go's runes vs. built-in iterators & Grapheme handling vs `Intl.Segmenter`.
 - I took a little bit of liberty in a few places, sometimes to make it more
   JS-idiomatic, but unless it's specifically marked as different, the
-  functionality offered should be the samem, even if the API is slightly
-  different.
+  functionality offered should be the same, with maybe a slightly different API.
 - We use `pascalCase`, they use `CamelCase`. That said, the naming
   is still a bit iffy, might need some tweaking / changes.
 - VT100-related comments are identical.
@@ -164,16 +163,18 @@ stdout.write(BEL.toCaret()); // "^G"
 Features that are not implemented the same way.
 
 - *String processing*
-  ([width.go](https://github.com/charmbracelet/x/blob/main/ansi/width.go),
-  [truncate.go](https://github.com/charmbracelet/x/blob/main/ansi/truncate.go),
+  ([truncate.go](https://github.com/charmbracelet/x/blob/main/ansi/truncate.go),
   [wrap.go](https://github.com/charmbracelet/x/blob/main/ansi/wrap.go))
 
-  The Go package uses their parser to compute width, truncate and wrap. We rely
-  on external packages that do their own logic and string processing.
+  The Go package uses their parser for any string processing. So far, we
+  only use it for stripping and computing the width.
+
 - *Parser*
   ([x/ansi/parser](https://github.com/charmbracelet/x/tree/main/ansi/parser.go))
 
-  It at least does not have the same `Handler` interface.
+  The parser is fundamentally different, though what it achieves is
+  effectively the same. We're using the excellent [@ansi-tools/parser]
+  (https://www.npmjs.com/package/@ansi-tools/parser)!
 
 - *Color*
   ([x/ansi/color](https://github.com/charmbracelet/x/tree/main/ansi/color.go))
