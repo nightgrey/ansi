@@ -32,7 +32,6 @@ export * from "./slice.ts";
 export * from "./split.ts";
 export * from "./status.ts";
 export * from "./strip.ts";
-export * from "./style.ts";
 export * from "./termcap.ts";
 export * from "./title.ts";
 export * from "./truncate.ts";
