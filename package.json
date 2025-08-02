@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "@ansi-tools/parser": "^1.0.8",
+    "@ansi-tools/parser": "^1.0.10",
     "@thi.ng/color": "^5.7.47",
     "@thi.ng/memoize": "^4.0.23",
     "@thi.ng/strings": "^3.9.16",

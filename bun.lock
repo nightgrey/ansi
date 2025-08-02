@@ -4,7 +4,7 @@
     "": {
       "name": "ansi",
       "dependencies": {
-        "@ansi-tools/parser": "^1.0.8",
+        "@ansi-tools/parser": "^1.0.10",
         "@thi.ng/color": "^5.7.47",
         "@thi.ng/memoize": "^4.0.23",
         "@thi.ng/strings": "^3.9.16",
@@ -31,7 +31,7 @@
     },
   },
   "packages": {
-    "@ansi-tools/parser": ["@ansi-tools/parser@1.0.8", "", {}, "sha512-UCxKE1yFPVS6xwxmhhWlwJjRCozwTpvRPJBBVz7u1N09FR6BwOw0LjMsz5zThFlRbRPaEHhgkwrjCvuclBdkpw=="],
+    "@ansi-tools/parser": ["@ansi-tools/parser@1.0.10", "", {}, "sha512-jcMpwHgqjNZKcQGE20+m4bdKeKcufVNkKsmi1n1r9tzYH1Im+crsVP+VrUugYeTibYg+x8Q0u/NGoAXjMqOlSw=="],
 
     "@biomejs/biome": ["@biomejs/biome@2.1.2", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.1.2", "@biomejs/cli-darwin-x64": "2.1.2", "@biomejs/cli-linux-arm64": "2.1.2", "@biomejs/cli-linux-arm64-musl": "2.1.2", "@biomejs/cli-linux-x64": "2.1.2", "@biomejs/cli-linux-x64-musl": "2.1.2", "@biomejs/cli-win32-arm64": "2.1.2", "@biomejs/cli-win32-x64": "2.1.2" }, "bin": { "biome": "bin/biome" } }, "sha512-yq8ZZuKuBVDgAS76LWCfFKHSYIAgqkxVB3mGVVpOe2vSkUTs7xG46zXZeNPRNVjiJuw0SZ3+J2rXiYx0RUpfGg=="],
 
