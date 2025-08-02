@@ -1,6 +1,6 @@
 import { BEL, ESC } from "./c0";
 import { ST } from "./c1";
-import { type RgbColor, rgb } from "./color";
+import { type Color, type RgbColor, rgb } from "./color";
 
 /**
  * Returns a sequence that sets the default terminal foreground color.
@@ -44,11 +44,11 @@ export const resetForegroundColor = "\x1b]110\x07";
  * Where color is the encoded color number. Most terminals support hex,
  * XParseColor rgb: and rgba: strings.
  *
- * @param s The color value
+ * @param color The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
-export function setBackgroundColor(s: string): string {
-  return `\x1b]11;${s}\x07`;
+export function setBackgroundColor(color: Color): string {
+  return `\x1b]11;${color}\x07`;
 }
 
 /**
@@ -100,7 +100,7 @@ export const resetCursorColor = "\x1b]112\x07";
  * @param string - the string to parse
  * @returns the parsed color
  */
-export function parseTerminalColorSequence(string: string): RgbColor {
+export function parseColorSequence(string: string): RgbColor {
   if (string.length < 24 || string.length > 25) {
     throw new TypeError("String must have a length of < 24 or > 25");
   }
