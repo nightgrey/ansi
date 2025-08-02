@@ -1,9 +1,5 @@
-import {
-  type CODE,
-  parser as _parser,
-  type TOKEN,
-  tokenizer as _tokenizer,
-} from "@ansi-tools/parser";
+import { parser as ansiToolsParser } from "@ansi-tools/parser";
+import type { Parser } from "./types";
 
 /**
  * Parser for ANSI escape sequence tokens.
@@ -54,17 +50,6 @@ import {
  * });
  * ```
  */
-export const parser = _parser as (tokens: Iterator<TOKEN>) => Generator<CODE>;
-
-/**
- * Tokenizes for ANSI escape sequences.
- * @see {@link parser}
- */
-export const tokenizer = _tokenizer;
-
-export type {
-  CODE,
-  CONTROL_CODE,
-  TEXT,
-  TOKEN,
-} from "@ansi-tools/parser/dist/escaped";
+export const parser = ansiToolsParser as (
+  tokens: Iterable<Parser.Raw>,
+) => Generator<Parser.AnsiToken>;

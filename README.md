@@ -7,7 +7,8 @@ complete overview, check out the
 [API reference](https://nightgrey.github.io/ansi/).
 
 **Note**: This project does not have complete feature-parity with the original
-Go library. See [comparison & differences](#comparison--differences) for more. Additionally, I would probably not recommend using it for production use.
+Go library. See [comparison & differences](#comparison--differences) for
+more. Additionally, I  would probably not recommend using it for production use.
 
 **Installation**
 
@@ -162,19 +163,43 @@ stdout.write(BEL.toCaret()); // "^G"
 
 Features that are not implemented the same way.
 
-- *String processing*
-  ([truncate.go](https://github.com/charmbracelet/x/blob/main/ansi/truncate.go),
-  [wrap.go](https://github.com/charmbracelet/x/blob/main/ansi/wrap.go))
+- [*String width*](https://github.com/charmbracelet/x/blob/main/ansi/width.go)
+  In many of Go's string processing functions, you can set a method to
+  measure the width. The difference between `WcWidth` and
+  `GraphemeWidth` is, as far as I can see, in which package is used to
+  determine the width:
 
-  The Go package uses their parser for any string processing. So far, we
-  only use it for stripping and computing the width.
+    - `WcWidth` = [mattn/go-runewidth](https://github.com/mattn/go-runewidth)
+    - `GraphemeWidth` = [rivo/uniseg](https://pkg.go.dev/github.com/rivo/uniseg)
+
+  It seems like they both try to accomplish the same thing, but in
+  different ways, with the `uniseg` library being property-based,
+  grapheme-aware and more modern.
+
+  So far, we only implemented `WcWidth` - mainly because it
+  was easier. In the test suite, you can see that it counts `🇸🇦` as 1,
+  not 2 cells wide like `GraphemeWidth`.
+
+  I'm not sure how many other symbols  that might be the case for, nor if I
+  understand the whole Unicode thing correctly yet. Let me know if
+  something is off! :)
+
+- [*Wrapping*](https://github.com/charmbracelet/x/blob/main/ansi/wrap.go)
+
+  As mentioned in the point above, we have only implemented the `WcWidth`
+  method so far, so it's not possible to choose another string width method.
+
+- [*Truncating*](https://github.com/charmbracelet/x/blob/main/ansi/truncate.go)
+
+  We do not use the parser to do this yet, but rather rely on a
+  third party package.
 
 - *Parser*
   ([x/ansi/parser](https://github.com/charmbracelet/x/tree/main/ansi/parser.go))
 
-  The parser is fundamentally different, though what it achieves is
-  effectively the same. We're using the excellent [@ansi-tools/parser]
-  (https://www.npmjs.com/package/@ansi-tools/parser)!
+  The parser is fundamentally different, though it should work and achieve the
+  same. We're using the excellent [@ansi-tools/parser] (https://www.npmjs.
+  com/package/@ansi-tools/parser)!
 
 - *Color*
   ([x/ansi/color](https://github.com/charmbracelet/x/tree/main/ansi/color.go))

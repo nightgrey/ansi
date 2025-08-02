@@ -1,5 +1,5 @@
 import { BasicColor } from "../src/color";
-import { Style } from "../src/style";
+import { Style } from "../src/sgr";
 import { bench, describe } from "vitest";
 
 const ALL_STYLES = new Style()

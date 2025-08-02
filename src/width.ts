@@ -1,15 +1,17 @@
-import { strip } from "./strip";
 import { graphemes } from "./graphemes";
-import { runeWidth } from "./runes";
-export type { Options } from "string-width";
+import { tokenizer } from "./parser";
+import {
+  runeWidth,
+  type WidthOptions as UnicodeWidthOptions,
+} from "./unicode-width";
+
+export type WidthOptions = UnicodeWidthOptions;
 
 /**
  * Returns the width of a string in cells. This is the number of
  * cells that the string will occupy when printed in a terminal. ANSI escape
- * codes are ignored and wide characters (such as East Asians and emojis) are
+ * codes are ignored and wide characters (such as east asian characters & emojis) are
  * accounted for.
- *
- * This treats the text as a sequence of grapheme clusters.
  *
  * @example
  * ```
@@ -25,11 +27,14 @@ export type { Options } from "string-width";
  * //=> 2
  * ```
  */
-export function stringWidth(string: string) {
+export function stringWidth(string: string, options?: WidthOptions) {
   let width = 0;
+  for (const token of tokenizer(string)) {
+    if (token.type !== "TEXT") continue;
 
-  for (const character of graphemes(strip(string))) {
-    width += runeWidth(character);
+    for (const grapheme of graphemes(token.raw)) {
+      width += runeWidth(grapheme.codePointAt(0), options);
+    }
   }
 
   return width;
