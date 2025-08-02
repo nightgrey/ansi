@@ -9,13 +9,15 @@ import type { Writable } from "node:stream";
  *
  * @param stream - The writable stream
  * @param chunk - The chunk to write
+ * @param encoding - Encoding
  */
 export function execute(
   stream: Writable,
   chunk: Uint8Array | string,
+  encoding: BufferEncoding = "utf8",
 ): Promise<void> {
   return new Promise((resolve) => {
-    if (!stream.write(chunk)) {
+    if (!stream.write(chunk, encoding)) {
       stream.once("drain", resolve);
     } else {
       process.nextTick(resolve);
