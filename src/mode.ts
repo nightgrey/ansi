@@ -302,12 +302,12 @@ export abstract class Mode {
   }
 
   /**
-   * Returns the mode setting from a report mode (DECRPM) sequence.
+   * Parses the mode setting from a report mode (DECRPM) sequence.
    *
    * @param report - the report mode sequence
    * @returns the mode setting
    */
-  static setting(report: string): ModeSetting {
+  static parseReport(report: string): ModeSetting {
     if (!report.startsWith(CSI.toString())) return ModeSetting.NOT_RECOGNIZED;
 
     const regex = report
@@ -333,7 +333,7 @@ export const SM = setMode;
 export const resetMode = Mode.reset;
 
 /** RM is an alias for {@link resetMode}. */
-export const rM = resetMode;
+export const RM = resetMode;
 
 export const requestMode = Mode.request;
 
