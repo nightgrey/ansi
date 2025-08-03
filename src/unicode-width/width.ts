@@ -18,7 +18,7 @@ import {
 
 class LUT extends Uint8Array {
   readonly options: WidthOptions;
-  #bytes: number;
+  #bytes = 0;
 
   get bytes() {
     return this.#bytes;
@@ -27,18 +27,20 @@ class LUT extends Uint8Array {
   constructor(options: WidthOptions = DEFAULTS) {
     super(0x110000 / 2);
     this.options = options;
-    this.#bytes = 0;
+    LUT.set(options, this);
 
-    for (let i = 0; i < this.bytes; i++) {
+    for (let i = 0; i < this.length; i++) {
       const i32 = i * 2;
       const x0 = runeWidth(i32, options);
       const x1 = runeWidth(i32 + 1, options);
 
       // Pack two 4-bit values into one byte
       // x0 in lower 4 bits, x1 in upper 4 bits
-      this[i] = x0 | (x1 << 4);
-      this.#bytes++;
+      this[i] = (x0 & 0xff) | ((x1 & 0xff) << 4);
     }
+
+    // We can only set this afterwards, because otherwise the `runeWidth` calls inside the loop will return 0.
+    this.#bytes = this.length;
   }
 
   /** Hash map for LUTs */
@@ -59,13 +61,8 @@ class LUT extends Uint8Array {
    * @param options - The options to create the Lut instance from.
    */
   static fromOptions(options: WidthOptions) {
-    if (LUT.has(options)) {
-      return LUT.get(options)!;
-    }
-
-    const lut = new LUT(options);
-    LUT.set(options, lut);
-    return lut;
+    if (LUT.has(options)) return LUT.get(options)!;
+    return new LUT(options);
   }
 
   private static has(options: WidthOptions) {
@@ -189,16 +186,20 @@ export const DEFAULTS: WidthOptions = {
  * @see {@link https://www.unicode.org/reports/tr11/ | Unicode Standard Annex #11}
  * @see {@link stringWidth} for measuring entire strings
  */
-export function runeWidth(rune: number = 0, options?: WidthOptions): number {
+export function runeWidth(rune = 0, options?: WidthOptions): number {
   if (rune < 0 || rune > 0x10ffff) {
     return 0;
   }
 
   const OPTIONS = { ...DEFAULTS, ...options };
-  const combinedLut = LUT.fromOptions(OPTIONS);
+  const lut = LUT.fromOptions(OPTIONS);
 
-  if (combinedLut.bytes > 0) {
-    return (combinedLut[rune >> 1] >> ((rune & 1) * 4)) & 3;
+  if (lut.bytes > 0) {
+    const result = (lut[rune >> 1] >> ((rune & 1) * 4)) & 3;
+    if (result !== 0) {
+      console.log("result", result);
+    }
+    return result;
   }
 
   // Optimized version

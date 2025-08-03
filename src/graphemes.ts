@@ -1,5 +1,5 @@
+import { runeWidth } from "./unicode-width";
 import { Segmenter } from "./utils/segmenter";
-import { runeWidth } from "./runes";
 
 const SEGMENTER = new Segmenter();
 
@@ -49,7 +49,7 @@ export function maxGraphemeWidth(string: string): number {
   let maxWidth = 0;
 
   for (const grapheme of graphemes(string)) {
-    const w = runeWidth(grapheme);
+    const w = runeWidth(grapheme.codePointAt(0) || 0);
     if (w > maxWidth) {
       maxWidth = w;
     }

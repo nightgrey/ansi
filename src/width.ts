@@ -29,6 +29,7 @@ export type WidthOptions = UnicodeWidthOptions;
  */
 export function stringWidth(string: string, options?: WidthOptions) {
   let width = 0;
+
   for (const token of tokenizer(string)) {
     if (token.type !== "TEXT") continue;
 
