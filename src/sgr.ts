@@ -35,15 +35,6 @@ export enum UnderlineStyle {
   DashedUnderline = "4:5",
 }
 
-export enum UnderlineStyleAttr {
-  NoUnderline,
-  SingleUnderline,
-  DoubleUnderline,
-  CurlyUnderline,
-  DottedUnderline,
-  DashedUnderline,
-}
-
 /** Reset all attributes */
 export const ResetAttr: Attribute = 0;
 /** Bold or increased intensity */
@@ -207,7 +198,6 @@ export class Style {
   readonly attributes: Readonly<Attributes>;
 
   constructor(attributes: Attributes = []) {
-    super(attributes);
     this.attributes = Object.freeze(attributes);
   }
 
