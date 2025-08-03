@@ -1,5 +1,5 @@
 import { CSI } from "./c1";
-import {type Attributes, Style} from "./style";
+import { type Attributes, Style } from "./style";
 
 /**
  * RESET_STYLE is a `SGR` (Select Graphic Rendition) style sequence that resets
@@ -141,7 +141,6 @@ export const BrightWhiteBackgroundColorAttr: Attribute = 107;
 export const RGBColorIntroducerAttr: Attribute = 2;
 /** Extended color introducer attribute */
 export const ExtendedColorIntroducerAttr: Attribute = 5;
-
 
 /**
  * Select Graphic Rendition (`SGR`) is a command that sets display attributes.
