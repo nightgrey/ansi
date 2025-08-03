@@ -299,7 +299,7 @@ export function stringWidth(
   let width = 0;
 
   for (const r of runes(string)) {
-    width += runeWidth(r, options);
+    width += runeWidth(r.codePointAt(0) || 0, options);
   }
 
   return width;

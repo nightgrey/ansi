@@ -1,7 +1,7 @@
 import { distEucledian3, type RGB, type SRGB } from "@thi.ng/color";
 import type { BasicColor, IndexedColor } from "../color";
 import { INDEXED_TO_BASIC } from "./constants";
-import { srgb2553 } from "./srgb-255";
+import { int2553 } from "./int255";
 import { cubeSrgb3, srgbCube3 } from "./srgb-cube";
 
 const TEMP_RGB = new Uint8Array(3);
@@ -24,7 +24,7 @@ const TEMP_CUBE = new Uint8Array(3);
  * @returns ANSI 256 color index
  */
 export function srgbIndexedColor(src: SRGB): IndexedColor {
-  const color = srgb2553(TEMP_RGB, src) as RGB;
+  const color = int2553(TEMP_RGB, src) as RGB;
   const [r, g, b] = color;
   const cube6 = srgbCube3(TEMP_CUBE6, color) as RGB;
   const [qr, qg, qb] = cube6;
@@ -78,7 +78,7 @@ export function srgbBasicColor(src: SRGB): BasicColor {
 }
 
 export function srgbBasicColorAlt(src: SRGB): IndexedColor {
-  const [r, g, b] = srgb2553(TEMP_RGB, src) as RGB;
+  const [r, g, b] = int2553(TEMP_RGB, src) as RGB;
   // We use the extended greyscale palette here, with the exception of
   // black and white. normal palette only has 4 greyscale shades.
   if (r === g && g === b) {
