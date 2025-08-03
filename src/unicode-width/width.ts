@@ -195,11 +195,7 @@ export function runeWidth(rune = 0, options?: WidthOptions): number {
   const lut = LUT.fromOptions(OPTIONS);
 
   if (lut.bytes > 0) {
-    const result = (lut[rune >> 1] >> ((rune & 1) * 4)) & 3;
-    if (result !== 0) {
-      console.log("result", result);
-    }
-    return result;
+    return (lut[rune >> 1] >> ((rune & 1) * 4)) & 3;
   }
 
   // Optimized version
