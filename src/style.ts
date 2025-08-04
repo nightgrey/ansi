@@ -1,3 +1,14 @@
+import { srgb } from "@thi.ng/color";
+import { CSI } from "./c1";
+import {
+  type AnsiColor,
+  BasicColor,
+  DefaultColor,
+  isBasicColor,
+  isDefaultColor,
+  isIndexedColor,
+  type MaybeColor,
+} from "./color";
 import {
   type Attribute,
   BlackBackgroundColorAttr,
@@ -45,9 +56,9 @@ import {
   NoStrikethroughAttr,
   NoUnderlineAttr,
   RapidBlinkAttr,
+  RESET_STYLE,
   RedBackgroundColorAttr,
   RedForegroundColorAttr,
-  RESET_STYLE,
   ResetAttr,
   ReverseAttr,
   RGBColorIntroducerAttr,
@@ -60,18 +71,7 @@ import {
   YellowBackgroundColorAttr,
   YellowForegroundColorAttr,
 } from "./sgr";
-import {
-  type AnsiColor,
-  BasicColor,
-  DefaultColor,
-  isBasicColor,
-  isDefaultColor,
-  isIndexedColor,
-  type MaybeColor,
-} from "./color";
-import { CSI } from "./c1";
 import { int2553 } from "./utils/int255";
-import { srgb } from "@thi.ng/color";
 
 /**
  * Attributes represents an array of style attributes.
