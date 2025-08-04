@@ -1,11 +1,11 @@
 import {
   BEL,
-  bracketedPasteMode,
+  BracketedPasteMode,
   cursorPosition,
   cursorUp,
-  focusEventMode,
+  FocusEventMode,
   IndexedColor,
-  keyboardActionMode,
+  KeyboardActionMode,
   Mode,
   parser,
   Style,
@@ -74,13 +74,13 @@ const result = [...parser(tokenizer(String.raw`\x1b[31mHello\x1b[0m World`))];
 // ]
 
 // Manage terminal modes
-stdout.write(bracketedPasteMode.set); // Set bracketed paste mode, enabling bracketed paste
-stdout.write(keyboardActionMode.set); // Set keyboard action mode, locking the keyboard
+stdout.write(BracketedPasteMode.set); // Set bracketed paste mode, enabling bracketed paste
+stdout.write(KeyboardActionMode.set); // Set keyboard action mode, locking the keyboard
 
 // .. or request and parse responses
-stdout.write(focusEventMode.request); // Request focus event mode
+stdout.write(FocusEventMode.request); // Request focus event mode
 process.stdin.on("data", (data) => {
-  const setting = Mode.setting(data.toString());
+  const setting = Mode.parseReport(data.toString());
   if (Mode.isSet(setting)) {
     stdout.write("Event mode is set");
   } else if (Mode.isReset(setting)) {
