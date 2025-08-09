@@ -9,7 +9,7 @@ export namespace Parser {
   }
 
   /**
-   * Raw, un-parsed token
+   * Raw token
    *
    * Resulting token from processing through the {@link tokenizer}.
    */
@@ -21,11 +21,11 @@ export namespace Parser {
   }
 
   /**
-   * ANSI escape sequence token
+   * ANSI code token
    *
-   * Represents an ANSI escape sequence. Contains the command and parameters.
+   * Represents an ANSI code token. Contains the command and parameters.
    */
-  export interface Sequence extends Parser.BaseToken {
+  export interface Code extends Parser.BaseToken {
     type: "CSI" | "DCS" | "DEC" | "ESC" | "OSC" | "PRIVATE" | "SGR" | "STRING";
     /**
      * Command of the sequence
@@ -56,5 +56,5 @@ export namespace Parser {
    *
    * Resulting token from processing through the {@link parser}.
    */
-  export type AnsiToken = Sequence | Text;
+  export type Token = Code | Text;
 }

@@ -52,4 +52,4 @@ import type { Parser } from "./types";
  */
 export const parser = ansiToolsParser as (
   tokens: Iterable<Parser.Raw>,
-) => Generator<Parser.AnsiToken>;
+) => Generator<Parser.Token>;
