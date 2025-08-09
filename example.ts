@@ -80,7 +80,7 @@ stdout.write(KeyboardActionMode.set); // Set keyboard action mode, locking the k
 // .. or request and parse responses
 stdout.write(FocusEventMode.request); // Request focus event mode
 process.stdin.on("data", (data) => {
-  const setting = Mode.parseReport(data.toString());
+  const setting = Mode.match(data.toString());
   if (Mode.isSet(setting)) {
     stdout.write("Event mode is set");
   } else if (Mode.isReset(setting)) {
