@@ -8,7 +8,6 @@ export enum ModeSetting {
   PERMANENTLY_SET = 3,
   PERMANENTLY_RESET = 4,
 }
-
 /**
  * Represents an interface for terminal modes.
  * Modes can be set, reset, and requested.
@@ -279,24 +278,30 @@ export abstract class Mode {
   }
 
   /**
-   * Create mode setting from a report mode (DECRPM) sequence.
+   * Match mode setting from a report mode (DECRPM) sequence.
    *
    * @param sequence - report mode sequence
    * @returns mode setting
    */
-  static parseReport(sequence: string): ModeSetting {
-    if (!sequence.startsWith(CSI.toString())) return ModeSetting.NOT_RECOGNIZED;
+  static match(sequence: string): ModeSetting {
+    if (!sequence.startsWith(CSI.string))
+      throw new Error(`Mode setting can't be matched from ${sequence}.`);
 
-    const regex = sequence
-      .replace(CSI.toString(), "")
-      .match(/^\?(\d+);(\d+)\$y$/);
-    if (regex === null) return ModeSetting.NOT_RECOGNIZED;
+    // Ensure it’s a private + intermediate response
+    const params = sequence.replace(CSI.string, "").match(/^\?(\d+);(\d+)\$y$/);
+    if (params === null)
+      throw new Error(`Mode setting can't be matched from ${sequence}.`);
 
-    return Mode.setting(regex[2]);
+    const [ps, pm] = params;
+
+    if (!ps || !pm)
+      throw new Error(`Mode setting can't be matched from ${sequence}.`);
+
+    return Mode.setting(pm);
   }
 
   /**
-   * Parse mode setting from a number or string.
+   * Parse mode setting from number or string.
    *
    * @param value - the value to parse
    * @returns mode setting
