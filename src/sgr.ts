@@ -161,3 +161,27 @@ export function selectGraphicRendition(attributes: Attributes) {
 
 /** `SGR` is an alias for {@link selectGraphicRendition} */
 export const SGR = selectGraphicRendition;
+
+/** A map of human-readable attribute keys to their corresponding attributes. */
+export const AttributeKeys = {
+  reset: ResetAttr,
+  bold: BoldAttr,
+  faint: FaintAttr,
+  italic: ItalicAttr,
+  underline: UnderlineAttr,
+  slowBlink: SlowBlinkAttr,
+  rapidBlink: RapidBlinkAttr,
+  reverse: ReverseAttr,
+  conceal: ConcealAttr,
+  strikethrough: StrikethroughAttr,
+  normalIntensity: NormalIntensityAttr,
+  noItalic: NoItalicAttr,
+  noUnderline: NoUnderlineAttr,
+  noBlink: NoBlinkAttr,
+  noReverse: NoReverseAttr,
+  noConceal: NoConcealAttr,
+  noStrikethrough: NoStrikethroughAttr,
+  defaultForegroundColor: DefaultForegroundColorAttr,
+  defaultBackgroundColor: DefaultBackgroundColorAttr,
+  defaultUnderlineColor: DefaultUnderlineColorAttr,
+} as const;

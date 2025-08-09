@@ -11,6 +11,7 @@ import {
 } from "./color";
 import {
   type Attribute,
+  AttributeKeys,
   BlackBackgroundColorAttr,
   BlackForegroundColorAttr,
   BlueBackgroundColorAttr,
@@ -59,7 +60,6 @@ import {
   RESET_STYLE,
   RedBackgroundColorAttr,
   RedForegroundColorAttr,
-  ResetAttr,
   ReverseAttr,
   RGBColorIntroducerAttr,
   SlowBlinkAttr,
@@ -83,35 +83,16 @@ export type Attributes = (string | AnsiColor | Attribute)[];
  *
  * @see {@link Style.from}
  */
-export type AttributeProps = Partial<{
-  reset: boolean;
-  bold: boolean;
-  faint: boolean;
-  italic: boolean;
-  underline: boolean;
+export type AttributeProps = {
+  [K in keyof typeof AttributeKeys]: boolean;
+} & {
   underlineStyle: UnderlineStyle;
-  blink: boolean;
-  slowBlink: boolean;
-  rapidBlink: boolean;
-  reverse: boolean;
-  conceal: boolean;
-  strikethrough: boolean;
-  normalIntensity: boolean;
-  noItalic: boolean;
-  noUnderline: boolean;
-  noBlink: boolean;
-  noReverse: boolean;
-  noConceal: boolean;
-  noStrikethrough: boolean;
-  defaultForegroundColor: boolean;
-  defaultBackgroundColor: boolean;
-  defaultUnderlineColor: boolean;
   background: MaybeColor;
   backgroundColor: MaybeColor; // alias for background
   foreground: MaybeColor;
   foregroundColor: MaybeColor; // alias for foreground
   underlineColor: MaybeColor;
-}>;
+};
 
 /**
  * Style represents a collection of ANSI style attributes that can be applied to text.
@@ -683,10 +664,10 @@ export class Style {
         case "underline":
           attributes.push(value as UnderlineStyle);
           break;
-        default:
-          if (value === true)
-            attributes.push(Style.KEY_TO_ATTRIBUTE[key] as Attribute);
+        default: {
+          attributes.push(AttributeKeys[key as keyof typeof AttributeKeys]);
           break;
+        }
       }
     }
 
@@ -703,29 +684,4 @@ export class Style {
    * Useful for default arguments.
    */
   static readonly empty = new Style(Style.EMPTY_ATTRIBUTES as Attributes);
-
-  private static readonly KEY_TO_ATTRIBUTE: {
-    [key in keyof AttributeProps]: Attribute | UnderlineStyle;
-  } = {
-    reset: ResetAttr,
-    bold: BoldAttr,
-    faint: FaintAttr,
-    italic: ItalicAttr,
-    underline: UnderlineAttr,
-    slowBlink: SlowBlinkAttr,
-    rapidBlink: RapidBlinkAttr,
-    reverse: ReverseAttr,
-    conceal: ConcealAttr,
-    strikethrough: StrikethroughAttr,
-    normalIntensity: NormalIntensityAttr,
-    noItalic: NoItalicAttr,
-    noUnderline: NoUnderlineAttr,
-    noBlink: NoBlinkAttr,
-    noReverse: NoReverseAttr,
-    noConceal: NoConcealAttr,
-    noStrikethrough: NoStrikethroughAttr,
-    defaultForegroundColor: DefaultForegroundColorAttr,
-    defaultBackgroundColor: DefaultBackgroundColorAttr,
-    defaultUnderlineColor: DefaultUnderlineColorAttr,
-  } as const;
 }
