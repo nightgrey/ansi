@@ -6,63 +6,49 @@ import { Mode, ModeSetting } from "./mode";
  *
  *
  */
-export class Modes {
-  [Symbol.iterator]() {
-    return this.modes[Symbol.iterator]();
-  }
-  private modes: Map<Mode, ModeSetting> = new Map();
-
+export class Modes extends Map<Mode, ModeSetting> {
   /**
    * Get returns the setting of a terminal mode. If the mode is not set, it
    * returns {@link ModeSetting.NOT_RECOGNIZED}.
    */
   get(mode: Mode): ModeSetting {
-    const a = this[Symbol.iterator]();
-    return this.modes.get(mode) ?? ModeSetting.NOT_RECOGNIZED;
+    return super.get(mode) ?? ModeSetting.NOT_RECOGNIZED;
   }
 
   /**
    * Delete deletes a terminal mode. This has the same effect as setting the mode
    * to {@link ModeSetting.NOT_RECOGNIZED}.
    */
-  delete(mode: Mode): void {
-    this.modes.delete(mode);
+  delete(mode: Mode) {
+    return super.delete(mode);
   }
 
   /**
    * Set sets a terminal mode to {@link ModeSetting.SET}.
    */
-  set(...modes: Mode[]): void {
-    for (const mode of modes) {
-      this.modes.set(mode, ModeSetting.SET);
-    }
+  set(mode: Mode) {
+    return super.set(mode, ModeSetting.SET);
   }
 
   /**
    * Permanently Set sets a terminal mode to {@link ModeSetting.PERMANENTLY_SET}.
    */
-  permanentlySet(...modes: Mode[]): void {
-    for (const mode of modes) {
-      this.modes.set(mode, ModeSetting.PERMANENTLY_SET);
-    }
+  permanentlySet(mode: Mode) {
+    return super.set(mode, ModeSetting.PERMANENTLY_SET);
   }
 
   /**
    * Reset sets a terminal mode to {@link ModeSetting.RESET}.
    */
-  reset(...modes: Mode[]): void {
-    for (const mode of modes) {
-      this.modes.set(mode, ModeSetting.RESET);
-    }
+  reset(mode: Mode) {
+    return super.set(mode, ModeSetting.RESET);
   }
 
   /**
    * Permanently Reset sets a terminal mode to {@link ModeSetting.PERMANENTLY_RESET}.
    */
-  permanentlyReset(...modes: Mode[]): void {
-    for (const mode of modes) {
-      this.modes.set(mode, ModeSetting.PERMANENTLY_RESET);
-    }
+  permanentlyReset(mode: Mode) {
+    return super.set(mode, ModeSetting.PERMANENTLY_RESET);
   }
 
   /**
