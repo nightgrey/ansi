@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { BasicColor, IndexedColor } from "../src/color";
-import { Attributes, Style, UnderlineStyle } from "../src/sgr";
+import { BasicColor, IndexedColor } from "../color";
+import { Attributes, Style, UnderlineStyle } from "./index";
 
 describe("Style", () => {
   test("constructor creates empty style", () => {
@@ -68,15 +68,15 @@ describe("Style", () => {
     });
     test("hex colors", () => {
       const hex = new Style().foregroundColor("#e40010");
-      expect(hex.format("Hello")).toMatchSgr("38;2;228;0;16");
+      expect(hex.format("Hello")).toMatchSgr("38:2:228:0:16");
     });
     test("vector colors", () => {
       const vec = new Style().foregroundColor([0.5, 0.5, 0.5]);
-      expect(vec.format("Hello")).toMatchSgr("38;2;128;128;128");
+      expect(vec.format("Hello")).toMatchSgr("38:2:128:128:128");
     });
     test("rgb() colors", () => {
       const rgb = new Style().foregroundColor("rgb(229,8,174)");
-      expect(rgb.format("Hello")).toMatchSgr("38;2;229;8;174");
+      expect(rgb.format("Hello")).toMatchSgr("38:2:229:8:174");
     });
   });
 
@@ -92,17 +92,17 @@ describe("Style", () => {
     });
     test("hex colors", () => {
       const hex = new Style().backgroundColor("#e40010");
-      expect(hex.format("Hello")).toMatchSgr("38;2;228;0;16");
+      expect(hex.format("Hello")).toMatchSgr("48:2:228:0:16");
     });
     test("vector colors", () => {
       const vec = new Style().backgroundColor([0.5, 0.5, 0.5]);
 
-      expect(vec.format("Hello")).toMatchSgr("38;2;128;128;128");
+      expect(vec.format("Hello")).toMatchSgr("48:2:128:128:128");
     });
     test("rgb() colors", () => {
       const rgb = new Style().backgroundColor("rgb(229,8,174)");
 
-      expect(rgb.format("Hello")).toMatchSgr("38;2;229;8;174");
+      expect(rgb.format("Hello")).toMatchSgr("48:2:229:8:174");
     });
   });
 
@@ -110,7 +110,7 @@ describe("Style", () => {
     test("basic colors", () => {
       const style = new Style().underlineColor(BasicColor.Red);
 
-      expect(style.format("Hello")).toMatchSgr("58;5;1");
+      expect(style.format("Hello")).toMatchSgr("58:5:1");
     });
     test("indexed colors", () => {
       const style = new Style().underlineColor(IndexedColor.AlienArmpit);
@@ -118,22 +118,22 @@ describe("Style", () => {
       //   `${ExtendedUnderlineColorAttr};${ExtendedColorIntroducerAttr};${IndexedColor.AlienArmpit}`,
       // );
 
-      expect(style.format("Hello")).toMatchSgr("58;5;76");
+      expect(style.format("Hello")).toMatchSgr("58:5:76");
     });
     test("hex colors", () => {
       const hex = new Style().underlineColor("#e40010");
 
-      expect(hex.format("Hello")).toMatchSgr("58;2;228;0;16");
+      expect(hex.format("Hello")).toMatchSgr("58:2:228:0:16");
     });
     test("vector colors", () => {
       const vec = new Style().underlineColor([0.5, 0.5, 0.5]);
 
-      expect(vec.format("Hello")).toMatchSgr("58;2;128;128;128");
+      expect(vec.format("Hello")).toMatchSgr("58:2:128:128:128");
     });
     test("rgb() colors", () => {
       const rgb = new Style().underlineColor("rgb(229,8,174)");
 
-      expect(rgb.format("Hello")).toMatchSgr("58;2;229;8;174");
+      expect(rgb.format("Hello")).toMatchSgr("58:2:229:8:174");
     });
   });
 
@@ -198,6 +198,6 @@ describe("Style", () => {
         .noItalic()
         .defaultForegroundColor()
         .format("Hello"),
-    ).toMatchSgr("1;2;4:2;5;7;8;23;29;39;44;58;2;0;0;1");
+    ).toMatchSgr("1;2;4:2;5;7;8;23;29;39;44;58:5:1");
   });
 });

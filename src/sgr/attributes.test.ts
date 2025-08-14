@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { BasicColor, DefaultColor } from "../src/color"; // Adjust import path
+import { BasicColor, DefaultColor } from "../color"; // Adjust import path
 import {
   ATTRIBUTE_TO_BIT,
   Attribute,
@@ -7,7 +7,7 @@ import {
   BIT_TO_ATTRIBUTE,
   Bit,
   UnderlineStyle,
-} from "../src/sgr/attributes";
+} from "./attributes";
 
 describe("Attributes", () => {
   let attrs: Attributes;

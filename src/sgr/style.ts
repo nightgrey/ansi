@@ -85,6 +85,17 @@ export class Style implements Styled {
   }
 
   /**
+   * Add an underline to the style.
+   */
+  underline(style = UnderlineStyle.Single) {
+    return new Style(this.attributes.underline(style));
+  }
+
+  static underline() {
+    return new Style().underline();
+  }
+
+  /**
    * Add an underline color attribute to the style.
    */
   underlineColor(color: MaybeColor) {
@@ -94,24 +105,13 @@ export class Style implements Styled {
       const [r, g, b] = int2553(null, rgb(color));
 
       return new Style(
-        this.attributes.underlineColor((r << 16) | (g << 8) | b),
+        this.attributes.underlineColor(Attributes.pack(r, g, b)),
       );
     }
   }
 
   static underlineColor(color: MaybeColor) {
     return new Style().underlineColor(color);
-  }
-
-  /**
-   * Add an underline to the style.
-   */
-  underline(style = UnderlineStyle.Single) {
-    return new Style(this.attributes.underline(style));
-  }
-
-  static underline() {
-    return new Style().underline();
   }
 
   /**
@@ -336,7 +336,7 @@ export class Style implements Styled {
     }
 
     const [r, g, b] = int2553(null, rgb(color));
-    return new Style(this.attributes.backgroundColor((r << 16) | (g << 8) | b));
+    return new Style(this.attributes.backgroundColor(Attributes.pack(r, g, b)));
   }
 
   static backgroundColor(color: MaybeColor) {
@@ -371,7 +371,7 @@ export class Style implements Styled {
     }
 
     const [r, g, b] = int2553(null, rgb(color));
-    return new Style(this.attributes.foregroundColor((r << 16) | (g << 8) | b));
+    return new Style(this.attributes.foregroundColor(Attributes.pack(r, g, b)));
   }
 
   static foregroundColor(color: MaybeColor) {
@@ -565,6 +565,10 @@ export class Style implements Styled {
     return this.attributes.isEmpty();
   }
 
+  static isEmpty(style: Style) {
+    return style.isEmpty();
+  }
+
   /**
    * Create a {@link Style} from an object of attributes properties.
    */
@@ -581,7 +585,7 @@ export class Style implements Styled {
             attributes = attributes.backgroundColor(value);
           } else {
             const [r, g, b] = int2553(null, rgb(value as MaybeColor));
-            attributes = attributes.foregroundColor((r << 16) | (g << 8) | b);
+            attributes = attributes.foregroundColor(Attributes.pack(r, g, b));
           }
           break;
         case "foregroundColor":
@@ -589,7 +593,7 @@ export class Style implements Styled {
             attributes = attributes.foregroundColor(value);
           } else {
             const [r, g, b] = int2553(null, rgb(value as MaybeColor));
-            attributes = attributes.foregroundColor((r << 16) | (g << 8) | b);
+            attributes = attributes.foregroundColor(Attributes.pack(r, g, b));
           }
           break;
         case "underlineColor":
@@ -597,7 +601,7 @@ export class Style implements Styled {
             attributes = attributes.underlineColor(value);
           } else {
             const [r, g, b] = int2553(null, rgb(value as MaybeColor));
-            attributes = attributes.underlineColor((r << 16) | (g << 8) | b);
+            attributes = attributes.underlineColor(Attributes.pack(r, g, b));
           }
           break;
         case "underlineStyle":

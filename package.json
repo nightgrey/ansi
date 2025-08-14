@@ -12,7 +12,7 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "scripts": {
-    "build": "zshy",
+    "build": "bun run test && zshy",
     "dev": "nodemon --watch src --ext ts --exec 'zshy'",
     "format": "biome format --write",
     "lint": "biome lint --write",

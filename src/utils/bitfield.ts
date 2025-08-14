@@ -11,7 +11,6 @@ export interface GenericBitfield<T, Key = number, Value = boolean> {
   not(): T;
   isEmpty(): boolean;
   isFull(): boolean;
-  toHex(): string;
   toString(radix?: number): string;
   valueOf(): number | bigint;
 
@@ -33,16 +32,11 @@ export interface GenericBitfield<T, Key = number, Value = boolean> {
   values(): IterableIterator<Value>;
 }
 
-export interface GenericBitfieldN<C, K = number, V = boolean>
-  extends GenericBitfield<C, K, V> {
-  valueOf(): bigint;
-}
-
 /**
  * A 32-bit bitfield implementation
  *
  * @see {@link Bitfield64} or {@link Bitfield128} for larger bitfields
- * @see {@link BigBitfield} for a much slower, but variable size and possibly much larger {@link BigInt} based bitfield
+ * @see {@link BitfieldN} for a much slower, but variable size and possibly much larger {@link BigInt} based bitfield
  */
 export class Bitfield extends Number implements GenericBitfield<Bitfield> {
   /**
@@ -102,10 +96,6 @@ export class Bitfield extends Number implements GenericBitfield<Bitfield> {
       return this.valueOf().toString(2).padStart(32, "0");
     }
     return this.valueOf().toString(radix);
-  }
-
-  toHex(): string {
-    return "0x" + this.valueOf().toString(16).padStart(16, "0");
   }
 
   /**
@@ -249,9 +239,9 @@ export class Bitfield extends Number implements GenericBitfield<Bitfield> {
  * A 64-bit bitfield implementation
  *
  * @remark It is using two 32-bit integers to represent the 64-bit value. This is, in most cases, transparent.
- * This implementation is faster than {@link BigBitfield} (using a BigInt) by a factor of ~10 in most cases.
+ * This implementation is faster than {@link BitfieldN} (using a BigInt) by a factor of ~10 in most cases.
  */
-export class Bitfield64 implements GenericBitfieldN<Bitfield64> {
+export class Bitfield64 implements GenericBitfield<Bitfield64> {
   protected low: number; // bits 0-31
   protected high: number; // bits 32-63
 
@@ -421,10 +411,6 @@ export class Bitfield64 implements GenericBitfieldN<Bitfield64> {
     return new Bitfield64(~a.low >>> 0, ~a.high >>> 0);
   }
 
-  toHex(): string {
-    return "0x" + this.valueOf().toString(16).padStart(16, "0");
-  }
-
   *[Symbol.iterator]() {
     yield* this.keys();
   }
@@ -484,7 +470,7 @@ export class Bitfield64 implements GenericBitfieldN<Bitfield64> {
  * @remark It is using four 32-bit integers to represent the 128-bit value. This is, in most cases, transparent.
  * This implementation is faster than using BigInt for most operations.
  */
-export class Bitfield128 implements GenericBitfieldN<Bitfield128> {
+export class Bitfield128 implements GenericBitfield<Bitfield128> {
   protected int0: number; // bits 0-31
   protected int1: number; // bits 32-63
   protected int2: number; // bits 64-95
@@ -784,10 +770,6 @@ export class Bitfield128 implements GenericBitfieldN<Bitfield128> {
     );
   }
 
-  toHex(): string {
-    return "0x" + this.valueOf().toString(16).padStart(32, "0");
-  }
-
   *[Symbol.iterator]() {
     yield* this.keys();
   }
@@ -849,7 +831,7 @@ export class Bitfield128 implements GenericBitfieldN<Bitfield128> {
  * Sadly, this is just down to the `BigInt` implementation of Node or the browser. It is marginally faster is when
  * constructing and calling OR, AND or XOR though.
  */
-export class BigBitfield implements GenericBitfieldN<BigBitfield> {
+export class BitfieldN implements GenericBitfield<BitfieldN> {
   protected value: bigint;
   readonly max: number;
 
@@ -863,9 +845,9 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
    * @param bit - The bit position (0-63)
    * @returns A new Bitfield64N instance with the bit set
    */
-  set(bit: number): BigBitfield {
+  set(bit: number): BitfieldN {
     this.assert(bit);
-    return new BigBitfield(this.value | (1n << BigInt(bit)));
+    return new BitfieldN(this.value | (1n << BigInt(bit)));
   }
 
   /**
@@ -873,9 +855,9 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
    * @param bit - The bit position (0-63)
    * @returns A new Bitfield64N instance with the bit unset
    */
-  unset(bit: number): BigBitfield {
+  unset(bit: number): BitfieldN {
     this.assert(bit);
-    return new BigBitfield(this.value & ~(1n << BigInt(bit)));
+    return new BitfieldN(this.value & ~(1n << BigInt(bit)));
   }
 
   /**
@@ -895,11 +877,11 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
    */
   toggle(bit: number) {
     this.assert(bit);
-    return new BigBitfield(this.value ^ (1n << BigInt(bit)));
+    return new BitfieldN(this.value ^ (1n << BigInt(bit)));
   }
 
-  clear(): BigBitfield {
-    return new BigBitfield(0n);
+  clear(): BitfieldN {
+    return new BitfieldN(0n);
   }
 
   toString(radix?: number): string {
@@ -930,20 +912,20 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
     return count;
   }
 
-  or(other: BigBitfield): BigBitfield {
-    return new BigBitfield(this.value | other.value);
+  or(other: BitfieldN): BitfieldN {
+    return new BitfieldN(this.value | other.value);
   }
 
-  and(other: BigBitfield): BigBitfield {
-    return new BigBitfield(this.value & other.value);
+  and(other: BitfieldN): BitfieldN {
+    return new BitfieldN(this.value & other.value);
   }
 
-  xor(other: BigBitfield): BigBitfield {
-    return new BigBitfield(this.value ^ other.value);
+  xor(other: BitfieldN): BitfieldN {
+    return new BitfieldN(this.value ^ other.value);
   }
 
-  not(): BigBitfield {
-    return new BigBitfield(~this.value & 0xffffffffffffffffn);
+  not(): BitfieldN {
+    return new BitfieldN(~this.value & 0xffffffffffffffffn);
   }
 
   isEmpty(): boolean {
@@ -954,7 +936,7 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
     return this.value === 0xffffffffffffffffn;
   }
 
-  static from(bits: number[]): BigBitfield {
+  static from(bits: number[]): BitfieldN {
     let value = 0n;
 
     for (const bit of bits) {
@@ -962,44 +944,23 @@ export class BigBitfield implements GenericBitfieldN<BigBitfield> {
         value |= 1n << BigInt(bit);
       }
     }
-    return new BigBitfield(value);
+    return new BitfieldN(value);
   }
 
-  static or(a: BigBitfield, b: BigBitfield): BigBitfield {
-    return new BigBitfield(a.value | b.value);
+  static or(a: BitfieldN, b: BitfieldN): BitfieldN {
+    return new BitfieldN(a.value | b.value);
   }
 
-  static and(a: BigBitfield, b: BigBitfield): BigBitfield {
-    return new BigBitfield(a.value & b.value);
+  static and(a: BitfieldN, b: BitfieldN): BitfieldN {
+    return new BitfieldN(a.value & b.value);
   }
 
-  static xor(a: BigBitfield, b: BigBitfield): BigBitfield {
-    return new BigBitfield(a.value ^ b.value);
+  static xor(a: BitfieldN, b: BitfieldN): BitfieldN {
+    return new BitfieldN(a.value ^ b.value);
   }
 
-  static not(a: BigBitfield): BigBitfield {
-    return new BigBitfield(~a.value & 0xffffffffffffffffn);
-  }
-
-  getValue(): bigint {
-    return this.value;
-  }
-
-  getLow(): number {
-    return Number(this.value & 0xffffffffn);
-  }
-
-  getHigh(): number {
-    return Number((this.value >> 32n) & 0xffffffffn);
-  }
-
-  static fromHex(hex: string): BigBitfield {
-    hex = hex.replace(/^0x/i, "");
-    return new BigBitfield(BigInt("0x" + hex));
-  }
-
-  toHex(): string {
-    return "0x" + this.value.toString(16).padStart(16, "0");
+  static not(a: BitfieldN): BitfieldN {
+    return new BitfieldN(~a.value & 0xffffffffffffffffn);
   }
 
   leastSignificantBit(): number {

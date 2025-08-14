@@ -1,5 +1,5 @@
 import { bench } from "vitest";
-import { parser, tokenizer } from "../src/parser";
+import { parser, tokenizer } from "./index";
 
 bench(`parser + tokenizer`, () => {
   parser(tokenizer(`\x9d8;id=1;https://example.com/\x9c打豆豆\x9d8;id=1;\x07`));

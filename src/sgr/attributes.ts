@@ -1,5 +1,5 @@
 import { BasicColor, DefaultColor, type MaybeColor } from "../color";
-import type { GenericBitfieldN } from "../utils/bitfield";
+import type { GenericBitfield } from "../utils/bitfield";
 
 /**
  * Defines the different underline styles.
@@ -180,7 +180,7 @@ export type ColorBit = number;
  */
 export class Attributes
   implements
-    GenericBitfieldN<Attributes, number, Attribute | IntroducerAttribute>
+    GenericBitfield<Attributes, number, Attribute | IntroducerAttribute>
 {
   protected readonly low: number;
   protected readonly high: number;

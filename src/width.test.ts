@@ -1,4 +1,7 @@
-export const CASES = [
+import { describe, expect, it } from "vitest";
+import { stringWidth } from "./width";
+
+const CASES = [
   { name: "empty", raw: "", stripped: "", width: 0, wcwidth: 0 },
   { name: "ascii", raw: "hello", stripped: "hello", width: 5, wcwidth: 5 },
   { name: "emoji", raw: "👋", stripped: "👋", width: 2, wcwidth: 2 },
@@ -119,3 +122,8 @@ export const CASES = [
   },
   { name: "flag", raw: "🇸🇦", stripped: "🇸🇦", width: 2, wcwidth: 1 },
 ];
+describe("width", () => {
+  it.each(CASES)("stringWidth $name to be $wcwidth", (test) => {
+    expect(stringWidth(test.raw)).toBe(test.wcwidth);
+  });
+});

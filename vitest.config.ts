@@ -5,10 +5,10 @@ export default defineConfig({
     name: "ansi",
 
     benchmark: {
-      include: ["test/**/*.bench.ts"],
-      outputJson: "test/benchmark.json",
+      include: ["./src/**/*.bench.ts"],
+      outputJson: "benchmark.json",
     },
     setupFiles: ["./vitest.setup.ts"],
-    include: ["test/**/*.test.ts"],
+    include: ["./src/**/*.test.ts"],
   },
 });

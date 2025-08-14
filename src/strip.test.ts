@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stringWidth } from "../src/width";
+import { strip } from "./strip";
 
 const CASES = [
   { name: "empty", raw: "", stripped: "", width: 0, wcwidth: 0 },
@@ -122,8 +122,9 @@ const CASES = [
   },
   { name: "flag", raw: "🇸🇦", stripped: "🇸🇦", width: 2, wcwidth: 1 },
 ];
-describe("width", () => {
-  it.each(CASES)("stringWidth $name to be $wcwidth", (test) => {
-    expect(stringWidth(test.raw)).toBe(test.wcwidth);
+
+describe("strip", () => {
+  it.each(CASES)("strips $name", (test) => {
+    expect(strip(test.raw)).toBe(test.stripped);
   });
 });
