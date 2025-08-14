@@ -25,7 +25,7 @@ const _grey = new Style().foreground([0.2, 0.2, 0.2]);
 
 // `Style` instances are immutable and chainable
 const italic = blue.italic();
-stdout.write(italic.render("I'm blue and italic"));
+stdout.write(italic.format("I'm blue and italic"));
 
 const fancy = red
   .bold()
@@ -35,7 +35,7 @@ const fancy = red
   .faint()
   .background(IndexedColor.Blue);
 stdout.write(
-  fancy.render(
+  fancy.format(
     "I'm reversed - blue in color and red in background, bold, curly underlined, blinking and faint!",
   ),
 );

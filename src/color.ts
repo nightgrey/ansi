@@ -1,8 +1,9 @@
 import {
   type MaybeColor as _MaybeColor,
   luminance,
-  type SRGB,
+  ParsedColor,
   srgb,
+  TypedColor,
 } from "@thi.ng/color";
 import { ansiSrgb } from "./utils/ansi-srgb";
 import { INDEXED_TO_BASIC } from "./utils/constants";
@@ -374,22 +375,56 @@ export const rgb = (src: MaybeColor): RgbColor => {
 /**
  * Returns true if the given color is the default color.
  */
-export function isDefaultColor(src: MaybeColor): src is DefaultColor {
+export function isDefaultColor(src: unknown): src is DefaultColor {
   return src === DefaultColor;
 }
 
 /**
  * Returns true if the given color is an indexed color.
  */
-export function isIndexedColor(src: MaybeColor): src is IndexedColor {
-  return (
-    typeof src === "number" && !Number.isNaN(src) && src >= 0 && src <= 255
-  );
+export function isIndexedColor(src: unknown): src is IndexedColor {
+  return typeof src === "number" && src >= 0 && src <= 255;
 }
 
 /**
  * Returns true if the given color is a basic color.
  */
-export function isBasicColor(src: MaybeColor): src is BasicColor {
-  return typeof src === "number" && !Number.isNaN(src) && src >= 0 && src <= 15;
+export function isBasicColor(src: unknown): src is BasicColor {
+  return typeof src === "number" && src >= 0 && src <= 15;
+}
+
+/**
+ * Returns true if the given color is a RGB color.
+ */
+export function isRgbColor(src: unknown): src is RgbColor {
+  return src instanceof ParsedColor && src.mode === "srgb";
+}
+
+/**
+ * Returns true if the given value is a value that can probably be interpreted as a color.
+ *
+ * @param src - The color to check
+ */
+export function isMaybeColor(src: unknown): src is MaybeColor {
+  return (
+    isBasicColor(src) ||
+    isIndexedColor(src) ||
+    isDefaultColor(src) ||
+    isRgbColor(src) ||
+    (Array.isArray(src) && src.length === 3 && src.every(Number.isFinite)) ||
+    typeof src === "string"
+  );
+}
+
+/**
+ * Returns true if the given value is a color.
+ * @param src - The color to check
+ */
+export function isColor(src: unknown): src is Color {
+  return (
+    isBasicColor(src) ||
+    isIndexedColor(src) ||
+    isDefaultColor(src) ||
+    isRgbColor(src)
+  );
 }

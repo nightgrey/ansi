@@ -10,7 +10,6 @@
 
     "lib": ["ESNext"],
 
-    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
@@ -24,5 +23,5 @@
     "isolatedModules": true
   },
 
-  "include": ["src"]
+  "include": ["src", "test", "vitest.env.d.ts"]
 }
