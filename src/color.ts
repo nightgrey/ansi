@@ -1,9 +1,8 @@
 import {
   type MaybeColor as _MaybeColor,
   luminance,
-  ParsedColor,
+  type SRGB,
   srgb,
-  TypedColor,
 } from "@thi.ng/color";
 import { ansiSrgb } from "./utils/ansi-srgb";
 import { INDEXED_TO_BASIC } from "./utils/constants";
@@ -397,7 +396,7 @@ export function isBasicColor(src: unknown): src is BasicColor {
  * Returns true if the given color is a RGB color.
  */
 export function isRgbColor(src: unknown): src is RgbColor {
-  return src instanceof ParsedColor && src.mode === "srgb";
+  return src instanceof srgb.class;
 }
 
 /**
@@ -411,7 +410,7 @@ export function isMaybeColor(src: unknown): src is MaybeColor {
     isIndexedColor(src) ||
     isDefaultColor(src) ||
     isRgbColor(src) ||
-    (Array.isArray(src) && src.length === 3 && src.every(Number.isFinite)) ||
+    Array.isArray(src) ||
     typeof src === "string"
   );
 }
