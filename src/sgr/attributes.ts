@@ -757,19 +757,40 @@ export class Attributes
   }
 
   or(other: Attributes) {
-    return this.with(this.low | other.low, this.high | other.high);
+    return this.with(
+      this.low | other.low,
+      this.high | other.high,
+      this.bg | other.bg,
+      this.fg | other.fg,
+      this.ul | other.ul,
+      this.us | other.us,
+    );
   }
 
   and(other: Attributes) {
-    return this.with(this.low & other.low, this.high & other.high);
+    return this.with(
+      this.low & other.low,
+      this.high & other.high,
+      this.bg & other.bg,
+      this.fg & other.fg,
+      this.ul & other.ul,
+      this.us & other.us,
+    );
   }
 
   xor(other: Attributes) {
-    return this.with(this.low ^ other.low, this.high ^ other.high);
+    return this.with(
+      this.low ^ other.low,
+      this.high ^ other.high,
+      this.bg ^ other.bg,
+      this.fg ^ other.fg,
+      this.ul ^ other.ul,
+      this.us ^ other.us,
+    );
   }
 
   not() {
-    return this.with(~this.low >>> 0, ~this.high >>> 0);
+    return this.with(~this.low, ~this.high, this.bg, this.fg, this.ul, this.us);
   }
 
   isEmpty(): boolean {

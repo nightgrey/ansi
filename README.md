@@ -36,6 +36,7 @@ You can find the complete API reference at
 
 ```ts
 import {
+    Attributes,
     BEL,
     BracketedPasteMode,
     cursorPosition,
@@ -53,6 +54,21 @@ import {
 
 const stdout = process.stdout;
 
+// Handle SGR attributes with a fast, immutable class based on a bitfield
+const curly = new Attributes().underline().curlyUnderline().italic();
+
+const colors = new Attributes()
+    .backgroundColor(IndexedColor.Blue)
+    .underlineColor(IndexedColor.BrightBlue);
+
+// Use logical operations to combine attributes
+const combined = curly.and(colors);
+stdout.write(combined.toString()); // CSI 4:3:1;48;5;94m (underline + italic + blue background + bright blue foreground)
+
+// Create `Style` instance(s) from it
+const style = new Style(combined);
+stdout.write(style.format("Hello World"));
+
 // Style text easily!
 // Colors can be specified by almost any CSS notation (hex, rgb, rgba, hsl, etc.), ANSI indexes, or vectors.
 const red = new Style().foreground(IndexedColor.Red);
@@ -62,7 +78,7 @@ const _grey = new Style().foreground([0.2, 0.2, 0.2]);
 
 // `Style` instances are immutable and chainable
 const italic = blue.italic();
-stdout.write(italic.render("I'm blue and italic"));
+stdout.write(italic.format("I'm blue and italic"));
 
 const fancy = red
     .bold()
@@ -72,7 +88,7 @@ const fancy = red
     .faint()
     .background(IndexedColor.Blue);
 stdout.write(
-    fancy.render(
+    fancy.format(
         "I'm reversed - blue in color and red in background, bold, curly underlined, blinking and faint!",
     ),
 );
