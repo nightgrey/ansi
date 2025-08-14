@@ -7,7 +7,7 @@
     "url": "https://github.com/nightgrey/ansi",
     "type": "github"
   },
-  "version": "0.0.5",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -27,6 +27,206 @@
       "types": "./dist/index.d.cts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./sgr": {
+      "types": "./dist/sgr/index.d.cts",
+      "import": "./dist/sgr/index.js",
+      "require": "./dist/sgr/index.cjs"
+    },
+    "./parser": {
+      "types": "./dist/parser/index.d.cts",
+      "import": "./dist/parser/index.js",
+      "require": "./dist/parser/index.cjs"
+    },
+    "./ansi": {
+      "types": "./dist/ansi.d.cts",
+      "import": "./dist/ansi.js",
+      "require": "./dist/ansi.cjs"
+    },
+    "./ascii": {
+      "types": "./dist/ascii.d.cts",
+      "import": "./dist/ascii.js",
+      "require": "./dist/ascii.cjs"
+    },
+    "./background": {
+      "types": "./dist/background.d.cts",
+      "import": "./dist/background.js",
+      "require": "./dist/background.cjs"
+    },
+    "./c0": {
+      "types": "./dist/c0.d.cts",
+      "import": "./dist/c0.js",
+      "require": "./dist/c0.cjs"
+    },
+    "./c1": {
+      "types": "./dist/c1.d.cts",
+      "import": "./dist/c1.js",
+      "require": "./dist/c1.cjs"
+    },
+    "./charset": {
+      "types": "./dist/charset.d.cts",
+      "import": "./dist/charset.js",
+      "require": "./dist/charset.cjs"
+    },
+    "./clipboard": {
+      "types": "./dist/clipboard.d.cts",
+      "import": "./dist/clipboard.js",
+      "require": "./dist/clipboard.cjs"
+    },
+    "./color": {
+      "types": "./dist/color.d.cts",
+      "import": "./dist/color.js",
+      "require": "./dist/color.cjs"
+    },
+    "./ctrl": {
+      "types": "./dist/ctrl.d.cts",
+      "import": "./dist/ctrl.js",
+      "require": "./dist/ctrl.cjs"
+    },
+    "./cursor": {
+      "types": "./dist/cursor.d.cts",
+      "import": "./dist/cursor.js",
+      "require": "./dist/cursor.cjs"
+    },
+    "./cwd": {
+      "types": "./dist/cwd.d.cts",
+      "import": "./dist/cwd.js",
+      "require": "./dist/cwd.cjs"
+    },
+    "./escape": {
+      "types": "./dist/escape.d.cts",
+      "import": "./dist/escape.js",
+      "require": "./dist/escape.cjs"
+    },
+    "./finalterm": {
+      "types": "./dist/finalterm.d.cts",
+      "import": "./dist/finalterm.js",
+      "require": "./dist/finalterm.cjs"
+    },
+    "./focus": {
+      "types": "./dist/focus.d.cts",
+      "import": "./dist/focus.js",
+      "require": "./dist/focus.cjs"
+    },
+    "./graphemes": {
+      "types": "./dist/graphemes.d.cts",
+      "import": "./dist/graphemes.js",
+      "require": "./dist/graphemes.cjs"
+    },
+    "./hyperlink": {
+      "types": "./dist/hyperlink.d.cts",
+      "import": "./dist/hyperlink.js",
+      "require": "./dist/hyperlink.cjs"
+    },
+    "./keypad": {
+      "types": "./dist/keypad.d.cts",
+      "import": "./dist/keypad.js",
+      "require": "./dist/keypad.cjs"
+    },
+    "./match": {
+      "types": "./dist/match.d.cts",
+      "import": "./dist/match.js",
+      "require": "./dist/match.cjs"
+    },
+    "./mode": {
+      "types": "./dist/mode.d.cts",
+      "import": "./dist/mode.js",
+      "require": "./dist/mode.cjs"
+    },
+    "./modes": {
+      "types": "./dist/modes.d.cts",
+      "import": "./dist/modes.js",
+      "require": "./dist/modes.cjs"
+    },
+    "./mouse": {
+      "types": "./dist/mouse.d.cts",
+      "import": "./dist/mouse.js",
+      "require": "./dist/mouse.cjs"
+    },
+    "./notification": {
+      "types": "./dist/notification.d.cts",
+      "import": "./dist/notification.js",
+      "require": "./dist/notification.cjs"
+    },
+    "./passthrough": {
+      "types": "./dist/passthrough.d.cts",
+      "import": "./dist/passthrough.js",
+      "require": "./dist/passthrough.cjs"
+    },
+    "./paste": {
+      "types": "./dist/paste.d.cts",
+      "import": "./dist/paste.js",
+      "require": "./dist/paste.cjs"
+    },
+    "./regex": {
+      "types": "./dist/regex.d.cts",
+      "import": "./dist/regex.js",
+      "require": "./dist/regex.cjs"
+    },
+    "./runes": {
+      "types": "./dist/runes.d.cts",
+      "import": "./dist/runes.js",
+      "require": "./dist/runes.cjs"
+    },
+    "./screen": {
+      "types": "./dist/screen.d.cts",
+      "import": "./dist/screen.js",
+      "require": "./dist/screen.cjs"
+    },
+    "./slice": {
+      "types": "./dist/slice.d.cts",
+      "import": "./dist/slice.js",
+      "require": "./dist/slice.cjs"
+    },
+    "./split": {
+      "types": "./dist/split.d.cts",
+      "import": "./dist/split.js",
+      "require": "./dist/split.cjs"
+    },
+    "./status": {
+      "types": "./dist/status.d.cts",
+      "import": "./dist/status.js",
+      "require": "./dist/status.cjs"
+    },
+    "./strip": {
+      "types": "./dist/strip.d.cts",
+      "import": "./dist/strip.js",
+      "require": "./dist/strip.cjs"
+    },
+    "./termcap": {
+      "types": "./dist/termcap.d.cts",
+      "import": "./dist/termcap.js",
+      "require": "./dist/termcap.cjs"
+    },
+    "./title": {
+      "types": "./dist/title.d.cts",
+      "import": "./dist/title.js",
+      "require": "./dist/title.cjs"
+    },
+    "./truncate": {
+      "types": "./dist/truncate.d.cts",
+      "import": "./dist/truncate.js",
+      "require": "./dist/truncate.cjs"
+    },
+    "./width": {
+      "types": "./dist/width.d.cts",
+      "import": "./dist/width.js",
+      "require": "./dist/width.cjs"
+    },
+    "./winop": {
+      "types": "./dist/winop.d.cts",
+      "import": "./dist/winop.js",
+      "require": "./dist/winop.cjs"
+    },
+    "./wrap": {
+      "types": "./dist/wrap.d.cts",
+      "import": "./dist/wrap.js",
+      "require": "./dist/wrap.cjs"
+    },
+    "./xterm": {
+      "types": "./dist/xterm.d.cts",
+      "import": "./dist/xterm.js",
+      "require": "./dist/xterm.cjs"
     }
   },
   "dependencies": {
@@ -58,7 +258,46 @@
   "zshy": {
     "exports": {
       ".": "./src/index.ts",
-      "./*": "./src/*"
+      "./sgr": "./src/sgr/index.ts",
+      "./parser": "./src/parser/index.ts",
+      "./ansi": "./src/ansi.ts",
+      "./ascii": "./src/ascii.ts",
+      "./background": "./src/background.ts",
+      "./c0": "./src/c0.ts",
+      "./c1": "./src/c1.ts",
+      "./charset": "./src/charset.ts",
+      "./clipboard": "./src/clipboard.ts",
+      "./color": "./src/color.ts",
+      "./ctrl": "./src/ctrl.ts",
+      "./cursor": "./src/cursor.ts",
+      "./cwd": "./src/cwd.ts",
+      "./escape": "./src/escape.ts",
+      "./finalterm": "./src/finalterm.ts",
+      "./focus": "./src/focus.ts",
+      "./graphemes": "./src/graphemes.ts",
+      "./hyperlink": "./src/hyperlink.ts",
+      "./keypad": "./src/keypad.ts",
+      "./match": "./src/match.ts",
+      "./mode": "./src/mode.ts",
+      "./modes": "./src/modes.ts",
+      "./mouse": "./src/mouse.ts",
+      "./notification": "./src/notification.ts",
+      "./passthrough": "./src/passthrough.ts",
+      "./paste": "./src/paste.ts",
+      "./regex": "./src/regex.ts",
+      "./runes": "./src/runes.ts",
+      "./screen": "./src/screen.ts",
+      "./slice": "./src/slice.ts",
+      "./split": "./src/split.ts",
+      "./status": "./src/status.ts",
+      "./strip": "./src/strip.ts",
+      "./termcap": "./src/termcap.ts",
+      "./title": "./src/title.ts",
+      "./truncate": "./src/truncate.ts",
+      "./width": "./src/width.ts",
+      "./winop": "./src/winop.ts",
+      "./wrap": "./src/wrap.ts",
+      "./xterm": "./src/xterm.ts"
     }
   },
   "files": [
