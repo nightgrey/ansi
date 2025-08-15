@@ -1,193 +1,43 @@
-import { type BasicColor, DefaultColor, type MaybeColor } from "../color";
-import type { GenericBitfield } from "../utils/bitfield";
+import { type BasicColor, DefaultColor, rgb } from "../../color";
+import type { GenericBitfield } from "../../utils/bitfield";
+import { type Attribute, UnderlineStyle } from "./attribute";
 import {
+  BACKGROUND_BIT_TO_BASIC_COLOR,
   BASIC_COLOR_TO_BACKGROUND_BIT,
   BASIC_COLOR_TO_FOREGROUND_BIT,
   BIT_TO_ATTRIBUTE,
-  type PROP_TO_ATTRIBUTE,
-} from "./constants";
+  Bit,
+  type ColorBit,
+  FOREGROUND_BIT_TO_BASIC_COLOR,
+} from "./bit";
+import { ATTRIBUTE_TO_PROP, type AttributesProps } from "./props";
 
 /**
- * Defines the different underline styles.
- */
-export enum UnderlineStyle {
-  None,
-  Single,
-  Double,
-  Curly,
-  Dotted,
-  Dashed,
-}
-
-/**
- * SGR attributes
+ * A bitset representation of SGR attributes.
  *
  * @example
  * ```ts
- * `${CSI}${Attribute.Bold};${Attribute.Underline};${Attribute.RedForegroundColor}Hello World${CSI}m`
- * ```
+ * const attributes = new Attributes()
+ *   .foregroundColor(BasicColor.Red)
+ *   .underline()
+ *   .bold()
+ *   .italic();
  *
- * @see https://vt100.net/docs/vt510-rm/SGR.html#T5-16
- * @see https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
- */
-export enum Attribute {
-  Reset,
-  Bold,
-  Faint,
-  Italic,
-  Underline,
-  Blink,
-  RapidBlink,
-  Reverse,
-  Conceal,
-  Strikethrough,
-
-  NormalIntensity = 22,
-  NoItalic,
-  NoUnderline,
-  NoBlink,
-
-  NoReverse = 27,
-  NoConceal,
-  NoStrikethrough,
-
-  // Foreground colors
-  BlackForegroundColor,
-  RedForegroundColor,
-  GreenForegroundColor,
-  YellowForegroundColor,
-  BlueForegroundColor,
-  MagentaForegroundColor,
-  CyanForegroundColor,
-  WhiteForegroundColor,
-  ExtendedForegroundColor,
-  DefaultForegroundColor,
-
-  // Background colors
-  BlackBackgroundColor,
-  RedBackgroundColor,
-  GreenBackgroundColor,
-  YellowBackgroundColor,
-  BlueBackgroundColor,
-  MagentaBackgroundColor,
-  CyanBackgroundColor,
-  WhiteBackgroundColor,
-  ExtendedBackgroundColor,
-  DefaultBackgroundColor,
-
-  // Underline colors
-  ExtendedUnderlineColor = 58,
-  DefaultUnderlineColor,
-
-  // Bright foreground colors
-  BrightBlackForegroundColor = 90,
-  BrightRedForegroundColor,
-  BrightGreenForegroundColor,
-  BrightYellowForegroundColor,
-  BrightBlueForegroundColor,
-  BrightMagentaForegroundColor,
-  BrightCyanForegroundColor,
-  BrightWhiteForegroundColor,
-
-  // Bright background colors
-  BrightBlackBackgroundColor,
-  BrightRedBackgroundColor,
-  BrightGreenBackgroundColor,
-  BrightYellowBackgroundColor,
-  BrightBlueBackgroundColor,
-  BrightMagentaBackgroundColor,
-  BrightCyanBackgroundColor,
-  BrightWhiteBackgroundColor,
-}
-
-/**
- * SGR introducer attributes
  *
- * @example
- * ```ts
- * `${CSI}${IntroducerAttribute.RGBColor};${IntroducerAttribute.ExtendedColor};${BasicColor.Red}Hello World${CSI}m`
+ * attributes.has(Bit.Bold); // true
+ * attributes.has(Bit.Italic); // true
+ * attributes.has(Bit.Underline); // true
+ * attributes.has(Bit.ForegroundColor); // true
+ *
+ *
+ * attributes.and(new Attributes().backgroundColor(BasicColor.Blue));
+ * attributes.or(new Attributes().backgroundColor(BasicColor.Blue));
+ * attributes.xor(new Attributes().backgroundColor(BasicColor.Blue));
+ *
+ * new Style(attributes);
  * ```
  */
-export enum IntroducerAttribute {
-  RGBColor = 2,
-  ExtendedColor = 5,
-}
-
-/**
- * Attribute bits
- *
- * Represents position of the bit in the 64-bit value.
- *
- * @see {@link Attributes}
- * @see {@link BIT_TO_ATTRIBUTE}
- */
-export enum Bit {
-  Reset,
-  Bold,
-  Faint,
-  Italic,
-  Underline,
-  Blink,
-  RapidBlink,
-  Reverse,
-  Conceal,
-  Strikethrough,
-  NormalIntensity,
-  NoItalic,
-  NoUnderline,
-  NoBlink,
-  NoReverse,
-  NoConceal,
-  NoStrikethrough,
-  BlackForegroundColor,
-  RedForegroundColor,
-  GreenForegroundColor,
-  YellowForegroundColor,
-  BlueForegroundColor,
-  MagentaForegroundColor,
-  CyanForegroundColor,
-  WhiteForegroundColor,
-  ExtendedForegroundColor,
-  DefaultForegroundColor,
-  BlackBackgroundColor,
-  RedBackgroundColor,
-  GreenBackgroundColor,
-  YellowBackgroundColor,
-  BlueBackgroundColor,
-  MagentaBackgroundColor,
-  CyanBackgroundColor,
-  WhiteBackgroundColor,
-  ExtendedBackgroundColor,
-  DefaultBackgroundColor,
-  ExtendedUnderlineColor,
-  DefaultUnderlineColor,
-  BrightBlackForegroundColor,
-  BrightRedForegroundColor,
-  BrightGreenForegroundColor,
-  BrightYellowForegroundColor,
-  BrightBlueForegroundColor,
-  BrightMagentaForegroundColor,
-  BrightCyanForegroundColor,
-  BrightWhiteForegroundColor,
-  BrightBlackBackgroundColor,
-  BrightRedBackgroundColor,
-  BrightGreenBackgroundColor,
-  BrightYellowBackgroundColor,
-  BrightBlueBackgroundColor,
-  BrightMagentaBackgroundColor,
-  BrightCyanBackgroundColor,
-  BrightWhiteBackgroundColor,
-}
-
-export type ColorBit = number;
-
-/**
- * SGR Attributes
- */
-export class Attributes
-  implements
-    GenericBitfield<Attributes, number, Attribute | IntroducerAttribute>
-{
+export class Attributes implements GenericBitfield<Attributes, Bit, Attribute> {
   protected readonly low: number;
   protected readonly high: number;
   readonly bg: ColorBit;
@@ -588,7 +438,7 @@ export class Attributes
    * @returns A new Attributes instance with the bit set
    */
   set(
-    bit: number,
+    bit: Bit,
     bg?: ColorBit,
     fg?: ColorBit,
     ul?: ColorBit,
@@ -613,7 +463,7 @@ export class Attributes
    * @returns A new Attributes instance with the bit unset
    */
   unset(
-    bit: number,
+    bit: Bit,
     bg?: ColorBit,
     fg?: ColorBit,
     ul?: ColorBit,
@@ -640,7 +490,7 @@ export class Attributes
    * @param bit - The bit position (0-63)
    * @returns true if the bit is set, false otherwise
    */
-  has(bit: number): boolean {
+  has(bit: Bit): boolean {
     Attributes.assert(bit);
 
     if (bit < 32) {
@@ -655,7 +505,7 @@ export class Attributes
    * @param bit - The bit position (0-63)
    * @returns A new Attributes instance with the bit toggled
    */
-  toggle(bit: number) {
+  toggle(bit: Bit) {
     Attributes.assert(bit);
 
     if (bit < 32) {
@@ -843,47 +693,127 @@ export class Attributes
     );
   }
 
-  *[Symbol.iterator]() {
-    yield* this.values();
-  }
+  [Symbol.iterator] = this.entries;
 
   *keys() {
     // Use Brian Kernighan's algorithm for faster bit counting
-    let low = this.low;
+    let x = this.low;
     let position = 0;
 
-    while (low !== 0) {
-      const bit = low & -low; // Isolate rightmost set bit
-      const bitPosition = Math.clz32(bit) ^ 31; // Fast bit position
+    let bit = 0;
+    let bitPosition = 0;
+
+    while (x !== 0) {
+      bit = x & -x; // Isolate rightmost set bit
+      bitPosition = Math.clz32(bit) ^ 31; // Fast bit position
       yield (position + bitPosition) as Bit;
-      low &= low - 1; // Clear rightmost set bit
+      x &= x - 1; // Clear rightmost set bit
     }
 
-    let high = this.high;
+    // ... again, for high register
+    x = this.high;
     position = 32;
 
-    while (high !== 0) {
-      const bit = high & -high;
-      const bitPosition = Math.clz32(bit) ^ 31;
+    while (x !== 0) {
+      bit = x & -x; // Isolate rightmost set bit
+      bitPosition = Math.clz32(bit) ^ 31; // Fast bit position
       yield (position + bitPosition) as Bit;
-      high &= high - 1;
+      x &= x - 1;
     }
   }
 
   *values() {
-    for (const bit of this.keys()) {
-      yield BIT_TO_ATTRIBUTE[bit as Bit];
+    for (let i = 0; i < 64; i++) {
+      if (this.has(i)) yield BIT_TO_ATTRIBUTE[i as Bit];
     }
   }
 
   *entries() {
     for (const bit of this.keys()) {
-      yield [bit, BIT_TO_ATTRIBUTE[bit as Bit]] as const;
+      if (this.has(bit)) yield [bit, BIT_TO_ATTRIBUTE[bit as Bit]] as const;
     }
   }
+  toJSON(): Partial<AttributesProps> {
+    if (this.isEmpty())
+      return {
+        reset: true,
+      };
 
-  toJSON() {
-    return [this.valueOf()];
+    const props: Partial<AttributesProps> = {};
+    for (const [key, value] of this.entries()) {
+      if (key === Bit.DefaultBackgroundColor) {
+        props.backgroundColor = DefaultColor;
+      } else if (key === Bit.DefaultForegroundColor) {
+        props.foregroundColor = DefaultColor;
+      } else if (key === Bit.DefaultUnderlineColor) {
+        props.underlineColor = DefaultColor;
+      } else if (
+        key === Bit.ExtendedBackgroundColor ||
+        key === Bit.ExtendedForegroundColor ||
+        key === Bit.ExtendedUnderlineColor
+      ) {
+      } else if (
+        key === Bit.BlackBackgroundColor ||
+        key === Bit.RedBackgroundColor ||
+        key === Bit.GreenBackgroundColor ||
+        key === Bit.YellowBackgroundColor ||
+        key === Bit.BlueBackgroundColor ||
+        key === Bit.MagentaBackgroundColor ||
+        key === Bit.CyanBackgroundColor ||
+        key === Bit.WhiteBackgroundColor ||
+        key === Bit.BrightBlackBackgroundColor ||
+        key === Bit.BrightRedBackgroundColor ||
+        key === Bit.BrightGreenBackgroundColor ||
+        key === Bit.BrightYellowBackgroundColor ||
+        key === Bit.BrightBlueBackgroundColor ||
+        key === Bit.BrightMagentaBackgroundColor ||
+        key === Bit.BrightCyanBackgroundColor ||
+        key === Bit.BrightWhiteBackgroundColor
+      ) {
+        props.foregroundColor = BACKGROUND_BIT_TO_BASIC_COLOR[key];
+      } else if (
+        key === Bit.BlackForegroundColor ||
+        key === Bit.RedForegroundColor ||
+        key === Bit.GreenForegroundColor ||
+        key === Bit.YellowForegroundColor ||
+        key === Bit.BlueForegroundColor ||
+        key === Bit.MagentaForegroundColor ||
+        key === Bit.CyanForegroundColor ||
+        key === Bit.WhiteForegroundColor ||
+        key === Bit.BrightBlackForegroundColor ||
+        key === Bit.BrightRedForegroundColor ||
+        key === Bit.BrightGreenForegroundColor ||
+        key === Bit.BrightYellowForegroundColor ||
+        key === Bit.BrightBlueForegroundColor ||
+        key === Bit.BrightMagentaForegroundColor ||
+        key === Bit.BrightCyanForegroundColor ||
+        key === Bit.BrightWhiteForegroundColor
+      ) {
+        props.foregroundColor =
+          FOREGROUND_BIT_TO_BASIC_COLOR[key as Bit.BlackForegroundColor];
+      } else {
+        // @ts-expect-error - Not sure why it doesn't realize that the only possible key outcome can not possibly be `Bit.BlackBackgroundColor` (or any other color)
+        props[ATTRIBUTE_TO_PROP[value] as keyof AttributesProps] = true;
+      }
+    }
+
+    if (this.fg) {
+      props.foregroundColor = rgb(this.fg);
+    }
+
+    if (this.bg) {
+      props.backgroundColor = rgb(this.bg);
+    }
+
+    if (this.ul) {
+      props.underlineColor = rgb(this.ul);
+    }
+
+    if (this.us) {
+      props.underlineStyle = this.us;
+    }
+
+    return props;
   }
 
   static assert(bit: number) {
@@ -899,31 +829,3 @@ export class Attributes
     return [rgb >> 16, (rgb >> 8) & 0xff, rgb & 0xff];
   }
 }
-
-/**
- * SGR attribute props
- *
- * @example
- * ```ts
- * const attributes: AttributesProps = {
- *   backgroundColor: BasicColor.Red,
- *   foregroundColor: BasicColor.Green,
- *   underlineColor: BasicColor.Blue,
- *   underlineStyle: UnderlineStyle.Double,
- *   bold: true,
- *   italic: true,
- * };
- *
- * const style = Style.from(attributes);
- * ```
- *
- * @see {@link Style.from}
- */
-export type AttributesProps = {
-  [K in keyof typeof PROP_TO_ATTRIBUTE]: boolean;
-} & {
-  backgroundColor: MaybeColor;
-  foregroundColor: MaybeColor;
-  underlineColor: MaybeColor;
-  underlineStyle: UnderlineStyle;
-};

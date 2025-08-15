@@ -19,7 +19,7 @@ export interface GenericBitfield<T, Key = number, Value = boolean> {
    *
    * @see {@link this.keys} and {@link this.values}
    */
-  [Symbol.iterator](): IterableIterator<Key | Value>;
+  [Symbol.iterator](): Generator<readonly [Key, Value]>;
 
   /**
    * An iterator of all keys (bit positions) in the bitfield
@@ -30,6 +30,8 @@ export interface GenericBitfield<T, Key = number, Value = boolean> {
    * An iterator of all values in the bitfield
    */
   values(): IterableIterator<Value>;
+
+  entries(): Generator<readonly [Key, Value]>;
 }
 
 /**

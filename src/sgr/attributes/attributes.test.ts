@@ -1,12 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { BasicColor, DefaultColor } from "../color"; // Adjust import path
-import {
-  Attribute,
-  Attributes,
-  Bit,
-  UnderlineStyle,
-} from "./attributes";
-import {ATTRIBUTE_TO_BIT, BIT_TO_ATTRIBUTE} from "./constants";
+import { BasicColor, DefaultColor } from "../../color";
+import { Attribute, UnderlineStyle } from "./attribute";
+import { Attributes } from "./attributes";
+import { ATTRIBUTE_TO_BIT, BIT_TO_ATTRIBUTE, Bit } from "./bit";
 
 describe("Attributes", () => {
   let attrs: Attributes;
