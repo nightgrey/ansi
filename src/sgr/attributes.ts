@@ -374,41 +374,7 @@ export class Attributes
     }
 
     if (color < 16) {
-      switch (color) {
-        case BasicColor.Black: {
-          return clear.set(Bit.BlackForegroundColor);
-        }
-        case BasicColor.Red:
-          return clear.set(Bit.RedForegroundColor);
-        case BasicColor.Green:
-          return clear.set(Bit.GreenForegroundColor);
-        case BasicColor.Yellow:
-          return clear.set(Bit.YellowForegroundColor);
-        case BasicColor.Blue:
-          return clear.set(Bit.BlueForegroundColor);
-        case BasicColor.Magenta:
-          return clear.set(Bit.MagentaForegroundColor);
-        case BasicColor.Cyan:
-          return clear.set(Bit.CyanForegroundColor);
-        case BasicColor.White:
-          return clear.set(Bit.WhiteForegroundColor);
-        case BasicColor.BrightBlack:
-          return clear.set(Bit.BrightBlackForegroundColor);
-        case BasicColor.BrightRed:
-          return clear.set(Bit.BrightRedForegroundColor);
-        case BasicColor.BrightGreen:
-          return clear.set(Bit.BrightGreenForegroundColor);
-        case BasicColor.BrightYellow:
-          return clear.set(Bit.BrightYellowForegroundColor);
-        case BasicColor.BrightBlue:
-          return clear.set(Bit.BrightBlueForegroundColor);
-        case BasicColor.BrightMagenta:
-          return clear.set(Bit.BrightMagentaForegroundColor);
-        case BasicColor.BrightCyan:
-          return clear.set(Bit.BrightCyanForegroundColor);
-        case BasicColor.BrightWhite:
-          return clear.set(Bit.BrightWhiteForegroundColor);
-      }
+      return clear.set(BASIC_COLOR_TO_FOREGROUND_BIT[color as BasicColor]);
     } else if (color < 256) {
       return clear.with(
         clear.low | (1 << Bit.ExtendedForegroundColor),
@@ -482,41 +448,7 @@ export class Attributes
     }
 
     if (color < 16) {
-      switch (color) {
-        case BasicColor.Black: {
-          return clear.set(Bit.BlackBackgroundColor);
-        }
-        case BasicColor.Red:
-          return clear.set(Bit.RedBackgroundColor);
-        case BasicColor.Green:
-          return clear.set(Bit.GreenBackgroundColor);
-        case BasicColor.Yellow:
-          return clear.set(Bit.YellowBackgroundColor);
-        case BasicColor.Blue:
-          return clear.set(Bit.BlueBackgroundColor);
-        case BasicColor.Magenta:
-          return clear.set(Bit.MagentaBackgroundColor);
-        case BasicColor.Cyan:
-          return clear.set(Bit.CyanBackgroundColor);
-        case BasicColor.White:
-          return clear.set(Bit.WhiteBackgroundColor);
-        case BasicColor.BrightBlack:
-          return clear.set(Bit.BrightBlackBackgroundColor);
-        case BasicColor.BrightRed:
-          return clear.set(Bit.BrightRedBackgroundColor);
-        case BasicColor.BrightGreen:
-          return clear.set(Bit.BrightGreenBackgroundColor);
-        case BasicColor.BrightYellow:
-          return clear.set(Bit.BrightYellowBackgroundColor);
-        case BasicColor.BrightBlue:
-          return clear.set(Bit.BrightBlueBackgroundColor);
-        case BasicColor.BrightMagenta:
-          return clear.set(Bit.BrightMagentaBackgroundColor);
-        case BasicColor.BrightCyan:
-          return clear.set(Bit.BrightCyanBackgroundColor);
-        case BasicColor.BrightWhite:
-          return clear.set(Bit.BrightWhiteBackgroundColor);
-      }
+      return clear.set(BASIC_COLOR_TO_BACKGROUND_BIT[color as BasicColor]);
     } else if (color < 256) {
       return clear.with(
         clear.low,
@@ -961,6 +893,61 @@ export class Attributes
     return [rgb >> 16, (rgb >> 8) & 0xff, rgb & 0xff];
   }
 }
+export const BASIC_COLOR_TO_FOREGROUND_BIT: Record<BasicColor, Bit> = {
+  [BasicColor.Black]: Bit.BlackForegroundColor,
+  [BasicColor.Red]: Bit.RedForegroundColor,
+  [BasicColor.Green]: Bit.GreenForegroundColor,
+  [BasicColor.Yellow]: Bit.YellowForegroundColor,
+  [BasicColor.Blue]: Bit.BlueForegroundColor,
+  [BasicColor.Magenta]: Bit.MagentaForegroundColor,
+  [BasicColor.Cyan]: Bit.CyanForegroundColor,
+  [BasicColor.White]: Bit.WhiteForegroundColor,
+  [BasicColor.BrightBlack]: Bit.BrightBlackForegroundColor,
+  [BasicColor.BrightRed]: Bit.BrightRedForegroundColor,
+  [BasicColor.BrightGreen]: Bit.BrightGreenForegroundColor,
+  [BasicColor.BrightYellow]: Bit.BrightYellowForegroundColor,
+  [BasicColor.BrightBlue]: Bit.BrightBlueForegroundColor,
+  [BasicColor.BrightMagenta]: Bit.BrightMagentaForegroundColor,
+  [BasicColor.BrightCyan]: Bit.BrightCyanForegroundColor,
+  [BasicColor.BrightWhite]: Bit.BrightWhiteForegroundColor,
+};
+
+export const BASIC_COLOR_TO_BACKGROUND_BIT: Record<BasicColor, Bit> = {
+  [BasicColor.Black]: Bit.BlackBackgroundColor,
+  [BasicColor.Red]: Bit.RedBackgroundColor,
+  [BasicColor.Green]: Bit.GreenBackgroundColor,
+  [BasicColor.Yellow]: Bit.YellowBackgroundColor,
+  [BasicColor.Blue]: Bit.BlueBackgroundColor,
+  [BasicColor.Magenta]: Bit.MagentaBackgroundColor,
+  [BasicColor.Cyan]: Bit.CyanBackgroundColor,
+  [BasicColor.White]: Bit.WhiteBackgroundColor,
+  [BasicColor.BrightBlack]: Bit.BrightBlackBackgroundColor,
+  [BasicColor.BrightRed]: Bit.BrightRedBackgroundColor,
+  [BasicColor.BrightGreen]: Bit.BrightGreenBackgroundColor,
+  [BasicColor.BrightYellow]: Bit.BrightYellowBackgroundColor,
+  [BasicColor.BrightBlue]: Bit.BrightBlueBackgroundColor,
+  [BasicColor.BrightMagenta]: Bit.BrightMagentaBackgroundColor,
+  [BasicColor.BrightCyan]: Bit.BrightCyanBackgroundColor,
+  [BasicColor.BrightWhite]: Bit.BrightWhiteBackgroundColor,
+};
+export const COLOR_TO_BIT: Record<BasicColor, Bit> = {
+  [BasicColor.Black]: Bit.BlackForegroundColor,
+  [BasicColor.Red]: Bit.RedForegroundColor,
+  [BasicColor.Green]: Bit.GreenForegroundColor,
+  [BasicColor.Yellow]: Bit.YellowForegroundColor,
+  [BasicColor.Blue]: Bit.BlueForegroundColor,
+  [BasicColor.Magenta]: Bit.MagentaForegroundColor,
+  [BasicColor.Cyan]: Bit.CyanForegroundColor,
+  [BasicColor.White]: Bit.WhiteForegroundColor,
+  [BasicColor.BrightBlack]: Bit.BrightBlackForegroundColor,
+  [BasicColor.BrightRed]: Bit.BrightRedForegroundColor,
+  [BasicColor.BrightGreen]: Bit.BrightGreenForegroundColor,
+  [BasicColor.BrightYellow]: Bit.BrightYellowForegroundColor,
+  [BasicColor.BrightBlue]: Bit.BrightBlueForegroundColor,
+  [BasicColor.BrightMagenta]: Bit.BrightMagentaForegroundColor,
+  [BasicColor.BrightCyan]: Bit.BrightCyanForegroundColor,
+  [BasicColor.BrightWhite]: Bit.BrightWhiteForegroundColor,
+};
 
 /** Bit <-> Attribute */
 export const BIT_TO_ATTRIBUTE = Object.freeze({
