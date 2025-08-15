@@ -901,7 +901,23 @@ export class Attributes
 }
 
 /**
- * AttributeProps defines attributes in a property format.
+ * SGR attribute props
+ *
+ * @example
+ * ```ts
+ * const attributes: AttributesProps = {
+ *   backgroundColor: BasicColor.Red,
+ *   foregroundColor: BasicColor.Green,
+ *   underlineColor: BasicColor.Blue,
+ *   underlineStyle: UnderlineStyle.Double,
+ *   bold: true,
+ *   italic: true,
+ * };
+ *
+ * const style = Style.from(attributes);
+ * ```
+ *
+ * @see {@link Style.from}
  */
 export type AttributesProps = {
   [K in keyof typeof PROP_TO_ATTRIBUTE]: boolean;
