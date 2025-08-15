@@ -427,7 +427,7 @@ export class Style implements Styled {
 
       // Add attribute bits
 
-      for (const attr of attributes) {
+      for (const attr of attributes.values()) {
         switch (attr) {
           case Attribute.ExtendedBackgroundColor:
             extendedBackgroundColor = true;

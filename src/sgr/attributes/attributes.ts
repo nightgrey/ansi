@@ -515,10 +515,8 @@ export class Attributes implements GenericBitfield<Attributes, Bit, Attribute> {
     }
   }
 
-  // ... rest of the methods remain the same ...
-
   clear() {
-    return this.with(0, 0);
+    return new Attributes();
   }
 
   toString(radix?: number): string {
@@ -697,40 +695,64 @@ export class Attributes implements GenericBitfield<Attributes, Bit, Attribute> {
 
   *keys() {
     // Use Brian Kernighan's algorithm for faster bit counting
-    let x = this.low;
+    let n = this.low;
     let position = 0;
 
-    let bit = 0;
-    let bitPosition = 0;
-
-    while (x !== 0) {
-      bit = x & -x; // Isolate rightmost set bit
-      bitPosition = Math.clz32(bit) ^ 31; // Fast bit position
-      yield (position + bitPosition) as Bit;
-      x &= x - 1; // Clear rightmost set bit
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
+      yield (Math.clz32(position) ^ 31) as Bit; // Fast bit position
+      n &= n - 1; // Clear rightmost set bit
     }
 
-    // ... again, for high register
-    x = this.high;
-    position = 32;
+    n = this.high;
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
 
-    while (x !== 0) {
-      bit = x & -x; // Isolate rightmost set bit
-      bitPosition = Math.clz32(bit) ^ 31; // Fast bit position
-      yield (position + bitPosition) as Bit;
-      x &= x - 1;
+      yield ((32 + Math.clz32(position)) ^ 31) as Bit; // Fast bit position
+      n &= n - 1; // Clear rightmost set bit
     }
   }
 
   *values() {
-    for (let i = 0; i < 64; i++) {
-      if (this.has(i)) yield BIT_TO_ATTRIBUTE[i as Bit];
+    // Use Brian Kernighan's algorithm for faster bit counting
+    let n = this.low;
+    let position = 0;
+
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
+      yield BIT_TO_ATTRIBUTE[(Math.clz32(position) ^ 31) as Bit]; // Fast bit position
+      n &= n - 1; // Clear rightmost set bit
+    }
+
+    n = this.high;
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
+
+      yield BIT_TO_ATTRIBUTE[((32 + Math.clz32(position)) ^ 31) as Bit]; // Fast bit position
+      n &= n - 1; // Clear rightmost set bit
     }
   }
 
   *entries() {
-    for (const bit of this.keys()) {
-      if (this.has(bit)) yield [bit, BIT_TO_ATTRIBUTE[bit as Bit]] as const;
+    // Use Brian Kernighan's algorithm for faster bit counting
+    let n = this.low;
+    let position = 0;
+
+    let bit: Bit = 0;
+
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
+      bit = Math.clz32(position) ^ (31 as Bit); // Fast bit position
+      yield [bit, BIT_TO_ATTRIBUTE[bit]] as const;
+      n &= n - 1; // Clear rightmost set bit
+    }
+
+    n = this.high;
+    while (n !== 0) {
+      position = n & -n; // Isolate rightmost set bit
+      bit = ((32 + Math.clz32(position)) ^ 31) as Bit;
+      yield [bit, BIT_TO_ATTRIBUTE[bit]] as const;
+      n &= n - 1; // Clear rightmost set bit
     }
   }
   toJSON(): Partial<AttributesProps> {
