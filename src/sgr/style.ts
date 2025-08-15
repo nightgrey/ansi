@@ -2,16 +2,15 @@ import { CSI } from "../c1";
 import { isDefaultColor, isIndexedColor, type MaybeColor, rgb } from "../color";
 import { int2553 } from "../utils/int255";
 import {
-  ATTRIBUTE_TO_BIT,
   Attribute,
   Attributes,
   type AttributesProps,
   IntroducerAttribute,
-  PROP_TO_ATTRIBUTE,
   UnderlineStyle,
 } from "./attributes";
 import { RESET_STYLE } from "./sgr";
 import type { Styled } from "./styled";
+import {ATTRIBUTE_TO_BIT, PROP_TO_ATTRIBUTE} from "./constants";
 
 export class Style implements Styled {
   /** Bitfield for style attributes */
