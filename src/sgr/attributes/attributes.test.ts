@@ -365,9 +365,12 @@ describe("Attributes", () => {
 
     it("should unpack as SGR attribute string", () => {
       const color = rgb("rgb(255, 128, 64)");
+
+      expect(Attributes.attribute(color)).toBe("255:128:64");
+
       const packed = Attributes.pack(color);
 
-      expect(Attributes.unpackAttribute(packed)).toBe("255:128:64");
+      expect(Attributes.attribute(packed)).toBe("255:128:64");
     });
   });
 

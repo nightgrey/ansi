@@ -1,5 +1,7 @@
 import { intArgb32Srgb, srgbIntArgb32 } from "@thi.ng/color";
+import { clamp01 } from "@thi.ng/math";
 import {
+  type ColorVec,
   DefaultColor,
   isDefaultColor,
   isIndexedColor,
@@ -512,11 +514,11 @@ export abstract class Attributable<T> {
   /**
    * Packs an RGB color into a packed RGB value.
    *
-   * @param rgb - Color vector [0-1]
+   * @param color - Color vector [0-1]
    *
    */
-  static pack(rgb: RgbColor): PackedRGB {
-    return srgbIntArgb32(rgb);
+  static pack(color: ColorVec): PackedRGB {
+    return srgbIntArgb32(color);
   }
 
   /**
@@ -526,16 +528,22 @@ export abstract class Attributable<T> {
    * @returns Color vector [0-1]
    */
   static unpack(color: PackedRGB) {
-    return intArgb32Srgb([], color) as RgbColor;
+    return intArgb32Srgb([], color) as ColorVec;
   }
 
   /**
-   * Unpacks a packed RGB value into an SGR attribute string
+   * Converts a color to an SGR attribute string.
    *
-   * @param color - packed RGB value
+   * @param color - Color vector [0-1]
    * @returns SGR attribute string, e.g., `255:128:64`
    */
-  static unpackAttribute(src: PackedRGB) {
-    return `${(src >>> 16) & 255}:${(src >>> 8) & 255}:${src & 255}`;
+  static attribute(color: PackedRGB | ColorVec) {
+    if (typeof color === "number") {
+      return `${(color >>> 16) & 255}:${(color >>> 8) & 255}:${color & 255}`;
+    } else {
+      return `${clamp01(color[0]) * 255}:${
+        clamp01(color[1]) * 255
+      }:${clamp01(color[2]) * 255}`;
+    }
   }
 }

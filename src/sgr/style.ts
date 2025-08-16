@@ -87,7 +87,7 @@ export class Style extends Attributable<Style> {
         } else if (backgroundColor < 255) {
           sgr.push(`48:5:${backgroundColor}`);
         } else {
-          sgr.push(`48:2:${Style.unpackAttribute(backgroundColor)}`);
+          sgr.push(`48:2:${Style.attribute(backgroundColor)}`);
         }
       }
 
@@ -101,7 +101,7 @@ export class Style extends Attributable<Style> {
         } else if (foregroundColor < 255) {
           sgr.push(`38:5:${foregroundColor}`);
         } else {
-          sgr.push(`38:2:${Style.unpackAttribute(foregroundColor)}`);
+          sgr.push(`38:2:${Style.attribute(foregroundColor)}`);
         }
       }
 
@@ -111,7 +111,7 @@ export class Style extends Attributable<Style> {
         } else if (underlineColor < 255) {
           sgr.push(`58:5:${underlineColor}`);
         } else {
-          sgr.push(`58:2:${Style.unpackAttribute(underlineColor)}`);
+          sgr.push(`58:2:${Style.attribute(underlineColor)}`);
         }
       }
 

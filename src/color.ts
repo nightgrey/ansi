@@ -1,9 +1,11 @@
 import {
-  type MaybeColor as _MaybeColor,
+  type IParsedColor,
   luminance,
   type SRGB,
   srgb,
+  type TypedColor,
 } from "@thi.ng/color";
+import type { Vec } from "@thi.ng/vectors";
 import { ansiSrgb } from "./utils/ansi-srgb";
 import { INDEXED_TO_BASIC } from "./utils/constants";
 import { srgbIndexedColor } from "./utils/srgb-ansi";
@@ -295,8 +297,44 @@ export enum IndexedColor {
   BrightGray = 255,
 }
 
+/**
+ * A color vector.
+ *
+ * @example
+ * ```ts
+ * const color: ColorVec = [0.5, 0.5, 0.5];
+ * ```
+ */
+export type ColorVec = Vec;
+
+/**
+ * ANSI colors
+ *
+ * @example
+ * ```ts
+ * const basic: AnsiColor = BasicColor.Red;
+ * const indexed: AnsiColor = IndexedColor.Red;
+ * ```
+ */
 export type AnsiColor = BasicColor | IndexedColor;
-export type RgbColor = SRGB;
+/**
+ * RGB color
+ *
+ * @example
+ * ```ts
+ * const vec: RgbColor = [0.5, 0.5, 0.5];
+ * const rgb: RgbColor = rgb("#ff0000");
+ * ```
+ */
+export type RgbColor = SRGB | ColorVec;
+
+/**
+ * Color
+ *
+ * @see {@link DefaultColor}
+ * @see {@link AnsiColor}
+ * @see {@link RgbColor}
+ */
 export type Color = DefaultColor | AnsiColor | RgbColor;
 
 /**
@@ -325,7 +363,21 @@ export type Color = DefaultColor | AnsiColor | RgbColor;
  * const basic = BasicColor.Black;
  * ```
  */
-export type MaybeColor = _MaybeColor | RgbColor | AnsiColor | DefaultColor;
+export type MaybeColor =
+  // @thi.ng/color's `MaybeColor`
+  | (TypedColor<any> | IParsedColor)
+  // CSS strings
+  | string
+  // Packed RGB (r << 16 | g << 8 | b)
+  | number
+  // Vectors
+  | ColorVec
+  // RGB color
+  | RgbColor
+  // 0-255
+  | AnsiColor
+  // Default color
+  | DefaultColor;
 
 const TEMP: number[] = [];
 
