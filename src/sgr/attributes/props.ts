@@ -23,55 +23,53 @@ export const PROP_TO_ATTRIBUTE = Object.freeze({
   noConceal: Attribute.NoConceal,
   noStrikethrough: Attribute.NoStrikethrough,
 
-  // Foreground colors
-  blackForegroundColor: Attribute.BlackForegroundColor,
-  redForegroundColor: Attribute.RedForegroundColor,
-  greenForegroundColor: Attribute.GreenForegroundColor,
-  yellowForegroundColor: Attribute.YellowForegroundColor,
-  blueForegroundColor: Attribute.BlueForegroundColor,
-  magentaForegroundColor: Attribute.MagentaForegroundColor,
-  cyanForegroundColor: Attribute.CyanForegroundColor,
-  whiteForegroundColor: Attribute.WhiteForegroundColor,
-  extendedForegroundColor: Attribute.ExtendedForegroundColor,
-  defaultForegroundColor: Attribute.DefaultForegroundColor,
-
-  // Background colors
-  blackBackgroundColor: Attribute.BlackBackgroundColor,
-  redBackgroundColor: Attribute.RedBackgroundColor,
-  greenBackgroundColor: Attribute.GreenBackgroundColor,
-  yellowBackgroundColor: Attribute.YellowBackgroundColor,
-  blueBackgroundColor: Attribute.BlueBackgroundColor,
-  magentaBackgroundColor: Attribute.MagentaBackgroundColor,
-  cyanBackgroundColor: Attribute.CyanBackgroundColor,
-  whiteBackgroundColor: Attribute.WhiteBackgroundColor,
-  extendedBackgroundColor: Attribute.ExtendedBackgroundColor,
-  defaultBackgroundColor: Attribute.DefaultBackgroundColor,
-
-  extendedUnderlineColor: Attribute.ExtendedUnderlineColor,
-  defaultUnderlineColor: Attribute.DefaultUnderlineColor,
-
-  // Bright foreground colors
-  brightBlackForegroundColor: Attribute.BrightBlackForegroundColor,
-  brightRedForegroundColor: Attribute.BrightRedForegroundColor,
-  brightGreenForegroundColor: Attribute.BrightGreenForegroundColor,
-  brightYellowForegroundColor: Attribute.BrightYellowForegroundColor,
-  brightBlueForegroundColor: Attribute.BrightBlueForegroundColor,
-  brightMagentaForegroundColor: Attribute.BrightMagentaForegroundColor,
-  brightCyanForegroundColor: Attribute.BrightCyanForegroundColor,
-  brightWhiteForegroundColor: Attribute.BrightWhiteForegroundColor,
-
-  // Bright background colors
-  brightBlackBackgroundColor: Attribute.BrightBlackBackgroundColor,
-  brightRedBackgroundColor: Attribute.BrightRedBackgroundColor,
-  brightGreenBackgroundColor: Attribute.BrightGreenBackgroundColor,
-  brightYellowBackgroundColor: Attribute.BrightYellowBackgroundColor,
-  brightBlueBackgroundColor: Attribute.BrightBlueBackgroundColor,
-  brightMagentaBackgroundColor: Attribute.BrightMagentaBackgroundColor,
-  brightCyanBackgroundColor: Attribute.BrightCyanBackgroundColor,
-  brightWhiteBackgroundColor: Attribute.BrightWhiteBackgroundColor,
-} as const satisfies {
-  [K in string]: Attribute;
-});
+  // // Foreground colors
+  // blackForegroundColor: Attribute.BlackForegroundColor,
+  // redForegroundColor: Attribute.RedForegroundColor,
+  // greenForegroundColor: Attribute.GreenForegroundColor,
+  // yellowForegroundColor: Attribute.YellowForegroundColor,
+  // blueForegroundColor: Attribute.BlueForegroundColor,
+  // magentaForegroundColor: Attribute.MagentaForegroundColor,
+  // cyanForegroundColor: Attribute.CyanForegroundColor,
+  // whiteForegroundColor: Attribute.WhiteForegroundColor,
+  // extendedForegroundColor: Attribute.ExtendedForegroundColor,
+  // defaultForegroundColor: Attribute.DefaultForegroundColor,
+  //
+  // // Background colors
+  // blackBackgroundColor: Attribute.BlackBackgroundColor,
+  // redBackgroundColor: Attribute.RedBackgroundColor,
+  // greenBackgroundColor: Attribute.GreenBackgroundColor,
+  // yellowBackgroundColor: Attribute.YellowBackgroundColor,
+  // blueBackgroundColor: Attribute.BlueBackgroundColor,
+  // magentaBackgroundColor: Attribute.MagentaBackgroundColor,
+  // cyanBackgroundColor: Attribute.CyanBackgroundColor,
+  // whiteBackgroundColor: Attribute.WhiteBackgroundColor,
+  // extendedBackgroundColor: Attribute.ExtendedBackgroundColor,
+  // defaultBackgroundColor: Attribute.DefaultBackgroundColor,
+  //
+  // extendedUnderlineColor: Attribute.ExtendedUnderlineColor,
+  // defaultUnderlineColor: Attribute.DefaultUnderlineColor,
+  //
+  // // Bright foreground colors
+  // brightBlackForegroundColor: Attribute.BrightBlackForegroundColor,
+  // brightRedForegroundColor: Attribute.BrightRedForegroundColor,
+  // brightGreenForegroundColor: Attribute.BrightGreenForegroundColor,
+  // brightYellowForegroundColor: Attribute.BrightYellowForegroundColor,
+  // brightBlueForegroundColor: Attribute.BrightBlueForegroundColor,
+  // brightMagentaForegroundColor: Attribute.BrightMagentaForegroundColor,
+  // brightCyanForegroundColor: Attribute.BrightCyanForegroundColor,
+  // brightWhiteForegroundColor: Attribute.BrightWhiteForegroundColor,
+  //
+  // // Bright background colors
+  // brightBlackBackgroundColor: Attribute.BrightBlackBackgroundColor,
+  // brightRedBackgroundColor: Attribute.BrightRedBackgroundColor,
+  // brightGreenBackgroundColor: Attribute.BrightGreenBackgroundColor,
+  // brightYellowBackgroundColor: Attribute.BrightYellowBackgroundColor,
+  // brightBlueBackgroundColor: Attribute.BrightBlueBackgroundColor,
+  // brightMagentaBackgroundColor: Attribute.BrightMagentaBackgroundColor,
+  // brightCyanBackgroundColor: Attribute.BrightCyanBackgroundColor,
+  // brightWhiteBackgroundColor: Attribute.BrightWhiteBackgroundColor,
+} as const);
 
 /** Attribute <-> Property (human-readable property name) */
 export type PropToAttribute<T extends keyof typeof PROP_TO_ATTRIBUTE> =
@@ -99,60 +97,62 @@ export const ATTRIBUTE_TO_PROP = Object.freeze({
   [Attribute.NoConceal]: "noConceal",
   [Attribute.NoStrikethrough]: "noStrikethrough",
 
-  // Foreground colors
-  [Attribute.BlackForegroundColor]: "blackForegroundColor",
-  [Attribute.RedForegroundColor]: "redForegroundColor",
-  [Attribute.GreenForegroundColor]: "greenForegroundColor",
-  [Attribute.YellowForegroundColor]: "yellowForegroundColor",
-  [Attribute.BlueForegroundColor]: "blueForegroundColor",
-  [Attribute.MagentaForegroundColor]: "magentaForegroundColor",
-  [Attribute.CyanForegroundColor]: "cyanForegroundColor",
-  [Attribute.WhiteForegroundColor]: "whiteForegroundColor",
-  [Attribute.ExtendedForegroundColor]: "extendedForegroundColor",
-  [Attribute.DefaultForegroundColor]: "defaultForegroundColor",
-
-  // Background colors
-  [Attribute.BlackBackgroundColor]: "blackBackgroundColor",
-  [Attribute.RedBackgroundColor]: "redBackgroundColor",
-  [Attribute.GreenBackgroundColor]: "greenBackgroundColor",
-  [Attribute.YellowBackgroundColor]: "yellowBackgroundColor",
-  [Attribute.BlueBackgroundColor]: "blueBackgroundColor",
-  [Attribute.MagentaBackgroundColor]: "magentaBackgroundColor",
-  [Attribute.CyanBackgroundColor]: "cyanBackgroundColor",
-  [Attribute.WhiteBackgroundColor]: "whiteBackgroundColor",
-  [Attribute.ExtendedBackgroundColor]: "extendedBackgroundColor",
-  [Attribute.DefaultBackgroundColor]: "defaultBackgroundColor",
-
-  // Underline colors
-  [Attribute.ExtendedUnderlineColor]: "extendedUnderlineColor",
-  [Attribute.DefaultUnderlineColor]: "defaultUnderlineColor",
-
-  // Bright foreground colors
-  [Attribute.BrightBlackForegroundColor]: "brightBlackForegroundColor",
-  [Attribute.BrightRedForegroundColor]: "brightRedForegroundColor",
-  [Attribute.BrightGreenForegroundColor]: "brightGreenForegroundColor",
-  [Attribute.BrightYellowForegroundColor]: "brightYellowForegroundColor",
-  [Attribute.BrightBlueForegroundColor]: "brightBlueForegroundColor",
-  [Attribute.BrightMagentaForegroundColor]: "brightMagentaForegroundColor",
-  [Attribute.BrightCyanForegroundColor]: "brightCyanForegroundColor",
-  [Attribute.BrightWhiteForegroundColor]: "brightWhiteForegroundColor",
-
-  // Bright background colors
-  [Attribute.BrightBlackBackgroundColor]: "brightBlackBackgroundColor",
-  [Attribute.BrightRedBackgroundColor]: "brightRedBackgroundColor",
-  [Attribute.BrightGreenBackgroundColor]: "brightGreenBackgroundColor",
-  [Attribute.BrightYellowBackgroundColor]: "brightYellowBackgroundColor",
-  [Attribute.BrightBlueBackgroundColor]: "brightBlueBackgroundColor",
-  [Attribute.BrightMagentaBackgroundColor]: "brightMagentaBackgroundColor",
-  [Attribute.BrightCyanBackgroundColor]: "brightCyanBackgroundColor",
-  [Attribute.BrightWhiteBackgroundColor]: "brightWhiteBackgroundColor",
+  // // Foreground colors
+  // [Attribute.BlackForegroundColor]: "blackForegroundColor",
+  // [Attribute.RedForegroundColor]: "redForegroundColor",
+  // [Attribute.GreenForegroundColor]: "greenForegroundColor",
+  // [Attribute.YellowForegroundColor]: "yellowForegroundColor",
+  // [Attribute.BlueForegroundColor]: "blueForegroundColor",
+  // [Attribute.MagentaForegroundColor]: "magentaForegroundColor",
+  // [Attribute.CyanForegroundColor]: "cyanForegroundColor",
+  // [Attribute.WhiteForegroundColor]: "whiteForegroundColor",
+  // [Attribute.ExtendedForegroundColor]: "extendedForegroundColor",
+  // [Attribute.DefaultForegroundColor]: "defaultForegroundColor",
+  //
+  // // Background colors
+  // [Attribute.BlackBackgroundColor]: "blackBackgroundColor",
+  // [Attribute.RedBackgroundColor]: "redBackgroundColor",
+  // [Attribute.GreenBackgroundColor]: "greenBackgroundColor",
+  // [Attribute.YellowBackgroundColor]: "yellowBackgroundColor",
+  // [Attribute.BlueBackgroundColor]: "blueBackgroundColor",
+  // [Attribute.MagentaBackgroundColor]: "magentaBackgroundColor",
+  // [Attribute.CyanBackgroundColor]: "cyanBackgroundColor",
+  // [Attribute.WhiteBackgroundColor]: "whiteBackgroundColor",
+  // [Attribute.ExtendedBackgroundColor]: "extendedBackgroundColor",
+  // [Attribute.DefaultBackgroundColor]: "defaultBackgroundColor",
+  //
+  // // Underline colors
+  // [Attribute.ExtendedUnderlineColor]: "extendedUnderlineColor",
+  // [Attribute.DefaultUnderlineColor]: "defaultUnderlineColor",
+  //
+  // // Bright foreground colors
+  // [Attribute.BrightBlackForegroundColor]: "brightBlackForegroundColor",
+  // [Attribute.BrightRedForegroundColor]: "brightRedForegroundColor",
+  // [Attribute.BrightGreenForegroundColor]: "brightGreenForegroundColor",
+  // [Attribute.BrightYellowForegroundColor]: "brightYellowForegroundColor",
+  // [Attribute.BrightBlueForegroundColor]: "brightBlueForegroundColor",
+  // [Attribute.BrightMagentaForegroundColor]: "brightMagentaForegroundColor",
+  // [Attribute.BrightCyanForegroundColor]: "brightCyanForegroundColor",
+  // [Attribute.BrightWhiteForegroundColor]: "brightWhiteForegroundColor",
+  //
+  // // Bright background colors
+  // [Attribute.BrightBlackBackgroundColor]: "brightBlackBackgroundColor",
+  // [Attribute.BrightRedBackgroundColor]: "brightRedBackgroundColor",
+  // [Attribute.BrightGreenBackgroundColor]: "brightGreenBackgroundColor",
+  // [Attribute.BrightYellowBackgroundColor]: "brightYellowBackgroundColor",
+  // [Attribute.BrightBlueBackgroundColor]: "brightBlueBackgroundColor",
+  // [Attribute.BrightMagentaBackgroundColor]: "brightMagentaBackgroundColor",
+  // [Attribute.BrightCyanBackgroundColor]: "brightCyanBackgroundColor",
+  // [Attribute.BrightWhiteBackgroundColor]: "brightWhiteBackgroundColor",
 } as const satisfies {
-  [K in Attribute]: keyof typeof PROP_TO_ATTRIBUTE;
+  [K in (typeof PROP_TO_ATTRIBUTE)[keyof typeof PROP_TO_ATTRIBUTE]]: keyof typeof PROP_TO_ATTRIBUTE;
 });
 
 /** Attribute <-> Property */
-export type AttributeToProp<T extends Attribute> =
-  (typeof ATTRIBUTE_TO_PROP)[T];
+export type AttributeToProp<T extends Attribute | UnderlineStyle> =
+  T extends keyof typeof ATTRIBUTE_TO_PROP
+    ? (typeof ATTRIBUTE_TO_PROP)[T]
+    : never;
 
 /**
  * SGR attribute props
@@ -174,44 +174,8 @@ export type AttributeToProp<T extends Attribute> =
  * @remark Excludes some attributes, like basic background and foreground. They are supposed to be handled by the ingesting function via `backgroundColor` and `foregroundColor` properties.
  * @see {@link Style.from}
  */
-export type AttributesProps = {
-  [K in Exclude<
-    keyof typeof PROP_TO_ATTRIBUTE,
-    | AttributeToProp<Attribute.BlackBackgroundColor>
-    | AttributeToProp<Attribute.RedBackgroundColor>
-    | AttributeToProp<Attribute.GreenBackgroundColor>
-    | AttributeToProp<Attribute.YellowBackgroundColor>
-    | AttributeToProp<Attribute.BlueBackgroundColor>
-    | AttributeToProp<Attribute.MagentaBackgroundColor>
-    | AttributeToProp<Attribute.CyanBackgroundColor>
-    | AttributeToProp<Attribute.WhiteBackgroundColor>
-    | AttributeToProp<Attribute.ExtendedBackgroundColor>
-    | AttributeToProp<Attribute.BlackForegroundColor>
-    | AttributeToProp<Attribute.RedForegroundColor>
-    | AttributeToProp<Attribute.GreenForegroundColor>
-    | AttributeToProp<Attribute.YellowForegroundColor>
-    | AttributeToProp<Attribute.BlueForegroundColor>
-    | AttributeToProp<Attribute.MagentaForegroundColor>
-    | AttributeToProp<Attribute.CyanForegroundColor>
-    | AttributeToProp<Attribute.WhiteForegroundColor>
-    | AttributeToProp<Attribute.ExtendedForegroundColor>
-    | AttributeToProp<Attribute.BrightBlackBackgroundColor>
-    | AttributeToProp<Attribute.BrightRedBackgroundColor>
-    | AttributeToProp<Attribute.BrightGreenBackgroundColor>
-    | AttributeToProp<Attribute.BrightYellowBackgroundColor>
-    | AttributeToProp<Attribute.BrightBlueBackgroundColor>
-    | AttributeToProp<Attribute.BrightMagentaBackgroundColor>
-    | AttributeToProp<Attribute.BrightCyanBackgroundColor>
-    | AttributeToProp<Attribute.BrightWhiteBackgroundColor>
-    | AttributeToProp<Attribute.BrightBlackForegroundColor>
-    | AttributeToProp<Attribute.BrightRedForegroundColor>
-    | AttributeToProp<Attribute.BrightGreenForegroundColor>
-    | AttributeToProp<Attribute.BrightYellowForegroundColor>
-    | AttributeToProp<Attribute.BrightBlueForegroundColor>
-    | AttributeToProp<Attribute.BrightMagentaForegroundColor>
-    | AttributeToProp<Attribute.BrightCyanForegroundColor>
-    | AttributeToProp<Attribute.BrightWhiteForegroundColor>
-  >]: boolean;
+export type AttributeProps = {
+  -readonly [K in keyof typeof PROP_TO_ATTRIBUTE]: boolean;
 } & {
   backgroundColor: MaybeColor;
   foregroundColor: MaybeColor;

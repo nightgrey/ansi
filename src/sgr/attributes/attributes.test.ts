@@ -1,338 +1,422 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { BasicColor, DefaultColor } from "../../color";
-import { Attribute, UnderlineStyle } from "./attribute";
+import { BasicColor, DefaultColor, rgb } from "../../color";
+import { UnderlineStyle } from "./attribute";
 import { Attributes } from "./attributes";
-import { ATTRIBUTE_TO_BIT, BIT_TO_ATTRIBUTE, Bit } from "./bit";
+import { Bit } from "./bit";
 
 describe("Attributes", () => {
-  let attrs: Attributes;
+  let attributes: Attributes;
 
   beforeEach(() => {
-    attrs = new Attributes();
+    attributes = new Attributes();
   });
 
-  describe("Basic bit operations", () => {
-    it("should set bits correctly in low register (0-31)", () => {
-      const result = attrs.set(Bit.Bold);
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result["low"]).toBe(1 << Bit.Bold);
-      expect(result["high"]).toBe(0);
+  describe("constructor", () => {
+    it("should create empty attributes by default", () => {
+      expect(attributes.value).toBe(0);
+      expect(attributes.bg).toBe(null);
+      expect(attributes.fg).toBe(null);
+      expect(attributes.ul).toBe(null);
     });
 
-    it("should set bits correctly in high register (32-63)", () => {
-      const result = attrs.set(Bit.BrightBlackForegroundColor);
-      expect(result.has(Bit.BrightBlackForegroundColor)).toBe(true);
-      expect(result["low"]).toBe(0);
-      expect(result["high"]).toBe(1 << (Bit.BrightBlackForegroundColor - 32));
-    });
-
-    it("should unset bits correctly", () => {
-      const withBold = attrs.set(Bit.Bold);
-      const withoutBold = withBold.unset(Bit.Bold);
-
-      expect(withBold.has(Bit.Bold)).toBe(true);
-      expect(withoutBold.has(Bit.Bold)).toBe(false);
-    });
-
-    it("should toggle bits correctly", () => {
-      const toggled = attrs.toggle(Bit.Italic);
-      const toggledBack = toggled.toggle(Bit.Italic);
-
-      expect(toggled.has(Bit.Italic)).toBe(true);
-      expect(toggledBack.has(Bit.Italic)).toBe(false);
-    });
-
-    it("should handle multiple bits correctly", () => {
-      const result = attrs
-        .set(Bit.Bold)
-        .set(Bit.Italic)
-        .set(Bit.BrightRedForegroundColor);
-
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result.has(Bit.Italic)).toBe(true);
-      expect(result.has(Bit.BrightRedForegroundColor)).toBe(true);
-      expect(result.has(Bit.Underline)).toBe(false);
+    it("should create attributes with provided values", () => {
+      const attr = new Attributes(123, 255, 128, 64);
+      expect(attr.value).toBe(123);
+      expect(attr.bg).toBe(255);
+      expect(attr.fg).toBe(128);
+      expect(attr.ul).toBe(64);
     });
   });
 
-  describe("Bit boundary tests", () => {
-    it("should handle bit 31 (last bit in low register)", () => {
-      const result = attrs.set(31);
-      expect(result.has(31)).toBe(true);
-      expect(result["low"]).toBe(1 << 31);
-      expect(result["high"]).toBe(0);
+  describe("basic attributes", () => {
+    it("should set bold", () => {
+      const bold = attributes.bold();
+      expect(bold.has(Bit.Bold)).toBe(true);
+      expect(bold).not.toBe(attributes); // immutable
     });
 
-    it("should handle bit 32 (first bit in high register)", () => {
-      const result = attrs.set(32);
-      expect(result.has(32)).toBe(true);
-      expect(result["low"]).toBe(0);
-      expect(result["high"]).toBe(1);
+    it("should set italic", () => {
+      const italic = attributes.italic();
+      expect(italic.has(Bit.Italic)).toBe(true);
     });
 
-    it("should handle bit 63 (last valid bit)", () => {
-      const result = attrs.set(63);
-      expect(result.has(63)).toBe(true);
-      expect(result["high"]).toBe(1 << 31);
+    it("should set and unset italic", () => {
+      const italic = attributes.italic();
+      const noItalic = italic.noItalic();
+      expect(italic.has(Bit.Italic)).toBe(true);
+      expect(noItalic.has(Bit.NoItalic)).toBe(true);
+      expect(noItalic.has(Bit.Italic)).toBe(false);
     });
 
-    it("should throw error for invalid bit positions", () => {
-      expect(() => attrs.set(-1)).toThrow("Number must be between 0 and 63");
-      expect(() => attrs.set(64)).toThrow("Number must be between 0 and 63");
-    });
-  });
-
-  describe("Style methods bit operations", () => {
-    it("should set bold bit correctly", () => {
-      const result = attrs.bold();
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result["low"] & (1 << Bit.Bold)).toBeTruthy();
-    });
-
-    it("should handle intensity operations correctly", () => {
-      const faint = attrs.faint();
+    it("should handle intensity correctly", () => {
+      const faint = attributes.faint();
       const normal = faint.normalIntensity();
 
       expect(faint.has(Bit.Faint)).toBe(true);
-      expect(faint.has(Bit.Bold)).toBe(false);
       expect(normal.has(Bit.NormalIntensity)).toBe(true);
       expect(normal.has(Bit.Faint)).toBe(false);
-      expect(normal.has(Bit.Bold)).toBe(false);
     });
 
-    it("should handle italic/no-italic toggle correctly", () => {
-      const italic = attrs.italic();
-      const noItalic = italic.noItalic();
+    it("should set reset", () => {
+      const reset = attributes.reset();
+      expect(reset.has(Bit.Reset)).toBe(true);
+    });
+  });
 
-      expect(italic.has(Bit.Italic)).toBe(true);
-      expect(italic.has(Bit.NoItalic)).toBe(false);
-      expect(noItalic.has(Bit.Italic)).toBe(false);
-      expect(noItalic.has(Bit.NoItalic)).toBe(true);
+  describe("underline styles", () => {
+    it("should set single underline by default", () => {
+      const underlined = attributes.underline();
+      expect(underlined.has(Bit.Underline)).toBe(true);
     });
 
-    it("should handle underline operations correctly", () => {
-      const underlined = attrs.underline();
+    it("should set specific underline styles", () => {
+      const single = attributes.singleUnderline();
+      const double = attributes.doubleUnderline();
+      const curly = attributes.curlyUnderline();
+      const dotted = attributes.dottedUnderline();
+      const dashed = attributes.dashedUnderline();
+
+      expect(single.has(Bit.Underline)).toBe(true);
+      expect(double.has(Bit.UnderlineDouble)).toBe(true);
+      expect(curly.has(Bit.UnderlineCurly)).toBe(true);
+      expect(dotted.has(Bit.UnderlineDotted)).toBe(true);
+      expect(dashed.has(Bit.UnderlineDashed)).toBe(true);
+    });
+
+    it("should remove underline", () => {
+      const underlined = attributes.underline();
       const noUnderline = underlined.noUnderline();
 
       expect(underlined.has(Bit.Underline)).toBe(true);
-      expect(underlined.us).toBe(UnderlineStyle.Single);
-      expect(noUnderline.has(Bit.NoUnderline)).toBe(true);
       expect(noUnderline.has(Bit.Underline)).toBe(false);
-      expect(noUnderline.us).toBe(UnderlineStyle.None);
     });
 
-    it("should handle blink operations correctly", () => {
-      const slow = attrs.slowBlink();
-      const rapid = attrs.rapidBlink();
-      const noBlink = slow.noBlink();
+    it("should handle underline none style", () => {
+      const underlined = attributes.underline();
+      const none = underlined.underline(Bit.UnderlineNone);
 
-      expect(slow.has(Bit.Blink)).toBe(true);
-      expect(rapid.has(Bit.RapidBlink)).toBe(true);
+      expect(none.has(Bit.Underline)).toBe(false);
+      expect(none.has(Bit.NoUnderline)).toBe(true);
+    });
+  });
+
+  describe("blink attributes", () => {
+    it("should set and unset blink", () => {
+      const blink = attributes.blink();
+      const noBlink = blink.noBlink();
+
+      expect(blink.has(Bit.Blink)).toBe(true);
       expect(noBlink.has(Bit.NoBlink)).toBe(true);
       expect(noBlink.has(Bit.Blink)).toBe(false);
     });
-  });
 
-  describe("Color operations bit shifting", () => {
-    it("should set basic foreground colors correctly", () => {
-      const red = attrs.foregroundColor(BasicColor.Red);
-      const brightBlue = attrs.foregroundColor(BasicColor.BrightBlue);
-
-      expect(red.has(Bit.RedForegroundColor)).toBe(true);
-      expect(brightBlue.has(Bit.BrightBlueForegroundColor)).toBe(true);
+    it("should set slow blink", () => {
+      const slowBlink = attributes.slowBlink();
+      expect(slowBlink.has(Bit.Blink)).toBe(true);
     });
 
-    it("should set basic background colors correctly", () => {
-      const green = attrs.backgroundColor(BasicColor.Green);
-      const brightMagenta = attrs.backgroundColor(BasicColor.BrightMagenta);
-
-      expect(green.has(Bit.GreenBackgroundColor)).toBe(true);
-      expect(brightMagenta.has(Bit.BrightMagentaBackgroundColor)).toBe(true);
-    });
-
-    it("should handle extended colors correctly", () => {
-      const extendedFg = attrs.foregroundColor(200); // 256-color palette
-      const extendedBg = attrs.backgroundColor(150);
-
-      expect(extendedFg.has(Bit.ExtendedForegroundColor)).toBe(true);
-      expect(extendedFg.fg).toBe(200);
-      expect(extendedBg.has(Bit.ExtendedBackgroundColor)).toBe(true);
-      expect(extendedBg.bg).toBe(150);
-    });
-
-    it("should clear color bits when setting new colors", () => {
-      const redThenBlue = attrs
-        .foregroundColor(BasicColor.Red)
-        .foregroundColor(BasicColor.Blue);
-
-      expect(redThenBlue.has(Bit.RedForegroundColor)).toBe(false);
-      expect(redThenBlue.has(Bit.BlueForegroundColor)).toBe(true);
-    });
-
-    it("should handle default colors correctly", () => {
-      const defaultFg = attrs.foregroundColor(DefaultColor);
-      const defaultBg = attrs.backgroundColor(DefaultColor);
-
-      expect(defaultFg.has(Bit.DefaultForegroundColor)).toBe(true);
-      expect(defaultBg.has(Bit.DefaultBackgroundColor)).toBe(true);
+    it("should set rapid blink", () => {
+      const rapidBlink = attributes.rapidBlink();
+      expect(rapidBlink.has(Bit.RapidBlink)).toBe(true);
     });
   });
 
-  describe("Bitwise operations", () => {
-    it("should perform OR operations correctly", () => {
-      const a = attrs.set(Bit.Bold).set(Bit.Italic);
-      const b = attrs.set(Bit.Underline).set(Bit.Reverse);
-      const result = a.or(b);
+  describe("reverse attributes", () => {
+    it("should set and unset reverse", () => {
+      const reverse = attributes.reverse();
+      const noReverse = reverse.noReverse();
 
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result.has(Bit.Italic)).toBe(true);
-      expect(result.has(Bit.Underline)).toBe(true);
-      expect(result.has(Bit.Reverse)).toBe(true);
-    });
-
-    it("should perform AND operations correctly", () => {
-      const a = attrs.set(Bit.Bold).set(Bit.Italic).set(Bit.Underline);
-      const b = attrs.set(Bit.Bold).set(Bit.Reverse).set(Bit.Underline);
-      const result = a.and(b);
-
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result.has(Bit.Underline)).toBe(true);
-      expect(result.has(Bit.Italic)).toBe(false);
-      expect(result.has(Bit.Reverse)).toBe(false);
-    });
-
-    it("should perform XOR operations correctly", () => {
-      const a = attrs.set(Bit.Bold).set(Bit.Italic);
-      const b = attrs.set(Bit.Bold).set(Bit.Underline);
-      const result = a.xor(b);
-
-      expect(result.has(Bit.Bold)).toBe(false); // Same in both
-      expect(result.has(Bit.Italic)).toBe(true); // Only in a
-      expect(result.has(Bit.Underline)).toBe(true); // Only in b
-    });
-
-    it("should perform NOT operations correctly", () => {
-      const original = attrs.set(Bit.Bold);
-      const inverted = original.not();
-
-      expect(inverted.has(Bit.Bold)).toBe(false);
-      // Check that other bits are set (since we're inverting all bits)
-      expect(inverted.has(Bit.Italic)).toBe(true);
+      expect(reverse.has(Bit.Reverse)).toBe(true);
+      expect(noReverse.has(Bit.NoReverse)).toBe(true);
+      expect(noReverse.has(Bit.Reverse)).toBe(false);
     });
   });
 
-  describe("valueOf and BigInt operations", () => {
-    it("should convert to BigInt correctly", () => {
-      const result = attrs.set(Bit.Bold).set(Bit.BrightRedForegroundColor);
-      const bigIntValue = result.valueOf();
+  describe("conceal attributes", () => {
+    it("should set and unset conceal", () => {
+      const conceal = attributes.conceal();
+      const noConceal = conceal.noConceal();
 
-      expect(typeof bigIntValue).toBe("bigint");
-
-      // Verify the bit pattern
-      const expectedLow = 1 << Bit.Bold;
-      const expectedHigh = 1 << (Bit.BrightRedForegroundColor - 32);
-      const expected = BigInt(expectedLow) + (BigInt(expectedHigh) << 32n);
-
-      expect(bigIntValue).toBe(expected);
-    });
-
-    it("should create from BigInt correctly", () => {
-      const bigIntValue = BigInt(0b1010101010101010n);
-      const result = Attributes.from(bigIntValue);
-
-      expect(result.valueOf()).toBe(bigIntValue);
-    });
-
-    it("should create from bit array correctly", () => {
-      const bits = [Bit.Bold, Bit.Italic, Bit.BrightRedForegroundColor];
-      const result = Attributes.from(bits);
-
-      expect(result.has(Bit.Bold)).toBe(true);
-      expect(result.has(Bit.Italic)).toBe(true);
-      expect(result.has(Bit.BrightRedForegroundColor)).toBe(true);
-      expect(result.has(Bit.Underline)).toBe(false);
+      expect(conceal.has(Bit.Conceal)).toBe(true);
+      expect(noConceal.has(Bit.NoConceal)).toBe(true);
     });
   });
 
-  describe("Iterator and enumeration", () => {
-    it("should iterate over set bits correctly", () => {
-      const result = attrs
-        .set(Bit.Bold)
-        .set(Bit.Italic)
-        .set(Bit.BrightRedForegroundColor);
-      const setBits = Array.from(result.keys());
+  describe("strikethrough attributes", () => {
+    it("should set and unset strikethrough", () => {
+      const strike = attributes.strikethrough();
+      const noStrike = strike.noStrikethrough();
 
-      expect(setBits).toContain(Bit.Bold);
-      expect(setBits).toContain(Bit.Italic);
-      expect(setBits).toContain(Bit.BrightRedForegroundColor);
-      expect(setBits).toHaveLength(3);
-    });
-
-    it("should iterate over attribute values correctly", () => {
-      const result = attrs.set(Bit.Bold).set(Bit.Italic);
-      const attributes = Array.from(result.values());
-
-      expect(attributes).toContain(Attribute.Bold);
-      expect(attributes).toContain(Attribute.Italic);
-    });
-
-    it("should count set bits correctly", () => {
-      const result = attrs.set(Bit.Bold).set(Bit.Italic).set(Bit.Underline);
-      expect(result.length).toBe(3);
+      expect(strike.has(Bit.Strikethrough)).toBe(true);
+      expect(noStrike.has(Bit.NoStrikethrough)).toBe(true);
+      expect(noStrike.has(Bit.Strikethrough)).toBe(false);
     });
   });
 
-  describe("Edge cases and error conditions", () => {
-    it("should handle empty attributes correctly", () => {
-      expect(attrs.isEmpty()).toBe(true);
-      expect(attrs.length).toBe(0);
-      expect(attrs.valueOf()).toBe(0n);
+  describe("colors", () => {
+    it("should set foreground color", () => {
+      const colored = attributes.foregroundColor(BasicColor.Red);
+      expect(colored.fg).toBe(BasicColor.Red);
     });
 
-    it("should handle clearing attributes", () => {
-      const withAttributes = attrs.set(Bit.Bold).set(Bit.Italic);
-      const cleared = withAttributes.clear();
+    it("should set background color", () => {
+      const colored = attributes.backgroundColor(BasicColor.Blue);
+      expect(colored.bg).toBe(BasicColor.Blue);
+    });
+
+    it("should set underline color", () => {
+      const colored = attributes.underlineColor(BasicColor.Green);
+      expect(colored.ul).toBe(BasicColor.Green);
+    });
+
+    it("should set default colors", () => {
+      const defaultFg = attributes.defaultForegroundColor();
+      const defaultBg = attributes.defaultBackgroundColor();
+      const defaultUl = attributes.defaultUnderlineColor();
+
+      expect(defaultFg.fg).toBe(DefaultColor);
+      expect(defaultBg.bg).toBe(DefaultColor);
+      expect(defaultUl.ul).toBe(DefaultColor);
+    });
+
+    it("should handle RGB colors", () => {
+      const rgbColor = rgb(255, 128, 64);
+      const colored = attributes.foregroundColor(rgbColor);
+      expect(colored.fg).toBe(rgbColor);
+    });
+  });
+
+  describe("bit operations", () => {
+    it("should set and check bits", () => {
+      const withBit = attributes.set(Bit.Bold);
+      expect(withBit.has(Bit.Bold)).toBe(true);
+    });
+
+    it("should unset bits", () => {
+      const withBit = attributes.set(Bit.Bold);
+      const withoutBit = withBit.unset(Bit.Bold);
+      expect(withoutBit.has(Bit.Bold)).toBe(false);
+    });
+
+    it("should toggle bits", () => {
+      const toggled1 = attributes.toggle(Bit.Bold);
+      const toggled2 = toggled1.toggle(Bit.Bold);
+
+      expect(toggled1.value).toBe(1 << Bit.Bold);
+      expect(toggled2.value).toBe(0);
+    });
+
+    it("should clear all attributes", () => {
+      const complex = attributes
+        .bold()
+        .italic()
+        .foregroundColor(BasicColor.Red);
+      const cleared = complex.clear();
 
       expect(cleared.isEmpty()).toBe(true);
-      expect(cleared.has(Bit.Bold)).toBe(false);
-      expect(cleared.has(Bit.Italic)).toBe(false);
-    });
-
-    it("should handle 32-bit unsigned integer overflow correctly", () => {
-      // Test that we handle the >>> 0 operation correctly for 32-bit values
-      const attrs1 = new Attributes(0xffffffff, 0xffffffff);
-      expect(attrs1["low"]).toBe(0xffffffff);
-      expect(attrs1["high"]).toBe(0xffffffff);
-    });
-
-    it("should maintain immutability", () => {
-      const original = attrs.set(Bit.Bold);
-      const modified = original.set(Bit.Italic);
-
-      expect(original.has(Bit.Italic)).toBe(false);
-      expect(modified.has(Bit.Bold)).toBe(true);
-      expect(modified.has(Bit.Italic)).toBe(true);
     });
   });
 
-  describe("BIT_TO_ATTRIBUTE and ATTRIBUTE_TO_BIT mappings", () => {
-    it("should have consistent mappings", () => {
-      // Test that every bit maps to an attribute and back
-      for (const [bitStr, attribute] of Object.entries(BIT_TO_ATTRIBUTE)) {
-        const bit = parseInt(bitStr);
-        expect(ATTRIBUTE_TO_BIT[attribute]).toBe(bit);
-      }
+  describe("logical operations", () => {
+    let attr1: Attributes;
+    let attr2: Attributes;
+
+    beforeEach(() => {
+      attr1 = new Attributes().bold().foregroundColor(BasicColor.Red);
+      attr2 = new Attributes()
+        .italic()
+        .foregroundColor(BasicColor.Blue)
+        .backgroundColor(BasicColor.Blue);
     });
 
-    it("should cover all defined bits", () => {
-      const definedBits = Object.values(Bit).filter(
-        (v) => typeof v === "number",
-      ) as number[];
-      const mappedBits = Object.keys(BIT_TO_ATTRIBUTE).map(Number);
+    it("should perform OR operation", () => {
+      const result = attr1.or(attr2);
 
-      for (const bit of definedBits) {
-        expect(mappedBits).toContain(bit);
+      expect(result.has(Bit.Bold)).toBe(true);
+      expect(result.has(Bit.Italic)).toBe(true);
+      expect(result.fg).toBe(BasicColor.Blue);
+      expect(result.bg).toBe(BasicColor.Blue);
+    });
+
+    it("should perform AND operation", () => {
+      const both = attr1.bold().italic();
+      const result = both.and(attr1);
+      expect(result.has(Bit.Bold)).toBe(true);
+      expect(result.has(Bit.Italic)).toBe(false);
+    });
+
+    it("should perform XOR operation", () => {
+      const same = attr1.bold();
+      const result = attr1.xor(same);
+      expect(result.value).toBe(0);
+    });
+
+    it("should perform NOT operation", () => {
+      const result = attr1.not();
+      expect(result.has(Bit.Bold)).toBe(false);
+    });
+
+    it("should perform static logical operations", () => {
+      const orResult = Attributes.or(attr1, attr2);
+      const andResult = Attributes.and(attr1, attr2);
+      const xorResult = Attributes.xor(attr1, attr2);
+      const notResult = Attributes.not(attr1);
+
+      expect(orResult.has(Bit.Bold)).toBe(true);
+      expect(orResult.has(Bit.Italic)).toBe(true);
+      expect(andResult.value).toBe(0);
+      expect(xorResult.has(Bit.Bold)).toBe(true);
+      expect(xorResult.has(Bit.Italic)).toBe(true);
+      expect(notResult.has(Bit.Bold)).toBe(false);
+    });
+  });
+
+  describe("utility methods", () => {
+    it("should check if empty", () => {
+      expect(attributes.isEmpty()).toBe(true);
+      expect(attributes.bold().isEmpty()).toBe(false);
+    });
+
+    it("should convert to string", () => {
+      const attr = new Attributes(15);
+      expect(attr.toString()).toBe("15");
+      expect(attr.toString(16)).toBe("f");
+    });
+
+    it("should return numeric value", () => {
+      const attr = new Attributes(42);
+      expect(attr.valueOf()).toBe(42);
+    });
+
+    it("should count set bits", () => {
+      const attr = new Attributes(0b1011); // 3 bits set
+      expect(attr.length).toBe(3);
+    });
+
+    it("should copy attributes", () => {
+      const original = attributes.bold().foregroundColor(BasicColor.Red);
+      const copy = original.copy();
+
+      expect(copy).not.toBe(original);
+      expect(copy.value).toBe(original.value);
+      expect(copy.fg).toBe(original.fg);
+    });
+  });
+
+  describe("iterators", () => {
+    let complexAttr: Attributes;
+
+    beforeEach(() => {
+      complexAttr = new Attributes().bold().italic().set(Bit.Underline);
+    });
+
+    it("should iterate over keys", () => {
+      const keys = Array.from(complexAttr.keys());
+      expect(keys).toContain(Bit.Bold);
+      expect(keys).toContain(Bit.Italic);
+      expect(keys).toContain(Bit.Underline);
+    });
+
+    it("should iterate over values", () => {
+      const values = Array.from(complexAttr.values());
+      expect(values.length).toBeGreaterThan(0);
+    });
+
+    it("should iterate over entries", () => {
+      const entries = Array.from(complexAttr.entries());
+      expect(entries.length).toBeGreaterThan(0);
+      expect(entries[0]).toHaveLength(2); // [bit, attribute] pairs
+    });
+
+    it("should be iterable with for...of", () => {
+      const entries = [];
+      for (const entry of complexAttr) {
+        entries.push(entry);
       }
+      expect(entries.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("JSON serialization", () => {
+    it("should serialize empty attributes", () => {
+      const json = attributes.toJSON();
+      expect(json).toEqual({ reset: true });
+    });
+
+    it("should serialize basic attributes", () => {
+      const attr = attributes.bold().italic();
+      const json = attr.toJSON();
+      expect(json.bold).toBe(true);
+      expect(json.italic).toBe(true);
+    });
+
+    it("should serialize colors", () => {
+      const attr = attributes
+        .foregroundColor(BasicColor.Red)
+        .backgroundColor(255) // indexed color
+        .underlineColor(rgb(255, 128, 64)); // RGB color
+
+      const json = attr.toJSON();
+      expect(json.foregroundColor).toBe(BasicColor.Red);
+      expect(json.backgroundColor).toBe(255);
+      expect(json.underlineColor).toEqual(rgb(255, 128, 64));
+    });
+
+    it("should serialize underline styles", () => {
+      const attr = attributes.doubleUnderline();
+      const json = attr.toJSON();
+      expect(json.underlineStyle).toBe(UnderlineStyle.Double);
+    });
+  });
+
+  describe("static utility methods", () => {
+    it("should pack and unpack RGB values", () => {
+      const packed = Attributes.pack(255, 128, 64);
+
+      expect(Attributes.unpack(packed)).toEqual([255, 128, 64]);
+    });
+  });
+
+  describe("chaining example from documentation", () => {
+    it("should work as shown in the example", () => {
+      const attr = new Attributes()
+        .foregroundColor(BasicColor.Red)
+        .underline()
+        .bold()
+        .italic();
+
+      expect(attr.has(Bit.Bold)).toBe(true);
+      expect(attr.has(Bit.Italic)).toBe(true);
+      expect(attr.has(Bit.Underline)).toBe(true);
+      expect(attr.fg).toBe(BasicColor.Red);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should handle multiple underline style changes", () => {
+      const attr = attributes
+        .singleUnderline()
+        .doubleUnderline()
+        .curlyUnderline();
+
+      // Should only have the last style set
+      expect(attr.has(Bit.UnderlineCurly)).toBe(true);
+      expect(attr.has(Bit.UnderlineSingle)).toBe(false);
+      expect(attr.has(Bit.UnderlineDouble)).toBe(false);
+    });
+
+    it("should handle conflicting intensity settings", () => {
+      const attr = attributes.bold().faint().normalIntensity();
+      expect(attr.has(Bit.Faint)).toBe(false);
+      expect(attr.has(Bit.Bold)).toBe(false);
+    });
+
+    it("should handle large RGB values in JSON", () => {
+      const largeRgb = (255 << 16) | (255 << 8) | 255; // 0xFFFFFF
+      const attr = attributes.foregroundColor(largeRgb);
+      const json = attr.toJSON();
+
+      expect(json.foregroundColor).toEqual(rgb(largeRgb));
     });
   });
 });

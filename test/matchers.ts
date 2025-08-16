@@ -13,7 +13,7 @@ interface ExpectationResult {
 
 expect.extend({
   toMatchSgr(a: string, b: string | string[] = []): ExpectationResult {
-    const received = parser(tokenizer(a))
+    const actual = parser(tokenizer(a))
       .filter(
         (token) =>
           token.type === "CSI" &&
@@ -23,7 +23,7 @@ expect.extend({
       // Note:
       // - The parser recognizes the underline + style params, like `4:1`, `4:2`, ... as two parameters, not one.
       // - \x1B[38;2;228;0;16mHello\x1B[m is parsed into params of ["38", "2", "228", "0", "16"]
-      // Why?
+      // Not sure why, but that's why we parse the parameters manually.
       .flatMap((token) => {
         return token.raw.slice("\x1B[".length, -"m".length).split(";");
       })
@@ -34,22 +34,25 @@ expect.extend({
 
     return {
       message: () => {
-        if (expected.length > 0 && received.length === 0) {
+        if (expected.length > 0 && actual.length === 0) {
           return `Expected SGR attributes to match "${expected.join(";")}", but received none in ${util.inspect(
             a,
           )}`;
         }
 
-        return `Expected SGR attributes to match "${expected.join(";")}", but received "${received.join(";")}" in ${util.inspect(
+        return `Expected SGR attributes to match "${expected.join(";")}", but received "${actual.join(";")}" in ${util.inspect(
           a,
         )}`;
       },
+
+      actual: actual.join(";"),
+      expected: expected.join(";"),
       pass:
-        (received.length === 0 && expected.length === 0) ||
-        (received.length === expected.length &&
+        (actual.length === 0 && expected.length === 0) ||
+        (actual.length === expected.length &&
           expected
             .sort()
-            .every((code) => received.some((token) => token === code))),
+            .every((code) => actual.some((token) => token === code))),
     };
   },
 });

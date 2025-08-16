@@ -1,5 +1,5 @@
-import { BasicColor } from "../../color";
-import { Attribute } from "./attribute";
+import type { BasicColor, DefaultColor, IndexedColor } from "../../color";
+import { Attribute, UnderlineStyle } from "./attribute";
 
 /**
  * Attribute bits
@@ -27,129 +27,52 @@ export enum Bit {
   NoReverse,
   NoConceal,
   NoStrikethrough,
-  BlackForegroundColor,
-  RedForegroundColor,
-  GreenForegroundColor,
-  YellowForegroundColor,
-  BlueForegroundColor,
-  MagentaForegroundColor,
-  CyanForegroundColor,
-  WhiteForegroundColor,
-  ExtendedForegroundColor,
-  DefaultForegroundColor,
-  BlackBackgroundColor,
-  RedBackgroundColor,
-  GreenBackgroundColor,
-  YellowBackgroundColor,
-  BlueBackgroundColor,
-  MagentaBackgroundColor,
-  CyanBackgroundColor,
-  WhiteBackgroundColor,
-  ExtendedBackgroundColor,
-  DefaultBackgroundColor,
-  ExtendedUnderlineColor,
-  DefaultUnderlineColor,
-  BrightBlackForegroundColor,
-  BrightRedForegroundColor,
-  BrightGreenForegroundColor,
-  BrightYellowForegroundColor,
-  BrightBlueForegroundColor,
-  BrightMagentaForegroundColor,
-  BrightCyanForegroundColor,
-  BrightWhiteForegroundColor,
-  BrightBlackBackgroundColor,
-  BrightRedBackgroundColor,
-  BrightGreenBackgroundColor,
-  BrightYellowBackgroundColor,
-  BrightBlueBackgroundColor,
-  BrightMagentaBackgroundColor,
-  BrightCyanBackgroundColor,
-  BrightWhiteBackgroundColor,
+
+  // Underline styles
+  UnderlineNone,
+  UnderlineSingle,
+  UnderlineDouble,
+  UnderlineCurly,
+  UnderlineDotted,
+  UnderlineDashed,
 }
 
-export type ColorBit = number;
+export type UnderlineStyleBit =
+  | Bit.UnderlineNone
+  | Bit.UnderlineSingle
+  | Bit.UnderlineDouble
+  | Bit.UnderlineCurly
+  | Bit.UnderlineDotted
+  | Bit.UnderlineDashed;
 
-/** Basic color <-> Bit */
-export const BASIC_COLOR_TO_FOREGROUND_BIT = {
-  [BasicColor.Black]: Bit.BlackForegroundColor,
-  [BasicColor.Red]: Bit.RedForegroundColor,
-  [BasicColor.Green]: Bit.GreenForegroundColor,
-  [BasicColor.Yellow]: Bit.YellowForegroundColor,
-  [BasicColor.Blue]: Bit.BlueForegroundColor,
-  [BasicColor.Magenta]: Bit.MagentaForegroundColor,
-  [BasicColor.Cyan]: Bit.CyanForegroundColor,
-  [BasicColor.White]: Bit.WhiteForegroundColor,
-  [BasicColor.BrightBlack]: Bit.BrightBlackForegroundColor,
-  [BasicColor.BrightRed]: Bit.BrightRedForegroundColor,
-  [BasicColor.BrightGreen]: Bit.BrightGreenForegroundColor,
-  [BasicColor.BrightYellow]: Bit.BrightYellowForegroundColor,
-  [BasicColor.BrightBlue]: Bit.BrightBlueForegroundColor,
-  [BasicColor.BrightMagenta]: Bit.BrightMagentaForegroundColor,
-  [BasicColor.BrightCyan]: Bit.BrightCyanForegroundColor,
-  [BasicColor.BrightWhite]: Bit.BrightWhiteForegroundColor,
-} as const satisfies Partial<Record<BasicColor, Bit>>;
+/**
+ * A packed RGB value
+ *
+ * It is a 32-bit unsigned integer that can be used to represent a color.
+ * @example
+ * ```ts
+ * (r << 16) | (g << 8) | b
+ * ```
+ *
+ */
+export type PackedRGB = number;
 
-/** Bit <-> Basic color */
-export const FOREGROUND_BIT_TO_BASIC_COLOR = {
-  [Bit.BlackForegroundColor]: BasicColor.Black,
-  [Bit.RedForegroundColor]: BasicColor.Red,
-  [Bit.GreenForegroundColor]: BasicColor.Green,
-  [Bit.YellowForegroundColor]: BasicColor.Yellow,
-  [Bit.BlueForegroundColor]: BasicColor.Blue,
-  [Bit.MagentaForegroundColor]: BasicColor.Magenta,
-  [Bit.CyanForegroundColor]: BasicColor.Cyan,
-  [Bit.WhiteForegroundColor]: BasicColor.White,
-
-  [Bit.BrightBlackForegroundColor]: BasicColor.BrightBlack,
-  [Bit.BrightRedForegroundColor]: BasicColor.BrightRed,
-  [Bit.BrightGreenForegroundColor]: BasicColor.BrightGreen,
-  [Bit.BrightYellowForegroundColor]: BasicColor.BrightYellow,
-  [Bit.BrightBlueForegroundColor]: BasicColor.BrightBlue,
-  [Bit.BrightMagentaForegroundColor]: BasicColor.BrightMagenta,
-  [Bit.BrightCyanForegroundColor]: BasicColor.BrightCyan,
-  [Bit.BrightWhiteForegroundColor]: BasicColor.BrightWhite,
-} satisfies Partial<Record<Bit, BasicColor>>;
-
-/** Basic color <-> Bit */
-export const BASIC_COLOR_TO_BACKGROUND_BIT = {
-  [BasicColor.Black]: Bit.BlackBackgroundColor,
-  [BasicColor.Red]: Bit.RedBackgroundColor,
-  [BasicColor.Green]: Bit.GreenBackgroundColor,
-  [BasicColor.Yellow]: Bit.YellowBackgroundColor,
-  [BasicColor.Blue]: Bit.BlueBackgroundColor,
-  [BasicColor.Magenta]: Bit.MagentaBackgroundColor,
-  [BasicColor.Cyan]: Bit.CyanBackgroundColor,
-  [BasicColor.White]: Bit.WhiteBackgroundColor,
-  [BasicColor.BrightBlack]: Bit.BrightBlackBackgroundColor,
-  [BasicColor.BrightRed]: Bit.BrightRedBackgroundColor,
-  [BasicColor.BrightGreen]: Bit.BrightGreenBackgroundColor,
-  [BasicColor.BrightYellow]: Bit.BrightYellowBackgroundColor,
-  [BasicColor.BrightBlue]: Bit.BrightBlueBackgroundColor,
-  [BasicColor.BrightMagenta]: Bit.BrightMagentaBackgroundColor,
-  [BasicColor.BrightCyan]: Bit.BrightCyanBackgroundColor,
-  [BasicColor.BrightWhite]: Bit.BrightWhiteBackgroundColor,
-} as const satisfies Partial<Record<BasicColor, Bit>>;
-
-/** Bit <-> Basic color */
-export const BACKGROUND_BIT_TO_BASIC_COLOR = {
-  [Bit.BlackBackgroundColor]: BasicColor.Black,
-  [Bit.RedBackgroundColor]: BasicColor.Red,
-  [Bit.GreenBackgroundColor]: BasicColor.Green,
-  [Bit.YellowBackgroundColor]: BasicColor.Yellow,
-  [Bit.BlueBackgroundColor]: BasicColor.Blue,
-  [Bit.MagentaBackgroundColor]: BasicColor.Magenta,
-  [Bit.CyanBackgroundColor]: BasicColor.Cyan,
-  [Bit.WhiteBackgroundColor]: BasicColor.White,
-
-  [Bit.BrightBlackBackgroundColor]: BasicColor.BrightBlack,
-  [Bit.BrightRedBackgroundColor]: BasicColor.BrightRed,
-  [Bit.BrightGreenBackgroundColor]: BasicColor.BrightGreen,
-  [Bit.BrightYellowBackgroundColor]: BasicColor.BrightYellow,
-  [Bit.BrightBlueBackgroundColor]: BasicColor.BrightBlue,
-  [Bit.BrightMagentaBackgroundColor]: BasicColor.BrightMagenta,
-  [Bit.BrightCyanBackgroundColor]: BasicColor.BrightCyan,
-  [Bit.BrightWhiteBackgroundColor]: BasicColor.BrightWhite,
-} as const satisfies Partial<Record<Bit, BasicColor>>;
+/**
+ * {@link Attributes} color type
+ *
+ * A color type that can be any of the following:
+ * - {@link BasicColor}
+ * - {@link IndexedColor}
+ * - {@link PackedRGB}
+ * - {@link DefaultColor}
+ *
+ * It is different from the regular ANSI color type.
+ */
+export type ColorAttribute =
+  | BasicColor
+  | IndexedColor
+  | PackedRGB
+  | DefaultColor;
 
 /** Bit <-> Attribute */
 export const BIT_TO_ATTRIBUTE = Object.freeze({
@@ -170,45 +93,14 @@ export const BIT_TO_ATTRIBUTE = Object.freeze({
   [Bit.NoReverse]: Attribute.NoReverse,
   [Bit.NoConceal]: Attribute.NoConceal,
   [Bit.NoStrikethrough]: Attribute.NoStrikethrough,
-  [Bit.BlackForegroundColor]: Attribute.BlackForegroundColor,
-  [Bit.RedForegroundColor]: Attribute.RedForegroundColor,
-  [Bit.GreenForegroundColor]: Attribute.GreenForegroundColor,
-  [Bit.YellowForegroundColor]: Attribute.YellowForegroundColor,
-  [Bit.BlueForegroundColor]: Attribute.BlueForegroundColor,
-  [Bit.MagentaForegroundColor]: Attribute.MagentaForegroundColor,
-  [Bit.CyanForegroundColor]: Attribute.CyanForegroundColor,
-  [Bit.WhiteForegroundColor]: Attribute.WhiteForegroundColor,
-  [Bit.ExtendedForegroundColor]: Attribute.ExtendedForegroundColor,
-  [Bit.DefaultForegroundColor]: Attribute.DefaultForegroundColor,
-  [Bit.BlackBackgroundColor]: Attribute.BlackBackgroundColor,
-  [Bit.RedBackgroundColor]: Attribute.RedBackgroundColor,
-  [Bit.GreenBackgroundColor]: Attribute.GreenBackgroundColor,
-  [Bit.YellowBackgroundColor]: Attribute.YellowBackgroundColor,
-  [Bit.BlueBackgroundColor]: Attribute.BlueBackgroundColor,
-  [Bit.MagentaBackgroundColor]: Attribute.MagentaBackgroundColor,
-  [Bit.CyanBackgroundColor]: Attribute.CyanBackgroundColor,
-  [Bit.WhiteBackgroundColor]: Attribute.WhiteBackgroundColor,
-  [Bit.ExtendedBackgroundColor]: Attribute.ExtendedBackgroundColor,
-  [Bit.DefaultBackgroundColor]: Attribute.DefaultBackgroundColor,
-  [Bit.ExtendedUnderlineColor]: Attribute.ExtendedUnderlineColor,
-  [Bit.DefaultUnderlineColor]: Attribute.DefaultUnderlineColor,
-  [Bit.BrightBlackForegroundColor]: Attribute.BrightBlackForegroundColor,
-  [Bit.BrightRedForegroundColor]: Attribute.BrightRedForegroundColor,
-  [Bit.BrightGreenForegroundColor]: Attribute.BrightGreenForegroundColor,
-  [Bit.BrightYellowForegroundColor]: Attribute.BrightYellowForegroundColor,
-  [Bit.BrightBlueForegroundColor]: Attribute.BrightBlueForegroundColor,
-  [Bit.BrightMagentaForegroundColor]: Attribute.BrightMagentaForegroundColor,
-  [Bit.BrightCyanForegroundColor]: Attribute.BrightCyanForegroundColor,
-  [Bit.BrightWhiteForegroundColor]: Attribute.BrightWhiteForegroundColor,
-  [Bit.BrightBlackBackgroundColor]: Attribute.BrightBlackBackgroundColor,
-  [Bit.BrightRedBackgroundColor]: Attribute.BrightRedBackgroundColor,
-  [Bit.BrightGreenBackgroundColor]: Attribute.BrightGreenBackgroundColor,
-  [Bit.BrightYellowBackgroundColor]: Attribute.BrightYellowBackgroundColor,
-  [Bit.BrightBlueBackgroundColor]: Attribute.BrightBlueBackgroundColor,
-  [Bit.BrightMagentaBackgroundColor]: Attribute.BrightMagentaBackgroundColor,
-  [Bit.BrightCyanBackgroundColor]: Attribute.BrightCyanBackgroundColor,
-  [Bit.BrightWhiteBackgroundColor]: Attribute.BrightWhiteBackgroundColor,
-});
+
+  [Bit.UnderlineNone]: UnderlineStyle.None,
+  [Bit.UnderlineSingle]: UnderlineStyle.Single,
+  [Bit.UnderlineDouble]: UnderlineStyle.Double,
+  [Bit.UnderlineCurly]: UnderlineStyle.Curly,
+  [Bit.UnderlineDotted]: UnderlineStyle.Dotted,
+  [Bit.UnderlineDashed]: UnderlineStyle.Dashed,
+} as const);
 
 /** Attribute <-> Bit */
 export const ATTRIBUTE_TO_BIT = Object.freeze({
@@ -224,47 +116,16 @@ export const ATTRIBUTE_TO_BIT = Object.freeze({
   [Attribute.Strikethrough]: Bit.Strikethrough,
   [Attribute.NormalIntensity]: Bit.NormalIntensity,
   [Attribute.NoItalic]: Bit.NoItalic,
-  [Attribute.NoUnderline]: Bit.NoUnderline,
+  [Attribute.NoUnderline]: Bit.Underline,
   [Attribute.NoBlink]: Bit.NoBlink,
   [Attribute.NoReverse]: Bit.NoReverse,
   [Attribute.NoConceal]: Bit.NoConceal,
   [Attribute.NoStrikethrough]: Bit.NoStrikethrough,
-  [Attribute.BlackForegroundColor]: Bit.BlackForegroundColor,
-  [Attribute.RedForegroundColor]: Bit.RedForegroundColor,
-  [Attribute.GreenForegroundColor]: Bit.GreenForegroundColor,
-  [Attribute.YellowForegroundColor]: Bit.YellowForegroundColor,
-  [Attribute.BlueForegroundColor]: Bit.BlueForegroundColor,
-  [Attribute.MagentaForegroundColor]: Bit.MagentaForegroundColor,
-  [Attribute.CyanForegroundColor]: Bit.CyanForegroundColor,
-  [Attribute.WhiteForegroundColor]: Bit.WhiteForegroundColor,
-  [Attribute.ExtendedForegroundColor]: Bit.ExtendedForegroundColor,
-  [Attribute.DefaultForegroundColor]: Bit.DefaultForegroundColor,
-  [Attribute.BlackBackgroundColor]: Bit.BlackBackgroundColor,
-  [Attribute.RedBackgroundColor]: Bit.RedBackgroundColor,
-  [Attribute.GreenBackgroundColor]: Bit.GreenBackgroundColor,
-  [Attribute.YellowBackgroundColor]: Bit.YellowBackgroundColor,
-  [Attribute.BlueBackgroundColor]: Bit.BlueBackgroundColor,
-  [Attribute.MagentaBackgroundColor]: Bit.MagentaBackgroundColor,
-  [Attribute.CyanBackgroundColor]: Bit.CyanBackgroundColor,
-  [Attribute.WhiteBackgroundColor]: Bit.WhiteBackgroundColor,
-  [Attribute.ExtendedBackgroundColor]: Bit.ExtendedBackgroundColor,
-  [Attribute.DefaultBackgroundColor]: Bit.DefaultBackgroundColor,
-  [Attribute.ExtendedUnderlineColor]: Bit.ExtendedUnderlineColor,
-  [Attribute.DefaultUnderlineColor]: Bit.DefaultUnderlineColor,
-  [Attribute.BrightBlackForegroundColor]: Bit.BrightBlackForegroundColor,
-  [Attribute.BrightRedForegroundColor]: Bit.BrightRedForegroundColor,
-  [Attribute.BrightGreenForegroundColor]: Bit.BrightGreenForegroundColor,
-  [Attribute.BrightYellowForegroundColor]: Bit.BrightYellowForegroundColor,
-  [Attribute.BrightBlueForegroundColor]: Bit.BrightBlueForegroundColor,
-  [Attribute.BrightMagentaForegroundColor]: Bit.BrightMagentaForegroundColor,
-  [Attribute.BrightCyanForegroundColor]: Bit.BrightCyanForegroundColor,
-  [Attribute.BrightWhiteForegroundColor]: Bit.BrightWhiteForegroundColor,
-  [Attribute.BrightBlackBackgroundColor]: Bit.BrightBlackBackgroundColor,
-  [Attribute.BrightRedBackgroundColor]: Bit.BrightRedBackgroundColor,
-  [Attribute.BrightGreenBackgroundColor]: Bit.BrightGreenBackgroundColor,
-  [Attribute.BrightYellowBackgroundColor]: Bit.BrightYellowBackgroundColor,
-  [Attribute.BrightBlueBackgroundColor]: Bit.BrightBlueBackgroundColor,
-  [Attribute.BrightMagentaBackgroundColor]: Bit.BrightMagentaBackgroundColor,
-  [Attribute.BrightCyanBackgroundColor]: Bit.BrightCyanBackgroundColor,
-  [Attribute.BrightWhiteBackgroundColor]: Bit.BrightWhiteBackgroundColor,
-});
+
+  [UnderlineStyle.None]: Bit.UnderlineNone,
+  [UnderlineStyle.Single]: Bit.UnderlineSingle,
+  [UnderlineStyle.Double]: Bit.UnderlineDouble,
+  [UnderlineStyle.Curly]: Bit.UnderlineCurly,
+  [UnderlineStyle.Dotted]: Bit.UnderlineDotted,
+  [UnderlineStyle.Dashed]: Bit.UnderlineDashed,
+} as const);

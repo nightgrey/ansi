@@ -1,12 +1,19 @@
-import { CSI } from "../c1";
-import { isDefaultColor, isIndexedColor, type MaybeColor, rgb } from "../color";
+import {
+  type BasicColor,
+  DefaultColor,
+  isDefaultColor,
+  isIndexedColor,
+  type MaybeColor,
+  rgb,
+} from "../color";
 import { int2553 } from "../utils/int255";
 import {
   ATTRIBUTE_TO_BIT,
-  Attribute,
+  type AttributeProps,
   Attributes,
-  type AttributesProps,
-  IntroducerAttribute,
+  BASIC_COLOR_TO_BACKGROUND_ATTRIBUTE,
+  BASIC_COLOR_TO_FOREGROUND_ATTRIBUTE,
+  type PackedRGB,
   PROP_TO_ATTRIBUTE,
   UnderlineStyle,
 } from "./attributes";
@@ -27,10 +34,6 @@ export class Style implements Styled {
 
   get ul() {
     return this.attributes.ul;
-  }
-
-  get us() {
-    return this.attributes.us;
   }
 
   /** Cached string representation of attributes */
@@ -88,7 +91,7 @@ export class Style implements Styled {
    * Add an underline to the style.
    */
   underline(style = UnderlineStyle.Single) {
-    return new Style(this.attributes.underline(style));
+    return new Style(this.attributes.underline(ATTRIBUTE_TO_BIT[style]));
   }
 
   static underline() {
@@ -397,7 +400,7 @@ export class Style implements Styled {
    * Formats a string with this style applied.
    */
   format(string: string) {
-    return `${this.toString()}${string}${CSI}m`;
+    return `${this.toString()}${string}\x1b[m`;
   }
 
   /**
@@ -409,145 +412,57 @@ export class Style implements Styled {
       return RESET_STYLE;
     }
 
-    if (!this.#sgr) {
-      const {
-        bg: backgroundColor,
-        fg: foregroundColor,
-        ul: underlineColor,
-        us: underlineStyle,
-        attributes,
-      } = this;
+    if (this.#sgr) return `\x1b[${this.#sgr}m`;
 
-      const sgr: (string | number)[] = [];
+    const {
+      bg: backgroundColor,
+      fg: foregroundColor,
+      ul: underlineColor,
+      attributes,
+    } = this;
 
-      let extendedBackgroundColor = false;
-      let extendedForegroundColor = false;
-      let extendedUnderlineColor = false;
-      let noUnderline = false;
+    const sgr: (string | number)[] = [...attributes.values()];
 
-      // Add attribute bits
-
-      for (const attr of attributes.values()) {
-        switch (attr) {
-          case Attribute.ExtendedBackgroundColor:
-            extendedBackgroundColor = true;
-            break;
-          case Attribute.ExtendedForegroundColor:
-            extendedForegroundColor = true;
-            break;
-          case Attribute.ExtendedUnderlineColor:
-            extendedUnderlineColor = true;
-            break;
-
-          case Attribute.Underline:
-            // @TODO: Query for support before setting this?  Older terminals do not support the styles, only Attribute.Underline & Attribute.NoUnderline.
-            // https://sw.kovidgoyal.net/kitty/underlines/
-            switch (underlineStyle) {
-              case UnderlineStyle.Double:
-                sgr.push(Attribute.Underline + ":" + UnderlineStyle.Double);
-                break;
-              case UnderlineStyle.Curly:
-                sgr.push(Attribute.Underline + ":" + UnderlineStyle.Curly);
-                break;
-              case UnderlineStyle.Dotted:
-                sgr.push(Attribute.Underline + ":" + UnderlineStyle.Dotted);
-                break;
-              case UnderlineStyle.Dashed:
-                sgr.push(Attribute.Underline + ":" + UnderlineStyle.Dashed);
-                break;
-              case UnderlineStyle.None:
-                if (!noUnderline) {
-                  // This is done for legacy support. Only newer terminals support ${Underline}:${UnderlineStyle}
-                  sgr.push(Attribute.NoUnderline);
-                  noUnderline = true;
-                }
-                break;
-
-              // Set underline even if no style is set explicitly - this is the expected behavior.
-              case UnderlineStyle.Single:
-              default:
-                // This is done for legacy support. Only newer terminals support ${Underline}:${UnderlineStyle}
-                sgr.push(Attribute.Underline);
-              // sgr.push(Attribute.Underline + ":" + UnderlineStyle.Single);
-            }
-            break;
-          case Attribute.NoUnderline:
-            if (!noUnderline) {
-              // This is done for legacy support. Only newer terminals support ${Underline}:${UnderlineStyle}
-              sgr.push(Attribute.NoUnderline);
-              // sgr.push(Attribute.Underline + ":" + UnderlineStyle.None);
-              noUnderline = true;
-            }
-            break;
-          default:
-            sgr.push(attr);
-        }
+    if (backgroundColor) {
+      if (backgroundColor === DefaultColor) {
+        sgr.push("49");
+      } else if (backgroundColor < 16) {
+        sgr.push(
+          BASIC_COLOR_TO_BACKGROUND_ATTRIBUTE[backgroundColor as BasicColor],
+        );
+      } else if (backgroundColor < 255) {
+        sgr.push(`48:5:${backgroundColor}`);
+      } else {
+        sgr.push(`48:2:${Style.unpack(backgroundColor)}`);
       }
-
-      if (backgroundColor) {
-        if (extendedBackgroundColor) {
-          sgr.push(
-            Attribute.ExtendedBackgroundColor +
-              ":" +
-              IntroducerAttribute.ExtendedColor +
-              ":" +
-              backgroundColor,
-          );
-        } else {
-          sgr.push(
-            Attribute.ExtendedBackgroundColor +
-              ":" +
-              IntroducerAttribute.RGBColor +
-              ":" +
-              Attributes.unpack(backgroundColor).join(":"),
-          );
-        }
-      }
-
-      if (foregroundColor) {
-        if (extendedForegroundColor) {
-          sgr.push(
-            Attribute.ExtendedForegroundColor +
-              ":" +
-              IntroducerAttribute.ExtendedColor +
-              ":" +
-              foregroundColor,
-          );
-        } else {
-          sgr.push(
-            Attribute.ExtendedForegroundColor +
-              ":" +
-              IntroducerAttribute.RGBColor +
-              ":" +
-              Attributes.unpack(foregroundColor).join(":"),
-          );
-        }
-      }
-
-      if (underlineColor) {
-        if (extendedUnderlineColor) {
-          sgr.push(
-            Attribute.ExtendedUnderlineColor +
-              ":" +
-              IntroducerAttribute.ExtendedColor +
-              ":" +
-              underlineColor,
-          );
-        } else {
-          sgr.push(
-            Attribute.ExtendedUnderlineColor +
-              ":" +
-              IntroducerAttribute.RGBColor +
-              ":" +
-              Attributes.unpack(underlineColor).join(":"),
-          );
-        }
-      }
-
-      this.#sgr = sgr.join(";");
     }
 
-    return `${CSI}${this.#sgr}m`;
+    if (foregroundColor) {
+      if (foregroundColor === DefaultColor) {
+        sgr.push("39");
+      } else if (foregroundColor < 16) {
+        sgr.push(
+          BASIC_COLOR_TO_FOREGROUND_ATTRIBUTE[foregroundColor as BasicColor],
+        );
+      } else if (foregroundColor < 255) {
+        sgr.push(`38:5:${foregroundColor}`);
+      } else {
+        sgr.push(`38:2:${Style.unpack(foregroundColor)}`);
+      }
+    }
+
+    if (underlineColor) {
+      if (underlineColor === DefaultColor) {
+        sgr.push("59");
+      } else if (underlineColor < 255) {
+        sgr.push(`58:5:${underlineColor}`);
+      } else {
+        sgr.push(`58:2:${Style.unpack(underlineColor)}`);
+      }
+    }
+
+    this.#sgr = sgr.join(";");
+    return `\x1b[${this.#sgr}m`;
   }
 
   /**
@@ -572,12 +487,12 @@ export class Style implements Styled {
   /**
    * Create a {@link Style} from an object of attributes properties.
    */
-  static from(props: AttributesProps): Style {
+  static from(props: Partial<AttributeProps>): Style {
     let attributes = new Attributes();
 
     for (const [key, value] of Object.entries(props) as [
-      keyof AttributesProps,
-      AttributesProps[keyof AttributesProps],
+      keyof AttributeProps,
+      AttributeProps[keyof AttributeProps],
     ][]) {
       switch (key) {
         case "backgroundColor":
@@ -605,13 +520,12 @@ export class Style implements Styled {
           }
           break;
         case "underlineStyle":
-          attributes = attributes.underlineStyle(value as UnderlineStyle);
+          attributes = attributes.underlineStyle(
+            ATTRIBUTE_TO_BIT[value as UnderlineStyle],
+          );
           break;
         default: {
-          if (value && key in PROP_TO_ATTRIBUTE) {
-            const bit = ATTRIBUTE_TO_BIT[PROP_TO_ATTRIBUTE[key]];
-            attributes = attributes.set(bit);
-          }
+          attributes = attributes.set(ATTRIBUTE_TO_BIT[PROP_TO_ATTRIBUTE[key]]);
           break;
         }
       }
@@ -621,7 +535,31 @@ export class Style implements Styled {
   }
 
   /**
+   * Unpack a packed RGB value into an SGR attribute string
+   * @param color - packed RGB value
+   */
+  static unpack(color: PackedRGB) {
+    return `${color >> 16}:${(color >> 8) & 0xff}:${color & 0xff}`;
+  }
+
+  toJSON() {
+    return this.attributes.toJSON();
+  }
+
+  /**
    * Empty {@link Style}
    */
   static readonly empty = new Style();
+
+  *values() {
+    yield* this.attributes.values();
+  }
+
+  *keys() {
+    yield* this.attributes.keys();
+  }
+
+  *entries() {
+    yield* this.attributes.entries();
+  }
 }
