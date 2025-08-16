@@ -58,8 +58,8 @@ describe("Attributes", () => {
     });
 
     it("should set reset", () => {
-      const reset = attributes.reset();
-      expect(reset.has(Bit.Reset)).toBe(true);
+      const reset = attributes.bold().reset();
+      expect(reset.isEmpty()).toBe(true);
     });
   });
 
@@ -91,9 +91,9 @@ describe("Attributes", () => {
       expect(noUnderline.has(Bit.Underline)).toBe(false);
     });
 
-    it("should handle underline none style", () => {
+    it("should handle underline none", () => {
       const underlined = attributes.underline();
-      const none = underlined.underline(Bit.UnderlineNone);
+      const none = underlined.underline(UnderlineStyle.None);
 
       expect(none.has(Bit.Underline)).toBe(false);
       expect(none.has(Bit.NoUnderline)).toBe(true);
@@ -180,9 +180,8 @@ describe("Attributes", () => {
     });
 
     it("should handle RGB colors", () => {
-      const rgbColor = rgb(255, 128, 64);
-      const colored = attributes.foregroundColor(rgbColor);
-      expect(colored.fg).toBe(rgbColor);
+      const colored = attributes.foregroundColor(rgb("rgb(255, 128, 64)"));
+      expect(colored.fg).toBe(Attributes.pack(rgb("rgb(255, 128, 64)")));
     });
   });
 
@@ -254,20 +253,6 @@ describe("Attributes", () => {
     it("should perform NOT operation", () => {
       const result = attr1.not();
       expect(result.has(Bit.Bold)).toBe(false);
-    });
-
-    it("should perform static logical operations", () => {
-      const orResult = Attributes.or(attr1, attr2);
-      const andResult = Attributes.and(attr1, attr2);
-      const xorResult = Attributes.xor(attr1, attr2);
-      const notResult = Attributes.not(attr1);
-
-      expect(orResult.has(Bit.Bold)).toBe(true);
-      expect(orResult.has(Bit.Italic)).toBe(true);
-      expect(andResult.value).toBe(0);
-      expect(xorResult.has(Bit.Bold)).toBe(true);
-      expect(xorResult.has(Bit.Italic)).toBe(true);
-      expect(notResult.has(Bit.Bold)).toBe(false);
     });
   });
 
@@ -354,12 +339,13 @@ describe("Attributes", () => {
       const attr = attributes
         .foregroundColor(BasicColor.Red)
         .backgroundColor(255) // indexed color
-        .underlineColor(rgb(255, 128, 64)); // RGB color
+        .underlineColor("rgb(255, 128, 64)"); // RGB color
 
       const json = attr.toJSON();
       expect(json.foregroundColor).toBe(BasicColor.Red);
       expect(json.backgroundColor).toBe(255);
-      expect(json.underlineColor).toEqual(rgb(255, 128, 64));
+
+      expect(json.underlineColor).toEqual(rgb("rgb(255, 128, 64)"));
     });
 
     it("should serialize underline styles", () => {
@@ -371,9 +357,17 @@ describe("Attributes", () => {
 
   describe("static utility methods", () => {
     it("should pack and unpack RGB values", () => {
-      const packed = Attributes.pack(255, 128, 64);
+      const color = rgb("rgb(255, 128, 64)");
+      const packed = Attributes.pack(color);
 
-      expect(Attributes.unpack(packed)).toEqual([255, 128, 64]);
+      expect([...Attributes.unpack(packed)]).toEqual([...color]);
+    });
+
+    it("should unpack as SGR attribute string", () => {
+      const color = rgb("rgb(255, 128, 64)");
+      const packed = Attributes.pack(color);
+
+      expect(Attributes.unpackAttribute(packed)).toBe("255:128:64");
     });
   });
 

@@ -37,14 +37,6 @@ export enum Bit {
   UnderlineDashed,
 }
 
-export type UnderlineStyleBit =
-  | Bit.UnderlineNone
-  | Bit.UnderlineSingle
-  | Bit.UnderlineDouble
-  | Bit.UnderlineCurly
-  | Bit.UnderlineDotted
-  | Bit.UnderlineDashed;
-
 /**
  * A packed RGB value
  *

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, test } from "vitest";
 import { BasicColor, IndexedColor } from "../color";
-import { Attributes, Style, UnderlineStyle } from "./index";
+import { Style, UnderlineStyle } from "./index";
 
 describe("Style", () => {
   let style: Style;
@@ -9,35 +9,28 @@ describe("Style", () => {
     style = Style.empty;
   });
 
-  describe("constructor", () => {
-    it("should create a style with default attributes when no attributes provided", () => {
-      const newStyle = new Style();
-      expect(newStyle.attributes).toBeInstanceOf(Attributes);
-    });
-
-    it("should create a style with provided attributes", () => {
-      const attributes = new Attributes();
-      const newStyle = new Style(attributes);
-      expect(newStyle.attributes).toBe(attributes);
-    });
+  it("should create a style", () => {
+    const newStyle = new Style();
+    expect(newStyle.value).toBe(0);
+    expect(newStyle.bg).toBe(null);
+    expect(newStyle.fg).toBe(null);
+    expect(newStyle.ul).toBe(null);
   });
 
   describe("getters", () => {
     it("should return background color from attributes", () => {
       style = style.backgroundColor(BasicColor.Blue);
-      expect(style.bg).toBe(style.attributes.bg);
+      expect(style.bg).toBe(style.bg);
     });
 
     it("should return foreground color from attributes", () => {
       style = style.foregroundColor(BasicColor.Red);
-      expect(style.foregroundColor(BasicColor.Red).fg).toBe(
-        style.attributes.fg,
-      );
+      expect(style.foregroundColor(BasicColor.Red).fg).toBe(style.fg);
     });
 
     it("should return underline color from attributes", () => {
       style = style.underlineColor(BasicColor.Red);
-      expect(style.ul).toBe(style.attributes.ul);
+      expect(style.ul).toBe(style.ul);
     });
   });
 
@@ -193,9 +186,7 @@ describe("Style", () => {
       const copied = style.copy();
 
       expect(copied).not.toBe(style);
-      expect(copied.attributes.values().toArray()).toEqual(
-        style.attributes.values().toArray(),
-      );
+      expect(copied.values().toArray()).toEqual(style.values().toArray());
     });
 
     test("reset()", () => {

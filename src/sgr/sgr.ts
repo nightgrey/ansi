@@ -22,9 +22,9 @@ export const RESET_STYLE = `${CSI}0m`;
  * @see https://vt100.net/docs/vt510-rm/SGR.html
  */
 export function selectGraphicRendition(attributes: Attributes) {
-  if (attributes.length === 0) return RESET_STYLE;
+  if (attributes.isEmpty()) return RESET_STYLE;
 
-  return new Style(attributes).toString();
+  return Style.from(attributes).toString();
 }
 
 /** `SGR` is an alias for {@link selectGraphicRendition} */
