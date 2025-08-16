@@ -1,6 +1,6 @@
 import * as util from "node:util";
 import { expect } from "vitest";
-import { parser, tokenizer } from "./src/parser";
+import { parser, tokenizer } from "../src/parser";
 
 interface ExpectationResult {
   pass: boolean;

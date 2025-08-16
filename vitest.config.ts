@@ -8,7 +8,7 @@ export default defineConfig({
       include: ["./src/**/*.bench.ts"],
       outputJson: "benchmark.json",
     },
-    setupFiles: ["./vitest.setup.ts"],
+    setupFiles: ["./test/setup.ts"],
     include: ["./src/**/*.test.ts"],
   },
 });

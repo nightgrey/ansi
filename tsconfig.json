@@ -23,5 +23,5 @@
     "isolatedModules": true
   },
 
-  "include": ["src", "test", "vitest.env.d.ts"]
+  "include": ["src", "test"]
 }
