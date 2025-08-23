@@ -20,7 +20,7 @@
     "test:watch": "vitest run --watch",
     "typecheck": "tsc --noEmit",
     "bench": "vitest bench",
-    "docs": "bunx typedoc",
+    "docs": "typedoc",
     "prepublishOnly": "bun run build"
   },
   "exports": {
