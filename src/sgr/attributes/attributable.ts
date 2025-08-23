@@ -27,7 +27,7 @@ import { ATTRIBUTE_TO_PROP, type AttributeProps } from "./props";
  * @example
  * ```ts
  * class Attributes extends Attributable {
- *   protected mutate(
+ *   protected with(
  *     value?: number,
  *     bg?: ColorAttribute | null,
  *     fg?: ColorAttribute | null,
@@ -62,11 +62,41 @@ import { ATTRIBUTE_TO_PROP, type AttributeProps } from "./props";
  * @see {@link Attributes} for a concrete implementation
  */
 export abstract class Attributable<T> {
-  /** Bitset value */
+  /**
+   * Attributes
+   * 
+   * A bitset representening the set attributes.
+   */
   readonly value: number;
 
+  /**
+   * Background color
+   * 
+   * Either an ANSI indexed color (0-255) or a packed RGB.
+   * 
+   * @example 0
+   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   */
   readonly bg: ColorAttribute | null;
+
+  /**
+   * Foreground color
+   * 
+   * Either an ANSI indexed color (0-255) or a packed RGB.
+   * 
+   * @example 1
+   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   */
   readonly fg: ColorAttribute | null;
+
+  /**
+   * Underline color
+   * 
+   * Either an ANSI indexed color (0-255) or a packed RGB.
+   * 
+   * @example 2
+   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   */
   readonly ul: ColorAttribute | null;
 
   private static masks = Object.freeze({
@@ -86,26 +116,51 @@ export abstract class Attributable<T> {
   } as const satisfies Partial<Record<Bit, number>>);
 
   constructor(
-    value?: number,
-    bg?: ColorAttribute | null,
-    fg?: ColorAttribute | null,
-    ul?: ColorAttribute | null,
+    attributes?: number,
+    background?: ColorAttribute | null,
+    foreground?: ColorAttribute | null,
+    underline?: ColorAttribute | null,
   ) {
-    this.value = value ?? 0;
-    this.bg = bg ?? null;
-    this.fg = fg ?? null;
-    this.ul = ul ?? null;
+    this.value = attributes ?? 0;
+    this.bg = background ?? null;
+    this.fg = foreground ?? null;
+    this.ul = underline ?? null;
   }
 
-  protected abstract mutate(
-    value?: number,
-    bg?: ColorAttribute | null,
-    fg?: ColorAttribute | null,
-    ul?: ColorAttribute | null,
+  /**
+   * Return a new {@link Attributable} instance with the given parameters.
+   * 
+   * @example Example implementation
+   * ```ts
+   * function with(
+   *   attributes?: number,
+   *   background?: ColorAttribute | null,
+   *   foreground?: ColorAttribute | null,
+   *   underline?: ColorAttribute | null,
+   * ) {
+   *   return new Attributes(
+   *     attributes ?? this.value,
+   *     background === null ? null : background || this.bg,
+   *     foreground === null ? null : foreground || this.fg,
+   *     underline === null ? null : underline || this.ul,
+   *   );
+   * }
+   * ```
+   * 
+   * @param attributes - Next value of the attributable
+   * @param background - Next background color
+   * @param foreground - Next foreground color
+   * @param underline - Next underline color
+   */
+  protected abstract with(
+    attributes?: number,
+    background?: ColorAttribute | null,
+    foreground?: ColorAttribute | null, 
+    underline?: ColorAttribute | null,
   ): T;
 
   reset() {
-    return this.mutate(0);
+    return this.with(0);
   }
 
   bold() {
@@ -113,24 +168,24 @@ export abstract class Attributable<T> {
   }
 
   normalIntensity() {
-    return this.mutate(
+    return this.with(
       (this.value & ~Attributable.masks[Bit.NormalIntensity]) |
         (1 << Bit.NormalIntensity),
     );
   }
 
   faint() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.NormalIntensity)) | (1 << Bit.Faint),
     );
   }
 
   italic() {
-    return this.mutate((this.value & ~(1 << Bit.NoItalic)) | (1 << Bit.Italic));
+    return this.with((this.value & ~(1 << Bit.NoItalic)) | (1 << Bit.Italic));
   }
 
   noItalic() {
-    return this.mutate((this.value & ~(1 << Bit.Italic)) | (1 << Bit.NoItalic));
+    return this.with((this.value & ~(1 << Bit.Italic)) | (1 << Bit.NoItalic));
   }
 
   underline(style: UnderlineStyle = UnderlineStyle.Single) {
@@ -139,20 +194,20 @@ export abstract class Attributable<T> {
     }
 
     if (style === UnderlineStyle.Single) {
-      return this.mutate(
+      return this.with(
         (this.value & ~Attributable.masks[Bit.Underline]) |
           (1 << Bit.Underline),
       );
     }
 
-    return this.mutate(
+    return this.with(
       (this.value & ~Attributable.masks[Bit.Underline]) |
         (1 << ATTRIBUTE_TO_BIT[style]),
     );
   }
 
   noUnderline() {
-    return this.mutate(
+    return this.with(
       (this.value & ~Attributable.masks[Bit.Underline]) |
         (1 << Bit.NoUnderline),
       this.bg,
@@ -162,51 +217,51 @@ export abstract class Attributable<T> {
   }
 
   blink() {
-    return this.mutate((this.value & ~(1 << Bit.NoBlink)) | (1 << Bit.Blink));
+    return this.with((this.value & ~(1 << Bit.NoBlink)) | (1 << Bit.Blink));
   }
 
   noBlink() {
-    return this.mutate((this.value & ~(1 << Bit.Blink)) | (1 << Bit.NoBlink));
+    return this.with((this.value & ~(1 << Bit.Blink)) | (1 << Bit.NoBlink));
   }
 
   slowBlink() {
-    return this.mutate((this.value & ~(1 << Bit.NoBlink)) | (1 << Bit.Blink));
+    return this.with((this.value & ~(1 << Bit.NoBlink)) | (1 << Bit.Blink));
   }
 
   rapidBlink() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.NoBlink)) | (1 << Bit.RapidBlink),
     );
   }
 
   reverse() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.NoReverse)) | (1 << Bit.Reverse),
     );
   }
 
   noReverse() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.Reverse)) | (1 << Bit.NoReverse),
     );
   }
   conceal() {
-    return this.mutate((this.value & ~(1 << Bit.Conceal)) | (1 << Bit.Conceal));
+    return this.with((this.value & ~(1 << Bit.Conceal)) | (1 << Bit.Conceal));
   }
 
   noConceal() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.Conceal)) | (1 << Bit.NoConceal),
     );
   }
   strikethrough() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.Strikethrough)) | (1 << Bit.Strikethrough),
     );
   }
 
   noStrikethrough() {
-    return this.mutate(
+    return this.with(
       (this.value & ~(1 << Bit.Strikethrough)) | (1 << Bit.NoStrikethrough),
     );
   }
@@ -220,14 +275,14 @@ export abstract class Attributable<T> {
     if (isDefaultColor(color)) {
       return this.defaultForegroundColor();
     } else if (isIndexedColor(color)) {
-      return this.mutate(this.value, this.bg, color);
+      return this.with(this.value, this.bg, color);
     } else {
-      return this.mutate(this.value, this.bg, Attributable.pack(rgb(color)));
+      return this.with(this.value, this.bg, Attributable.pack(rgb(color)));
     }
   }
 
   defaultForegroundColor() {
-    return this.mutate(this.value, this.bg, DefaultColor);
+    return this.with(this.value, this.bg, DefaultColor);
   }
 
   /**
@@ -239,14 +294,14 @@ export abstract class Attributable<T> {
     if (isDefaultColor(color)) {
       return this.defaultBackgroundColor();
     } else if (isIndexedColor(color)) {
-      return this.mutate(this.value, color);
+      return this.with(this.value, color);
     } else {
-      return this.mutate(this.value, Attributable.pack(rgb(color)));
+      return this.with(this.value, Attributable.pack(rgb(color)));
     }
   }
 
   defaultBackgroundColor() {
-    return this.mutate(this.value, DefaultColor);
+    return this.with(this.value, DefaultColor);
   }
 
   /**
@@ -258,9 +313,9 @@ export abstract class Attributable<T> {
     if (isDefaultColor(color)) {
       return this.defaultUnderlineColor();
     } else if (isIndexedColor(color)) {
-      return this.mutate(this.value, this.bg, this.fg, color);
+      return this.with(this.value, this.bg, this.fg, color);
     } else {
-      return this.mutate(
+      return this.with(
         this.value,
         this.bg,
         this.fg,
@@ -270,7 +325,7 @@ export abstract class Attributable<T> {
   }
 
   defaultUnderlineColor() {
-    return this.mutate(this.value, this.bg, this.fg, DefaultColor);
+    return this.with(this.value, this.bg, this.fg, DefaultColor);
   }
 
   underlineStyle(style: UnderlineStyle) {
@@ -306,7 +361,7 @@ export abstract class Attributable<T> {
    * @returns A new Attributable instance with the bit set
    */
   set(bit: Bit, bg?: ColorAttribute, fg?: ColorAttribute, ul?: ColorAttribute) {
-    return this.mutate(this.value | (1 << bit), bg, fg, ul);
+    return this.with(this.value | (1 << bit), bg, fg, ul);
   }
 
   /**
@@ -323,7 +378,7 @@ export abstract class Attributable<T> {
     fg?: ColorAttribute,
     ul?: ColorAttribute,
   ) {
-    return this.mutate(this.value & ~(1 << bit), bg, fg, ul);
+    return this.with(this.value & ~(1 << bit), bg, fg, ul);
   }
 
   /**
@@ -341,11 +396,11 @@ export abstract class Attributable<T> {
    * @returns A new Attributable instance with the bit toggled
    */
   toggle(bit: Bit) {
-    return this.mutate(this.value ^ (1 << bit));
+    return this.with(this.value ^ (1 << bit));
   }
 
   clear() {
-    return this.mutate(0, null, null, null);
+    return this.with(0, null, null, null);
   }
 
   toString(radix?: number): string {
@@ -378,7 +433,7 @@ export abstract class Attributable<T> {
   }
 
   or(other: this) {
-    return this.mutate(
+    return this.with(
       this.value | other.value,
       other.bg !== null ? other.bg : this.bg,
       other.fg !== null ? other.fg : this.fg,
@@ -389,11 +444,11 @@ export abstract class Attributable<T> {
   merge = this.or;
 
   and(other: this) {
-    return this.mutate(this.value & other.value, this.bg, this.fg, this.ul);
+    return this.with(this.value & other.value, this.bg, this.fg, this.ul);
   }
 
   xor(other: this) {
-    return this.mutate(
+    return this.with(
       this.value ^ other.value,
       this.bg === other.bg ? null : other.bg,
       this.fg === other.fg ? null : other.fg,
@@ -402,7 +457,7 @@ export abstract class Attributable<T> {
   }
 
   not() {
-    return this.mutate(~this.value, undefined, undefined, undefined);
+    return this.with(~this.value, undefined, undefined, undefined);
   }
 
   isEmpty(): boolean {
@@ -415,7 +470,7 @@ export abstract class Attributable<T> {
   }
 
   copy() {
-    return this.mutate();
+    return this.with();
   }
 
   [Symbol.iterator] = this.entries;

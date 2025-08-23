@@ -28,17 +28,17 @@ import type { ColorAttribute } from "./bit";
  * ```
  */
 export class Attributes extends Attributable<Attributes> {
-  protected mutate(
-    value?: number,
-    bg?: ColorAttribute | null,
-    fg?: ColorAttribute | null,
-    ul?: ColorAttribute | null,
+  protected with(
+    attributes?: number,
+    background?: ColorAttribute | null,
+    foreground?: ColorAttribute | null,
+    underline?: ColorAttribute | null,
   ) {
     return new Attributes(
-      value ?? this.value,
-      bg === null ? null : bg || this.bg,
-      fg === null ? null : fg || this.fg,
-      ul === null ? null : ul || this.ul,
+      attributes ?? this.value,
+      background === null ? null : background || this.bg,
+      foreground === null ? null : foreground || this.fg,
+      underline === null ? null : underline || this.ul,
     );
   }
 }

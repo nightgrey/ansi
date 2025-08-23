@@ -1,6 +1,13 @@
 import { BEL, ESC } from "./c0";
 import { ST } from "./c1";
-import { type Color, type RgbColor, rgb } from "./color";
+import {
+  isDefaultColor,
+  isIndexedColor,
+  type MaybeColor,
+  type RgbColor,
+  rgb,
+} from "./color";
+import { Attributes } from "./sgr";
 
 /**
  * Returns a sequence that sets the default terminal foreground color.
@@ -17,8 +24,16 @@ import { type Color, type RgbColor, rgb } from "./color";
  * @param s The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
-export function setForegroundColor(s: string): string {
-  return `\x1b]10;${s}\x07`;
+export function setForegroundColor(color: MaybeColor) {
+  if (isDefaultColor(color)) {
+    return resetForegroundColor;
+  }
+
+  if (isIndexedColor(color)) {
+    return `\x1b]10;${color}\x07`;
+  }
+
+  return `\x1b]10;${Attributes.attribute(rgb(color))}\x07`;
 }
 
 /**
@@ -47,8 +62,16 @@ export const resetForegroundColor = "\x1b]110\x07";
  * @param color The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
-export function setBackgroundColor(color: Color): string {
-  return `\x1b]11;${color}\x07`;
+export function setBackgroundColor(color: MaybeColor): string {
+  if (isDefaultColor(color)) {
+    return resetBackgroundColor;
+  }
+
+  if (isIndexedColor(color)) {
+    return `\x1b]11;${color}\x07`;
+  }
+
+  return `\x1b]11;${Attributes.attribute(rgb(color))}\x07`;
 }
 
 /**
@@ -78,8 +101,16 @@ export const resetBackgroundColor = "\x1b]111\x07";
  * @param s The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
-export function setCursorColor(s: string): string {
-  return `\x1b]12;${s}\x07`;
+export function setCursorColor(color: MaybeColor) {
+  if (isDefaultColor(color)) {
+    return resetCursorColor;
+  }
+
+  if (isIndexedColor(color)) {
+    return `\x1b]12;${color}\x07`;
+  }
+
+  return `\x1b]12;${Attributes.attribute(rgb(color))}\x07`;
 }
 
 /**
@@ -95,10 +126,12 @@ export const requestCursorColor = "\x1b]12;?\x07";
 export const resetCursorColor = "\x1b]112\x07";
 
 /**
- * Parses a terminal color sequence.
+ * Parses a color sequence from a terminal control sequence.
  *
  * @param string - the string to parse
  * @returns the parsed color
+ * 
+ * @TODO: Naming / description / better place to put this?
  */
 export function parseColorSequence(string: string): RgbColor {
   if (string.length < 24 || string.length > 25) {
