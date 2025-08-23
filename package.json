@@ -16,9 +16,9 @@
     "dev": "nodemon --watch src --ext ts --exec 'zshy'",
     "format": "biome format --write",
     "lint": "biome lint --write",
-    "test": "vitest run && bun typecheck",
+    "test": "vitest run && bun tsc",
     "test:watch": "vitest run --watch",
-    "typecheck": "tsc --noEmit",
+    "tsc": "tsc --noEmit",
     "bench": "vitest bench",
     "docs": "typedoc",
     "prepublishOnly": "bun run build"
