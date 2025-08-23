@@ -146,7 +146,7 @@ export abstract class Mode {
     if (modes.length === 0) return "";
 
     const cmd = reset ? "l" : "h";
-    const seq = CSI.toString();
+    const seq = CSI;
 
     if (modes.length === 1) {
       const mode = modes[0];
@@ -287,7 +287,7 @@ export abstract class Mode {
     if (!sequence.startsWith(CSI.string))
       throw new Error(`Mode setting can't be matched from ${sequence}.`);
 
-    // Ensure it’s a private + intermediate response
+    // Ensure it's a private + intermediate response
     const params = sequence.replace(CSI.string, "").match(/^\?(\d+);(\d+)\$y$/);
     if (params === null)
       throw new Error(`Mode setting can't be matched from ${sequence}.`);
@@ -447,9 +447,9 @@ export const setCursorKeysMode = "\x1b[?1h";
 export const resetCursorKeysMode = "\x1b[?1l";
 export const requestCursorKeysMode = "\x1b[?1$p";
 
-/** @deprecated use {@link SetCursorKeysMode} and {@link ResetCursorKeysMode} instead. */
+/** @deprecated use {@link setCursorKeysMode} and {@link resetCursorKeysMode} instead. */
 export const enableCursorKeys = "\x1b[?1h";
-/** @deprecated use {@link SetCursorKeysMode} and {@link ResetCursorKeysMode} instead. */
+/** @deprecated use {@link setCursorKeysMode} and {@link resetCursorKeysMode} instead. */
 export const disableCursorKeys = "\x1b[?1l";
 
 /**
@@ -510,20 +510,20 @@ export const setTextCursorEnableMode = "\x1b[?25h";
 export const resetTextCursorEnableMode = "\x1b[?25l";
 export const requestTextCursorEnableMode = "\x1b[?25$p";
 
-/** These are aliases for {@link SetTextCursorEnableMode} and {@link ResetTextCursorEnableMode}. */
+/** These are aliases for {@link setTextCursorEnableMode} and {@link resetTextCursorEnableMode}. */
 export const showCursor = setTextCursorEnableMode;
-/** These are aliases for {@link SetTextCursorEnableMode} and {@link ResetTextCursorEnableMode}. */
+/** These are aliases for {@link setTextCursorEnableMode} and {@link resetTextCursorEnableMode}. */
 export const hideCursor = resetTextCursorEnableMode;
 
 /**
  * Text Cursor Enable Mode (DECTCEM) is a mode that shows/hides the cursor.
  *
  * @see https://vt100.net/docs/vt510-rm/DECTCEM.html
- * @deprecated use {@link SetTextCursorEnableMode} and {@link ResetTextCursorEnableMode} instead.
+ * @deprecated use {@link setTextCursorEnableMode} and {@link resetTextCursorEnableMode} instead.
  */
 export const CursorEnableMode = new DECMode(25);
 /**
- * @deprecated use {@link SetTextCursorEnableMode} and {@link ResetTextCursorEnableMode} instead.
+ * @deprecated use {@link setTextCursorEnableMode} and {@link resetTextCursorEnableMode} instead.
  */
 export const requestCursorVisibility = "\x1b[?25$p";
 
@@ -702,16 +702,13 @@ export const setFocusEventMode = "\x1b[?1004h";
 export const resetFocusEventMode = "\x1b[?1004l";
 export const requestFocusEventMode = "\x1b[?1004$p";
 
-/**
- * @deprecated use {@link SetFocusEventMode}, {@link ResetFocusEventMode}, and
- * {@link RequestFocusEventMode} instead.
- */
+/** @deprecated Use {@link SetFocusEventMode} instead. */
 export const ReportFocusMode = new DECMode(1004);
-/** @deprecated use {@link SetFocusEventMode}, {@link ResetFocusEventMode}, and {@link RequestFocusEventMode} instead. */
+/** @deprecated use {@link setFocusEventMode}, {@link resetFocusEventMode}, and {@link requestFocusEventMode} instead. */
 export const enableReportFocus = "\x1b[?1004h";
-/** @deprecated use {@link SetFocusEventMode}, {@link ResetFocusEventMode}, and {@link RequestFocusEventMode} instead. */
+/** @deprecated use {@link setFocusEventMode}, {@link resetFocusEventMode}, and {@link requestFocusEventMode} instead. */
 export const disableReportFocus = "\x1b[?1004l";
-/** @deprecated use {@link SetFocusEventMode}, {@link ResetFocusEventMode}, and {@link RequestFocusEventMode} instead. */
+/** @deprecated use {@link setFocusEventMode}, {@link resetFocusEventMode}, and {@link requestFocusEventMode} instead. */
 export const requestReportFocus = "\x1b[?1004$p";
 
 /**
@@ -733,16 +730,13 @@ export const setSgrExtMouseMode = "\x1b[?1006h";
 export const resetSgrExtMouseMode = "\x1b[?1006l";
 export const requestSgrExtMouseMode = "\x1b[?1006$p";
 
-/**
- * @deprecated use {@link SgrExtMouseMode} {@link SetSgrExtMouseMode},
- * {@link ResetSgrExtMouseMode}, and {@link RequestSgrExtMouseMode} instead.
- */
+/** @deprecated Use {@link SgrExtMouseMode} instead. */
 export const MouseSgrExtMode = new DECMode(1006);
-/** @deprecated use {@link SgrExtMouseMode} {@link SetSgrExtMouseMode}, {@link ResetSgrExtMouseMode}, and {@link RequestSgrExtMouseMode} instead. */
+/** @deprecated Use {@link setSgrExtMouseMode} instead. */
 export const enableMouseSgrExt = "\x1b[?1006h";
-/** @deprecated use {@link SgrExtMouseMode} {@link SetSgrExtMouseMode}, {@link ResetSgrExtMouseMode}, and {@link RequestSgrExtMouseMode} instead. */
+/** @deprecated Use {@link resetSgrExtMouseMode} instead. */
 export const disableMouseSgrExt = "\x1b[?1006l";
-/** @deprecated use {@link SgrExtMouseMode} {@link SetSgrExtMouseMode}, {@link ResetSgrExtMouseMode}, and {@link RequestSgrExtMouseMode} instead. */
+/** @deprecated Use {@link requestSgrExtMouseMode} instead. */
 export const requestMouseSgrExt = "\x1b[?1006$p";
 
 /**
@@ -820,20 +814,20 @@ export const requestAltScreenSaveCursorMode = "\x1b[?1049$p";
  * buffer is active.
  *
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-The-Alternate-Screen-Buffer
- * @deprecated use {@link AltScreenSaveCursorMode} instead.
+ * @deprecated Use {@link AltScreenSaveCursorMode} instead.
  */
 export const AltScreenBufferMode = new DECMode(1049);
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link setAltScreenSaveCursorMode} instead. */
 export const setAltScreenBufferMode = "\x1b[?1049h";
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link resetAltScreenSaveCursorMode} instead. */
 export const resetAltScreenBufferMode = "\x1b[?1049l";
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link requestAltScreenSaveCursorMode} instead. */
 export const requestAltScreenBufferMode = "\x1b[?1049$p";
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link setAltScreenSaveCursorMode} instead. */
 export const enableAltScreenBuffer = "\x1b[?1049h";
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link resetAltScreenSaveCursorMode} instead. */
 export const disableAltScreenBuffer = "\x1b[?1049l";
-/** @deprecated use {@link AltScreenSaveCursorMode} instead. */
+/** @deprecated Use {@link requestAltScreenSaveCursorMode} instead. */
 export const requestAltScreenBuffer = "\x1b[?1049$p";
 
 /**
@@ -848,14 +842,11 @@ export const setBracketedPasteMode = "\x1b[?2004h";
 export const resetBracketedPasteMode = "\x1b[?2004l";
 export const requestBracketedPasteMode = "\x1b[?2004$p";
 
-/**
- * @deprecated use {@link SetBracketedPasteMode}, {@link ResetBracketedPasteMode}, and
- * {@link RequestBracketedPasteMode} instead.
- */
+/** @deprecated Use {@link setBracketedPasteMode} instead. */
 export const enableBracketedPaste = "\x1b[?2004h";
-/** @deprecated use {@link SetBracketedPasteMode}, {@link ResetBracketedPasteMode}, and {@link RequestBracketedPasteMode} instead. */
+/** @deprecated Use {@link resetBracketedPasteMode} instead. */
 export const disableBracketedPaste = "\x1b[?2004l";
-/** @deprecated use {@link SetBracketedPasteMode}, {@link ResetBracketedPasteMode}, and {@link RequestBracketedPasteMode} instead. */
+/** @deprecated Use {@link requestBracketedPasteMode} instead. */
 export const requestBracketedPaste = "\x1b[?2004$p";
 
 /**
@@ -869,16 +860,13 @@ export const setSynchronizedOutputMode = "\x1b[?2026h";
 export const resetSynchronizedOutputMode = "\x1b[?2026l";
 export const requestSynchronizedOutputMode = "\x1b[?2026$p";
 
-/**
- * @deprecated use {@link SynchronizedOutputMode}, {@link SetSynchronizedOutputMode}, and
- * {@link ResetSynchronizedOutputMode}, and {@link RequestSynchronizedOutputMode} instead.
- */
+/** @deprecated Use {@link SynchronizedOutputMode} instead. */
 export const SyncdOutputMode = new DECMode(2026);
-/** @deprecated use {@link SynchronizedOutputMode}, {@link SetSynchronizedOutputMode}, and {@link ResetSynchronizedOutputMode}, and {@link RequestSynchronizedOutputMode} instead. */
+/** @deprecated Use {@link setSynchronizedOutputMode} instead. */
 export const enableSyncdOutput = "\x1b[?2026h";
-/** @deprecated use {@link SynchronizedOutputMode}, {@link SetSynchronizedOutputMode}, and {@link ResetSynchronizedOutputMode}, and {@link RequestSynchronizedOutputMode} instead. */
+/** @deprecated Use {@link resetSynchronizedOutputMode} instead. */
 export const disableSyncdOutput = "\x1b[?2026l";
-/** @deprecated use {@link SynchronizedOutputMode}, {@link SetSynchronizedOutputMode}, and {@link ResetSynchronizedOutputMode}, and {@link RequestSynchronizedOutputMode} instead. */
+/** @deprecated Use {@link requestSynchronizedOutputMode} instead. */
 export const requestSyncdOutput = "\x1b[?2026$p";
 
 /**
@@ -894,14 +882,11 @@ export const setGraphemeClusteringMode = "\x1b[?2027h";
 export const resetGraphemeClusteringMode = "\x1b[?2027l";
 export const requestGraphemeClusteringMode = "\x1b[?2027$p";
 
-/**
- * @deprecated use {@link SetGraphemeClusteringMode}, {@link ResetGraphemeClusteringMode}, and
- * {@link RequestGraphemeClusteringMode} instead.
- */
+/** @deprecated Use {@link setGraphemeClusteringMode} instead. */
 export const enableGraphemeClustering = "\x1b[?2027h";
-/** @deprecated use {@link SetGraphemeClusteringMode}, {@link ResetGraphemeClusteringMode}, and {@link RequestGraphemeClusteringMode} instead. */
+/** @deprecated Use {@link resetGraphemeClusteringMode} instead. */
 export const disableGraphemeClustering = "\x1b[?2027l";
-/** @deprecated use {@link SetGraphemeClusteringMode}, {@link ResetGraphemeClusteringMode}, and {@link RequestGraphemeClusteringMode} instead. */
+/** @deprecated Use {@link requestGraphemeClusteringMode} instead. */
 export const requestGraphemeClustering = "\x1b[?2027$p";
 
 /**
@@ -915,12 +900,9 @@ export const setWin32InputMode = "\x1b[?9001h";
 export const resetWin32InputMode = "\x1b[?9001l";
 export const requestWin32InputMode = "\x1b[?9001$p";
 
-/**
- * @deprecated use {@link SetWin32InputMode}, {@link ResetWin32InputMode}, and
- * {@link RequestWin32InputMode} instead.
- */
+/** @deprecated Use {@link setWin32InputMode} instead. */
 export const enableWin32Input = "\x1b[?9001h";
-/** @deprecated use {@link SetWin32InputMode}, {@link ResetWin32InputMode}, and {@link RequestWin32InputMode} instead. */
+/** @deprecated Use {@link resetWin32InputMode} instead. */
 export const disableWin32Input = "\x1b[?9001l";
-/** @deprecated use {@link SetWin32InputMode}, {@link ResetWin32InputMode}, and {@link RequestWin32InputMode} instead. */
+/** @deprecated Use {@link requestWin32InputMode} instead. */
 export const requestWin32Input = "\x1b[?9001$p";

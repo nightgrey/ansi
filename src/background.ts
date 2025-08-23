@@ -21,7 +21,7 @@ import { Attributes } from "./sgr";
  * Where color is the encoded color number. Most terminals support hex,
  * XParseColor rgb: and rgba: strings.
  *
- * @param s The color value
+ * @param color The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
 export function setForegroundColor(color: MaybeColor) {
@@ -98,7 +98,7 @@ export const resetBackgroundColor = "\x1b]111\x07";
  * Where color is the encoded color number. Most terminals support hex,
  * XParseColor rgb: and rgba: strings.
  *
- * @param s The color value
+ * @param color The color value
  * @see https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Operating-System-Commands
  */
 export function setCursorColor(color: MaybeColor) {
@@ -139,11 +139,11 @@ export function parseColorSequence(string: string): RgbColor {
   }
 
   let trimmed = string;
-  if (string.endsWith(BEL.toString())) {
+  if (string.endsWith(BEL)) {
     trimmed = string.slice(0, -BEL.length);
-  } else if (string.endsWith(ESC.toString())) {
+  } else if (string.endsWith(ESC)) {
     trimmed = string.slice(0, -ESC.length);
-  } else if (string.endsWith(ST.toString())) {
+  } else if (string.endsWith(ST)) {
     trimmed = string.slice(0, -ST.length);
   } else {
     throw new TypeError("String did not end with BEL, ESC or ST");

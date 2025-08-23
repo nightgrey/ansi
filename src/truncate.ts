@@ -2,10 +2,8 @@ import ansiTruncate, { type Options } from "ansi-truncate";
 export type TruncateOptions = Options;
 
 /**
- * Truncate a string to a specific width in the terminal.
- *
- * @param string - The text to truncate.
- * @param col - The number of columns to occupy in the terminal.
+ * Truncate a string to a specific width, respecting ANSI, Unicode, and
+ * fullwidth characters.
  *
  * @example
  * ```
@@ -37,7 +35,12 @@ export type TruncateOptions = Options;
  * truncate(paragraph, process.stdout.columns);
  * //=> 'Lorem ipsum dolor sit amet, consectetuer adipiscing…'
  * ```
- *
+ * 
+ * @param string - The text to truncate.
+ * @param columns - The number of columns to occupy in the terminal.
+ * @param options - Truncate options
+ * @returns The truncated string.
+ * 
  * @TODO Implement using parser?
  */
-export const truncate = ansiTruncate;
+export const truncate = ansiTruncate as (string: string, columns: number, options?: TruncateOptions) => string;
