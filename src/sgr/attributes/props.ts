@@ -171,7 +171,7 @@ export type AttributeToProp<T extends Attribute | UnderlineStyle> =
  * const style = Style.from(attributes);
  * ```
  *
- * @remark Excludes some attributes, like basic background and foreground. They are supposed to be handled by the ingesting function via `backgroundColor` and `foregroundColor` properties.
+ * @remarks Excludes some attributes, like basic background and foreground. They are supposed to be handled by the ingesting function via `backgroundColor` and `foregroundColor` properties.
  * @see {@link Style.from}
  */
 export type AttributeProps = {

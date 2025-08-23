@@ -351,7 +351,7 @@ export type Color = DefaultColor | AnsiColor | RgbColor;
  * Our functions treats numbers from 0 to 255 as ANSI colors.
  *
  * If you want to use functionality from `@thi.ng` with ANSI colors, convert
- * them first by using {@link ansiRgb}. This converts them to vectors readable by the `@thi.ng` universe.
+ * them first by using {@link rgb}. This converts them to vectors readable by the `@thi.ng` universe.
  *
  * @example
  * ```ts

@@ -240,11 +240,11 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ## License
 
-[MIT License](LICENSE)
+[MIT License](LICENSE.md)
 
 This project is a TypeScript port of
 [charmbracelet/x/ansi](https://github.com/charmbracelet/x/tree/main/ansi). See
-[LICENSES.md](./LICENSES.md) for full licensing information.
+[LICENSE.md](LICENSE.md) for full licensing information.
 
 
 ## Acknowledgments

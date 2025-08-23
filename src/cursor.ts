@@ -34,7 +34,7 @@ export const DECRC = restoreCursor;
  * Where Pl is the line number and Pc is the column number.
  * @see https://vt100.net/docs/vt510-rm/CPR.html
  *
- * @deprecated use {@link requestCursorPositionReport} instead.
+ * @deprecated use {@link REQUEST_CURSOR_POSITION_REPORT} instead.
  */
 export const requestCursorPosition = "\x1b[6n";
 
@@ -53,7 +53,7 @@ export const requestCursorPosition = "\x1b[6n";
  * number.
  * @see https://vt100.net/docs/vt510-rm/DECXCPR.html
  *
- * @deprecated use {@link requestExtendedCursorPositionReport} instead.
+ * @deprecated use {@link REQUEST_EXTENDED_CURSOR_POSITION_REPORT} instead.
  */
 export const requestExtendedCursorPosition = "\x1b[?6n";
 

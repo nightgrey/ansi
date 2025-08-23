@@ -64,38 +64,56 @@ import { ATTRIBUTE_TO_PROP, type AttributeProps } from "./props";
 export abstract class Attributable<T> {
   /**
    * Attributes
-   * 
+   *
    * A bitset representening the set attributes.
    */
   readonly value: number;
 
   /**
    * Background color
-   * 
+   *
    * Either an ANSI indexed color (0-255) or a packed RGB.
-   * 
-   * @example 0
-   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   *
+   * @example
+   * ```
+   * 0
+   * ```
+   * @example
+   * ```
+   * (255 << 8) | (255 << 16) | (255 << 24)
+   * ```
    */
   readonly bg: ColorAttribute | null;
 
   /**
    * Foreground color
-   * 
+   *
    * Either an ANSI indexed color (0-255) or a packed RGB.
-   * 
-   * @example 1
-   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   *
+   * @example
+   * ```
+   * 1
+   * ```
+   * @example
+   * ```
+   * (255 << 8) | (255 << 16) | (255 << 24)
+   * ```
    */
   readonly fg: ColorAttribute | null;
 
   /**
    * Underline color
-   * 
+   *
    * Either an ANSI indexed color (0-255) or a packed RGB.
-   * 
-   * @example 2
-   * @example (255 << 8) | (255 << 16) | (255 << 24)
+   *
+   * @example
+   * ```
+   * 2
+   * ```
+   * @example
+   * ```
+   * (255 << 8) | (255 << 16) | (255 << 24)
+   * ```
    */
   readonly ul: ColorAttribute | null;
 
@@ -129,7 +147,7 @@ export abstract class Attributable<T> {
 
   /**
    * Return a new {@link Attributable} instance with the given parameters.
-   * 
+   *
    * @example Example implementation
    * ```ts
    * function with(
@@ -146,7 +164,7 @@ export abstract class Attributable<T> {
    *   );
    * }
    * ```
-   * 
+   *
    * @param attributes - Next value of the attributable
    * @param background - Next background color
    * @param foreground - Next foreground color
@@ -155,7 +173,7 @@ export abstract class Attributable<T> {
   protected abstract with(
     attributes?: number,
     background?: ColorAttribute | null,
-    foreground?: ColorAttribute | null, 
+    foreground?: ColorAttribute | null,
     underline?: ColorAttribute | null,
   ): T;
 
@@ -235,24 +253,18 @@ export abstract class Attributable<T> {
   }
 
   reverse() {
-    return this.with(
-      (this.value & ~(1 << Bit.NoReverse)) | (1 << Bit.Reverse),
-    );
+    return this.with((this.value & ~(1 << Bit.NoReverse)) | (1 << Bit.Reverse));
   }
 
   noReverse() {
-    return this.with(
-      (this.value & ~(1 << Bit.Reverse)) | (1 << Bit.NoReverse),
-    );
+    return this.with((this.value & ~(1 << Bit.Reverse)) | (1 << Bit.NoReverse));
   }
   conceal() {
     return this.with((this.value & ~(1 << Bit.Conceal)) | (1 << Bit.Conceal));
   }
 
   noConceal() {
-    return this.with(
-      (this.value & ~(1 << Bit.Conceal)) | (1 << Bit.NoConceal),
-    );
+    return this.with((this.value & ~(1 << Bit.Conceal)) | (1 << Bit.NoConceal));
   }
   strikethrough() {
     return this.with(
@@ -441,7 +453,9 @@ export abstract class Attributable<T> {
     );
   }
 
-  merge = this.or;
+  merge(other: this) {
+    return this.or(other);
+  }
 
   and(other: this) {
     return this.with(this.value & other.value, this.bg, this.fg, this.ul);
@@ -473,7 +487,9 @@ export abstract class Attributable<T> {
     return this.with();
   }
 
-  [Symbol.iterator] = this.entries;
+  [Symbol.iterator]() {
+    return this.entries();
+  }
   private static readonly BIT_POSITIONS = new Uint8Array(64);
   static {
     for (let i = 0; i < 64; i++) {

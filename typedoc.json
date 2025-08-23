@@ -4,7 +4,11 @@
   "cleanOutputDir": true,
   "titleLink": "https://nightgrey.github.io/ansi",
   "githubPages": true,
-  "jsDocCompatibility": false,
+  "jsDocCompatibility": {
+    "defaultTag": true,
+    "exampleTag": true,
+    "ignoreUnescapedBraces": true
+  },
   "sourceLinkTemplate": "https://github.com/nightgrey/ansi/tree/main/{path}#L{line}",
   "hostedBaseUrl": "https://nightgrey.github.io/ansi",
   "navigationLinks": {

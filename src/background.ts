@@ -130,8 +130,8 @@ export const resetCursorColor = "\x1b]112\x07";
  *
  * @param string - the string to parse
  * @returns the parsed color
- * 
- * @TODO: Naming / description / better place to put this?
+ *
+ * @todo: Naming / description / better place to put this?
  */
 export function parseColorSequence(string: string): RgbColor {
   if (string.length < 24 || string.length > 25) {

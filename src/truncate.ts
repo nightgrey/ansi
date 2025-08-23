@@ -35,12 +35,16 @@ export type TruncateOptions = Options;
  * truncate(paragraph, process.stdout.columns);
  * //=> 'Lorem ipsum dolor sit amet, consectetuer adipiscing…'
  * ```
- * 
+ *
  * @param string - The text to truncate.
  * @param columns - The number of columns to occupy in the terminal.
  * @param options - Truncate options
  * @returns The truncated string.
- * 
- * @TODO Implement using parser?
+ *
+ * @todo Implement using parser?
  */
-export const truncate = ansiTruncate as (string: string, columns: number, options?: TruncateOptions) => string;
+export const truncate = ansiTruncate as (
+  string: string,
+  columns: number,
+  options?: TruncateOptions,
+) => string;
