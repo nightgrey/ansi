@@ -18,6 +18,7 @@ import {
   type PackedRGB,
 } from "./bit";
 import { ATTRIBUTE_TO_PROP, type AttributeProps } from "./props";
+import { Style } from "../style";
 
 /**
  * Attributable
@@ -61,7 +62,7 @@ import { ATTRIBUTE_TO_PROP, type AttributeProps } from "./props";
  *
  * @see {@link Attributes} for a concrete implementation
  */
-export abstract class Attributable<T> {
+export abstract class Attributable<T extends Attributable<any> = Attributable<any>> {
   /**
    * Attributes
    *
@@ -188,7 +189,7 @@ export abstract class Attributable<T> {
   normalIntensity() {
     return this.with(
       (this.value & ~Attributable.masks[Bit.NormalIntensity]) |
-        (1 << Bit.NormalIntensity),
+      (1 << Bit.NormalIntensity),
     );
   }
 
@@ -214,20 +215,20 @@ export abstract class Attributable<T> {
     if (style === UnderlineStyle.Single) {
       return this.with(
         (this.value & ~Attributable.masks[Bit.Underline]) |
-          (1 << Bit.Underline),
+        (1 << Bit.Underline),
       );
     }
 
     return this.with(
       (this.value & ~Attributable.masks[Bit.Underline]) |
-        (1 << ATTRIBUTE_TO_BIT[style]),
+      (1 << ATTRIBUTE_TO_BIT[style]),
     );
   }
 
   noUnderline() {
     return this.with(
       (this.value & ~Attributable.masks[Bit.Underline]) |
-        (1 << Bit.NoUnderline),
+      (1 << Bit.NoUnderline),
       this.bg,
       this.fg,
       0,
@@ -435,7 +436,7 @@ export abstract class Attributable<T> {
     return count;
   }
 
-  equals(other: this) {
+  equals(other: T) {
     return (
       this.value === other.value &&
       this.bg === other.bg &&
@@ -444,7 +445,7 @@ export abstract class Attributable<T> {
     );
   }
 
-  or(other: this) {
+  or(other: T) {
     return this.with(
       this.value | other.value,
       other.bg !== null ? other.bg : this.bg,
@@ -453,15 +454,15 @@ export abstract class Attributable<T> {
     );
   }
 
-  merge(other: this) {
+  merge(other: T) {
     return this.or(other);
   }
 
-  and(other: this) {
+  and(other: T) {
     return this.with(this.value & other.value, this.bg, this.fg, this.ul);
   }
 
-  xor(other: this) {
+  xor(other: T) {
     return this.with(
       this.value ^ other.value,
       this.bg === other.bg ? null : other.bg,
@@ -490,12 +491,7 @@ export abstract class Attributable<T> {
   [Symbol.iterator]() {
     return this.entries();
   }
-  private static readonly BIT_POSITIONS = new Uint8Array(64);
-  static {
-    for (let i = 0; i < 64; i++) {
-      Attributable.BIT_POSITIONS[i] = i;
-    }
-  }
+
   *keys() {
     let n = this.value;
     while (n !== 0) {
@@ -612,9 +608,8 @@ export abstract class Attributable<T> {
     if (typeof color === "number") {
       return `${(color >>> 16) & 255}:${(color >>> 8) & 255}:${color & 255}`;
     } else {
-      return `${clamp01(color[0]) * 255}:${
-        clamp01(color[1]) * 255
-      }:${clamp01(color[2]) * 255}`;
+      return `${clamp01(color[0]) * 255}:${clamp01(color[1]) * 255
+        }:${clamp01(color[2]) * 255}`;
     }
   }
 }
