@@ -7,7 +7,7 @@
     "url": "https://github.com/nightgrey/ansi",
     "type": "github"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -20,7 +20,8 @@
     "test:watch": "vitest run --watch",
     "typecheck": "tsc --noEmit",
     "bench": "vitest bench",
-    "docs": "bunx typedoc"
+    "docs": "bunx typedoc",
+    "prepublishOnly": "bun run build"
   },
   "exports": {
     ".": {
