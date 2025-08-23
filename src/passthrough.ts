@@ -58,8 +58,8 @@ export function tmuxPassthrough(seq: string): string {
   let result = "\x1bPtmux;";
 
   for (let i = 0; i < seq.length; i++) {
-    if (seq[i] === ESC.toString()) {
-      result += ESC.toString();
+    if (seq[i] === ESC) {
+      result += ESC;
     }
     result += seq[i];
   }

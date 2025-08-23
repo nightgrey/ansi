@@ -284,11 +284,11 @@ export abstract class Mode {
    * @returns mode setting
    */
   static match(sequence: string): ModeSetting {
-    if (!sequence.startsWith(CSI.string))
+    if (!sequence.startsWith(CSI))
       throw new Error(`Mode setting can't be matched from ${sequence}.`);
 
     // Ensure it's a private + intermediate response
-    const params = sequence.replace(CSI.string, "").match(/^\?(\d+);(\d+)\$y$/);
+    const params = sequence.replace(CSI, "").match(/^\?(\d+);(\d+)\$y$/);
     if (params === null)
       throw new Error(`Mode setting can't be matched from ${sequence}.`);
 
@@ -702,7 +702,7 @@ export const setFocusEventMode = "\x1b[?1004h";
 export const resetFocusEventMode = "\x1b[?1004l";
 export const requestFocusEventMode = "\x1b[?1004$p";
 
-/** @deprecated Use {@link SetFocusEventMode} instead. */
+/** @deprecated Use {@link FocusEventMode} instead. */
 export const ReportFocusMode = new DECMode(1004);
 /** @deprecated use {@link setFocusEventMode}, {@link resetFocusEventMode}, and {@link requestFocusEventMode} instead. */
 export const enableReportFocus = "\x1b[?1004h";

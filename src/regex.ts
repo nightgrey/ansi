@@ -1,13 +1,13 @@
-import { BEL, ESC } from "./c0";
-import { CSI, ST } from "./c1";
+import { BEL, BEL_CONTROL, ESC, ESC_CONTROL } from "./c0";
+import { CSI, CSI_CONTROL, ST, ST_CONTROL } from "./c1";
 
-const TERMINATORS = `(?:${BEL.toLiteral()}|${ESC.toLiteral()}|${ST.toLiteral()}|\\u005C)`;
+const TERMINATORS = `(?:${BEL_CONTROL.toControl()}|${ESC_CONTROL.toControl()}|${ST_CONTROL.toControl()}|\\u005C)`;
 
 /**
  * Pattern for the {@link COMPLEX_REGEX} regular expression.
  */
 export const COMPLEX_PATTERN = [
-  `[${CSI.toLiteral()}][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${TERMINATORS})`,
+  `[${CSI_CONTROL.toControl()}][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${TERMINATORS})`,
   "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
 ].join("|");
 
