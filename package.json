@@ -249,8 +249,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
-    "@types/node": "^24.2.1",
-    "@types/wcwidth": "^1.0.2",
+    "@types/bun": "^1.2.21",
     "nodemon": "^3.1.10",
     "tslib": "^2.8.1",
     "typedoc": "^0.28.10",
