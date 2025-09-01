@@ -1,11 +1,8 @@
-import { graphemes } from "./graphemes";
-import { tokenizer } from "./parser";
-import {
-  runeWidth,
-  type WidthOptions as UnicodeWidthOptions,
-} from "./unicode-width";
+import { HashMap } from "@thi.ng/associative";
+import { memoize } from "@thi.ng/memoize";
+import { UnicodeWidthOptions, stringWidth as unicodeStringWidth } from "./unicode";
 
-export type WidthOptions = UnicodeWidthOptions;
+export type WidthOptions = UnicodeWidthOptions
 
 /**
  * Returns the width of a string in cells. This is the number of
@@ -27,16 +24,8 @@ export type WidthOptions = UnicodeWidthOptions;
  * //=> 2
  * ```
  */
-export function stringWidth(string: string, options?: WidthOptions) {
-  let width = 0;
 
-  for (const token of tokenizer(string)) {
-    if (token.type !== "TEXT") continue;
+export const stringWidth = Bun?.stringWidth ?? unicodeStringWidth;
 
-    for (const grapheme of graphemes(token.raw)) {
-      width += runeWidth(grapheme.codePointAt(0), options);
-    }
-  }
+export { runeWidth } from "./unicode";
 
-  return width;
-}

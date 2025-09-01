@@ -1,40 +1,32 @@
 /**
  * Splits a string into runes (unicode code points)
  *
- * @example
- * ```ts
- * import { runes } from './runes';
- *
- * for (const rune of runes("Hello 🌍 世界")) {
- *     console.log(rune);
- * }
- *
- * // ['H', 'e', 'l', 'l', 'o', ' ', '🌍', ' ', '世', '界']
  * ```
  * @param string
  */
-export function runes(string: string) {
-  return string[Symbol.iterator]();
+export function* rune(string: string) {
+  for (const i of string) {
+    yield i.codePointAt(0)!;
+  }
 }
+
 
 /**
  * Splits a string into an array of runes (unicode code points)
  */
-export const splitByRunes = (string: string) => {
-  const out: string[] = [];
+export const runes = (string: string) => {
+  const out: number[] = [];
 
   for (const rune of string) {
-    out.push(rune);
+    out.push(rune.codePointAt(0)!);
   }
 
   return out;
 };
 
-export { maxGraphemeWidth as maxRuneWidth } from "./graphemes";
-
 /**
  * Returns the first rune from a string, or empty string if none.
  */
-export function firstRune(string: string): string {
-  return runes(string).next().value ?? "";
+export function firstRune(string: string) {
+  return rune(string).next().value ?? 0;
 }

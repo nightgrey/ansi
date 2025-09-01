@@ -1,7 +1,11 @@
-import { runeWidth } from "./unicode-width";
+import { runeWidth } from "./unicode";
 import { Segmenter } from "./utils/segmenter";
 
-const SEGMENTER = new Segmenter();
+export type GraphemeCluster = {
+  grapheme: string;
+  rest: string;
+  width: number;
+};
 
 /**
  * Splits a string into grapheme clusters
@@ -21,35 +25,22 @@ const SEGMENTER = new Segmenter();
  * ```
  * @param string
  */
-export function* graphemes(string: string) {
-  for (const { segment } of SEGMENTER.segment(string)) {
-    yield segment;
-  }
-
-  return;
-}
+export const grapheme = (string: string) => Segmenter.shared.grapheme(string);
+export const graphemeCluster = (string: string) => Segmenter.shared.graphemeCluster(string);
 
 /**
  * Splits a string into an array of grapheme clusters
  */
-export const splitByGraphemes = (string: string) => {
-  const out: string[] = [];
-
-  for (const { segment } of SEGMENTER.segment(string)) {
-    out.push(segment);
-  }
-
-  return out;
-};
+export const graphemes = (string: string) => Segmenter.shared.graphemes(string);
 
 /**
- * Returns the maximum display width of any grapheme cluster in the string.
+ * Returns the maximum display width of any graphemes in the string.
  */
 export function maxGraphemeWidth(string: string): number {
   let maxWidth = 0;
 
-  for (const grapheme of graphemes(string)) {
-    const w = runeWidth(grapheme.codePointAt(0) || 0);
+  for (const g of graphemes(string)) {
+    const w = runeWidth(g.codePointAt(0) ?? 0);
     if (w > maxWidth) {
       maxWidth = w;
     }
@@ -59,5 +50,19 @@ export function maxGraphemeWidth(string: string): number {
 }
 
 export function firstGrapheme(string: string) {
-  return SEGMENTER.segment(string).next().value?.segment ?? "";
+  return Segmenter.shared.grapheme(string).next().value ?? "";
+}
+
+const DEFAULT_GRAPHEME_CLUSTER: GraphemeCluster = {
+  grapheme: "",
+  get rest() {
+    return "";
+  },
+  get width() {
+    return 0;
+  },
+};
+
+export function firstGraphemeCluster(string: string) {
+  return graphemeCluster(string).next().value ?? DEFAULT_GRAPHEME_CLUSTER;
 }
