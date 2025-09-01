@@ -151,8 +151,8 @@ export const ATTRIBUTE_TO_PROP = Object.freeze({
 /** Attribute <-> Property */
 export type AttributeToProp<T extends Attribute | UnderlineStyle> =
   T extends keyof typeof ATTRIBUTE_TO_PROP
-    ? (typeof ATTRIBUTE_TO_PROP)[T]
-    : never;
+  ? (typeof ATTRIBUTE_TO_PROP)[T]
+  : never;
 
 /**
  * SGR attribute props

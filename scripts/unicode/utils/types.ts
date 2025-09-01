@@ -1,0 +1,1 @@
+export type CodepointMap<T = number> = Map<number, T>;

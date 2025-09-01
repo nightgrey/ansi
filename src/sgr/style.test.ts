@@ -11,7 +11,7 @@ describe("Style", () => {
 
   it("should create a style", () => {
     const newStyle = new Style();
-    expect(newStyle.value).toBe(0);
+    expect(newStyle.attributes).toBe(0);
     expect(newStyle.bg).toBe(null);
     expect(newStyle.fg).toBe(null);
     expect(newStyle.ul).toBe(null);

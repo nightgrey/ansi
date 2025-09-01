@@ -7,7 +7,7 @@ import {
   type RgbColor,
   rgb,
 } from "./color";
-import { Attributes } from "./sgr";
+import { Style } from "./sgr";
 
 /**
  * Returns a sequence that sets the default terminal foreground color.
@@ -33,7 +33,7 @@ export function setForegroundColor(color: MaybeColor) {
     return `\x1b]10;${color}\x07`;
   }
 
-  return `\x1b]10;${Attributes.attribute(rgb(color))}\x07`;
+  return `\x1b]10;${Style.attribute(rgb(color))}\x07`;
 }
 
 /**
@@ -71,7 +71,7 @@ export function setBackgroundColor(color: MaybeColor): string {
     return `\x1b]11;${color}\x07`;
   }
 
-  return `\x1b]11;${Attributes.attribute(rgb(color))}\x07`;
+  return `\x1b]11;${Style.attribute(rgb(color))}\x07`;
 }
 
 /**
@@ -110,7 +110,7 @@ export function setCursorColor(color: MaybeColor) {
     return `\x1b]12;${color}\x07`;
   }
 
-  return `\x1b]12;${Attributes.attribute(rgb(color))}\x07`;
+  return `\x1b]12;${Style.attribute(rgb(color))}\x07`;
 }
 
 /**

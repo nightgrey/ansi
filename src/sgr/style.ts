@@ -1,8 +1,8 @@
+import { ST } from "../c1";
 import { type BasicColor, DefaultColor, type MaybeColor } from "../color";
 import {
   ATTRIBUTE_TO_BIT,
   type AttributeProps,
-  Attributes,
   BASIC_COLOR_TO_BACKGROUND_ATTRIBUTE,
   BASIC_COLOR_TO_FOREGROUND_ATTRIBUTE,
   type ColorAttribute,
@@ -13,8 +13,13 @@ import { Attributable } from "./attributes/attributable";
 import { RESET_STYLE } from "./sgr";
 
 /**
- * An immutable class for styling text.
- *
+ * A class for styling terminal text.
+ * 
+ * - Immutable, all methods return a new instance
+ * - Performance-optimized, uses bitsets for efficient attribute manipulation
+ * - Chainable
+ * - Extensible, see {@link Attributable} for the underlying abstraction
+ * 
  * @example
  * ```ts
  * const style = new Style()
@@ -29,16 +34,16 @@ import { RESET_STYLE } from "./sgr";
  * // Renders the SGR escape sequence
  * style.toString(); // "\x1b[31;4;1;3m"
  *
- * // Renders the JSON representation of the style
+ * // Returns an object of attribute properties
  * style.toJSON(); // { foregroundColor: BasicColor.Red, underline: true, bold: true, italic: true }
  *
- * // Create a style from an object of attributes properties
+ * // Create a style from an object of attribute properties
  * Style.from({ foregroundColor: BasicColor.Green, underline: true, bold: true, italic: true });
  * ```
  */
 export class Style extends Attributable<Style> {
   /** Cached string representation of the SGR escape sequence */
-  #string = "";
+  #sgr?: string;
 
   protected with(
     attributes?: number,
@@ -47,10 +52,10 @@ export class Style extends Attributable<Style> {
     underline?: ColorAttribute | null,
   ) {
     return new Style(
-      attributes ?? this.value,
-      background === null ? null : background || this.bg,
-      foreground === null ? null : foreground || this.fg,
-      underline === null ? null : underline || this.ul,
+      attributes ?? this.attributes,
+      background === null ? null : (background || this.bg),
+      foreground === null ? null : (foreground || this.fg),
+      underline === null ? null : (underline || this.ul),
     );
   }
 
@@ -62,80 +67,116 @@ export class Style extends Attributable<Style> {
   }
 
   /**
-   * Returns the ANSI `SGR` (Select Graphic Rendition) string representation of the
-   * style.
+   * Returns the string representation of this style as an SGR (Select Graphic Rendition) escape sequence.
+   * 
+   * @example 
+   * ```ts
+   * const style = new Style().foregroundColor(BasicColor.Red).underline().bold().italic();
+   * style.toString() // "\x1b[31;4;1;3m"
+   * ```
+   * @see {@link https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences}
+   * @returns SGR escape sequence
    */
   toString() {
     if (this.isEmpty()) {
       return RESET_STYLE;
     }
 
-    if (!this.#string) {
-      const backgroundColor = this.bg;
-      const foregroundColor = this.fg;
-      const underlineColor = this.ul;
+    let sgr: (string | number)[] | (string | undefined) = this.#sgr;
 
-      const sgr: (string | number)[] = [...this.values()];
+    if (!sgr) {
+      const { bg, fg, ul } = this;
 
-      if (backgroundColor) {
-        if (backgroundColor === DefaultColor) {
-          sgr.push("49");
-        } else if (backgroundColor < 16) {
+      sgr = [...this.values()];
+
+      if (bg != null) {
+        if (bg === DefaultColor) {
+          sgr.push(49);
+        } else if (bg < 16) {
           sgr.push(
-            BASIC_COLOR_TO_BACKGROUND_ATTRIBUTE[backgroundColor as BasicColor],
+            BASIC_COLOR_TO_BACKGROUND_ATTRIBUTE[bg as BasicColor],
           );
-        } else if (backgroundColor < 255) {
-          sgr.push(`48:5:${backgroundColor}`);
+        } else if (bg < 255) {
+          sgr.push(`48:5:${bg}`);
         } else {
-          sgr.push(`48:2:${Style.attribute(backgroundColor)}`);
+          sgr.push(`48:2:${Style.attribute(bg)}`);
         }
       }
 
-      if (foregroundColor) {
-        if (foregroundColor === DefaultColor) {
-          sgr.push("39");
-        } else if (foregroundColor < 16) {
+      if (fg != null) {
+        if (fg === DefaultColor) {
+          sgr.push(39);
+        } else if (fg < 16) {
           sgr.push(
-            BASIC_COLOR_TO_FOREGROUND_ATTRIBUTE[foregroundColor as BasicColor],
+            BASIC_COLOR_TO_FOREGROUND_ATTRIBUTE[fg as BasicColor],
           );
-        } else if (foregroundColor < 255) {
-          sgr.push(`38:5:${foregroundColor}`);
+        } else if (fg < 255) {
+          sgr.push(`38:5:${fg}`);
         } else {
-          sgr.push(`38:2:${Style.attribute(foregroundColor)}`);
+          sgr.push(`38:2:${Style.attribute(fg)}`);
         }
       }
 
-      if (underlineColor) {
-        if (underlineColor === DefaultColor) {
-          sgr.push("59");
-        } else if (underlineColor < 255) {
-          sgr.push(`58:5:${underlineColor}`);
+      if (ul != null) {
+        if (ul === DefaultColor) {
+          sgr.push(59);
+        } else if (ul < 255) {
+          sgr.push(`58:5:${ul}`);
         } else {
-          sgr.push(`58:2:${Style.attribute(underlineColor)}`);
+          sgr.push(`58:2:${Style.attribute(ul)}`);
         }
       }
 
-      this.#string = sgr.join(";");
+      this.#sgr = (sgr = sgr.join(";"));
     }
 
-    return `\x1b[${this.#string}m`;
+    return `\x1b[${this.#sgr}m`;
   }
 
   /**
-   * Create a {@link Style} from an instance of {@link Attributes} or an object of attributes properties.
+   * Create a {@link Style} from an instance based on {@link Attributable}.
+   * 
+   * @example 
+   * ```ts
+   * class MyAttributable extends Attributable<MyAttributable> { ... }
+   * Style.from(new MyAttributable().bold());
+   * Style.from(new Style().bold());
+   * ```
+   * 
+   * @returns A new {@link Style} instance
    */
-  static from(props: Partial<AttributeProps> | Attributes) {
-    if (props instanceof Attributes) {
-      return new Style(props.value, props.bg, props.fg, props.ul);
-    }
-
+  static from(attributable: Attributable): Style;
+  /**
+   * Create a {@link Style} from attribute properties.
+   * 
+   * @example 
+   * ```ts
+   * Style.from({ foregroundColor: BasicColor.Red, underline: true, bold: true, italic: true });
+   * ```
+   * @returns A new {@link Style} instance
+   */
+  static from(props: Partial<AttributeProps>): Style;
+  /**
+   * Create a {@link Style} from an attribute bitset.
+   * 
+   * @example 
+   * ```ts
+   * Style.from(1 << Bit.Bold | 1 << Bit.Italic);
+   * ```
+   * @returns A new {@link Style} instance
+   */
+  static from(attributes: number): Style;
+  static from(x: Attributable | Partial<AttributeProps> | number) {
     let style = new Style();
 
-    for (const [key, value] of Object.entries(props) as [
-      keyof AttributeProps,
-      AttributeProps[keyof AttributeProps],
-    ][]) {
-      switch (key) {
+    if (x instanceof Attributable) {
+      return style.with(x.attributes, x.bg, x.fg, x.ul)
+    } else if (typeof x === "number") {
+      return style.with(x);
+    }
+
+    for (const k of Object.keys(x) as (keyof AttributeProps)[]) {
+      switch (k) {
         case "bold":
           style = style.bold();
           break;
@@ -185,19 +226,19 @@ export class Style extends Attributable<Style> {
           style = style.noStrikethrough();
           break;
         case "backgroundColor":
-          style = style.backgroundColor(value as MaybeColor);
+          style = style.backgroundColor(x[k] as MaybeColor);
           break;
         case "foregroundColor":
-          style = style.foregroundColor(value as MaybeColor);
+          style = style.foregroundColor(x[k] as MaybeColor);
           break;
         case "underlineColor":
-          style = style.underlineColor(value as MaybeColor);
+          style = style.underlineColor(x[k] as MaybeColor);
           break;
         case "underlineStyle":
-          style = style.underlineStyle(value as UnderlineStyle);
+          style = style.underlineStyle(x[k] as UnderlineStyle);
           break;
         default: {
-          style = style.set(ATTRIBUTE_TO_BIT[PROP_TO_ATTRIBUTE[key]]);
+          style = style.set(ATTRIBUTE_TO_BIT[PROP_TO_ATTRIBUTE[k]]);
           break;
         }
       }
@@ -206,5 +247,5 @@ export class Style extends Attributable<Style> {
     return style;
   }
 
-  static readonly empty = new Style();
+  static readonly empty = Object.freeze(new Style());
 }

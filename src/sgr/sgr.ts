@@ -1,5 +1,5 @@
 import { CSI } from "../c1";
-import type { Attributes } from "./attributes";
+import type { Attributable } from "./attributes";
 import { Style } from "./style";
 
 /**
@@ -21,7 +21,7 @@ export const RESET_STYLE = `${CSI}0m`;
  *
  * @see https://vt100.net/docs/vt510-rm/SGR.html
  */
-export function selectGraphicRendition(attributes: Attributes) {
+export function selectGraphicRendition(attributes: Attributable) {
   if (attributes.isEmpty()) return RESET_STYLE;
 
   return Style.from(attributes).toString();

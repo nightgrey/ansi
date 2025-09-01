@@ -1,6 +1,23 @@
 import { bench, describe } from "vitest";
 import { BasicColor } from "../../color"; // Adjust import path as needed
-import { Attributes } from "./attributes";
+import { Attributable } from "./attributable";
+import { ColorAttribute } from "./bit";
+
+class Attributes extends Attributable<Attributes> {
+  protected with(
+    attributes?: number,
+    background?: ColorAttribute | null,
+    foreground?: ColorAttribute | null,
+    underline?: ColorAttribute | null,
+  ) {
+    return new Attributes(
+      attributes ?? this.attributes,
+      background === null ? null : background || this.bg,
+      foreground === null ? null : foreground || this.fg,
+      underline === null ? null : underline || this.ul,
+    );
+  }
+}
 
 bench("Chaining", () => {
   new Attributes().bold().italic().underline().blink().reverse();

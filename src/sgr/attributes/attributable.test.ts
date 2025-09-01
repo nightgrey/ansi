@@ -1,27 +1,44 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { BasicColor, DefaultColor, rgb } from "../../color";
 import { UnderlineStyle } from "./attribute";
-import { Attributes } from "./attributes";
-import { Bit } from "./bit";
+import { Attributable } from "./attributable";
+import { Bit, ColorAttribute } from "./bit";
+
+class TestAttributable extends Attributable<TestAttributable> {
+  protected with(
+    attributes?: number,
+    background?: ColorAttribute | null,
+    foreground?: ColorAttribute | null,
+    underline?: ColorAttribute | null,
+  ) {
+    return new TestAttributable(
+      attributes ?? this.attributes,
+      background === null ? null : background || this.bg,
+      foreground === null ? null : foreground || this.fg,
+      underline === null ? null : underline || this.ul,
+    );
+  }
+
+}
 
 describe("Attributes", () => {
-  let attributes: Attributes;
+  let attributes: TestAttributable;
 
   beforeEach(() => {
-    attributes = new Attributes();
+    attributes = new TestAttributable();
   });
 
   describe("constructor", () => {
     it("should create empty attributes by default", () => {
-      expect(attributes.value).toBe(0);
+      expect(attributes.attributes).toBe(0);
       expect(attributes.bg).toBe(null);
       expect(attributes.fg).toBe(null);
       expect(attributes.ul).toBe(null);
     });
 
     it("should create attributes with provided values", () => {
-      const attr = new Attributes(123, 255, 128, 64);
-      expect(attr.value).toBe(123);
+      const attr = new TestAttributable(123, 255, 128, 64);
+      expect(attr.attributes).toBe(123);
       expect(attr.bg).toBe(255);
       expect(attr.fg).toBe(128);
       expect(attr.ul).toBe(64);
@@ -181,7 +198,7 @@ describe("Attributes", () => {
 
     it("should handle RGB colors", () => {
       const colored = attributes.foregroundColor(rgb("rgb(255, 128, 64)"));
-      expect(colored.fg).toBe(Attributes.pack(rgb("rgb(255, 128, 64)")));
+      expect(colored.fg).toBe(TestAttributable.pack(rgb("rgb(255, 128, 64)")));
     });
   });
 
@@ -201,8 +218,8 @@ describe("Attributes", () => {
       const toggled1 = attributes.toggle(Bit.Bold);
       const toggled2 = toggled1.toggle(Bit.Bold);
 
-      expect(toggled1.value).toBe(1 << Bit.Bold);
-      expect(toggled2.value).toBe(0);
+      expect(toggled1.attributes).toBe(1 << Bit.Bold);
+      expect(toggled2.attributes).toBe(0);
     });
 
     it("should clear all attributes", () => {
@@ -217,12 +234,12 @@ describe("Attributes", () => {
   });
 
   describe("logical operations", () => {
-    let attr1: Attributes;
-    let attr2: Attributes;
+    let attr1: TestAttributable;
+    let attr2: TestAttributable;
 
     beforeEach(() => {
-      attr1 = new Attributes().bold().foregroundColor(BasicColor.Red);
-      attr2 = new Attributes()
+      attr1 = new TestAttributable().bold().foregroundColor(BasicColor.Red);
+      attr2 = new TestAttributable()
         .italic()
         .foregroundColor(BasicColor.Blue)
         .backgroundColor(BasicColor.Blue);
@@ -247,7 +264,7 @@ describe("Attributes", () => {
     it("should perform XOR operation", () => {
       const same = attr1.bold();
       const result = attr1.xor(same);
-      expect(result.value).toBe(0);
+      expect(result.attributes).toBe(0);
     });
 
     it("should perform NOT operation", () => {
@@ -262,19 +279,13 @@ describe("Attributes", () => {
       expect(attributes.bold().isEmpty()).toBe(false);
     });
 
-    it("should convert to string", () => {
-      const attr = new Attributes(15);
-      expect(attr.toString()).toBe("15");
-      expect(attr.toString(16)).toBe("f");
-    });
-
     it("should return numeric value", () => {
-      const attr = new Attributes(42);
+      const attr = new TestAttributable(42);
       expect(attr.valueOf()).toBe(42);
     });
 
     it("should count set bits", () => {
-      const attr = new Attributes(0b1011); // 3 bits set
+      const attr = new TestAttributable(0b1011); // 3 bits set
       expect(attr.length).toBe(3);
     });
 
@@ -283,16 +294,16 @@ describe("Attributes", () => {
       const copy = original.copy();
 
       expect(copy).not.toBe(original);
-      expect(copy.value).toBe(original.value);
+      expect(copy.attributes).toBe(original.attributes);
       expect(copy.fg).toBe(original.fg);
     });
   });
 
   describe("iterators", () => {
-    let complexAttr: Attributes;
+    let complexAttr: TestAttributable;
 
     beforeEach(() => {
-      complexAttr = new Attributes().bold().italic().set(Bit.Underline);
+      complexAttr = new TestAttributable().bold().italic().set(Bit.Underline);
     });
 
     it("should iterate over keys", () => {
@@ -358,25 +369,25 @@ describe("Attributes", () => {
   describe("static utility methods", () => {
     it("should pack and unpack RGB values", () => {
       const color = rgb("rgb(255, 128, 64)");
-      const packed = Attributes.pack(color);
+      const packed = TestAttributable.pack(color);
 
-      expect([...Attributes.unpack(packed)]).toEqual([...color]);
+      expect([...TestAttributable.unpack(packed)]).toEqual([...color]);
     });
 
     it("should unpack as SGR attribute string", () => {
       const color = rgb("rgb(255, 128, 64)");
 
-      expect(Attributes.attribute(color)).toBe("255:128:64");
+      expect(TestAttributable.attribute(color)).toBe("255:128:64");
 
-      const packed = Attributes.pack(color);
+      const packed = TestAttributable.pack(color);
 
-      expect(Attributes.attribute(packed)).toBe("255:128:64");
+      expect(TestAttributable.attribute(packed)).toBe("255:128:64");
     });
   });
 
   describe("chaining example from documentation", () => {
     it("should work as shown in the example", () => {
-      const attr = new Attributes()
+      const attr = new TestAttributable()
         .foregroundColor(BasicColor.Red)
         .underline()
         .bold()
