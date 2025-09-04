@@ -139,22 +139,15 @@ export enum GeneralCategory {
  * Options for calculating character widths
  */
 export type UnicodeWidthOptions = Partial<{
-    /** 
+    /**
      * When true, treats ambiguous-width characters as narrow (1 cells) instead of wide (2 cells).
      * @default false
      */
-    ambigiousAreNarrow: boolean;
-    /**
-     * When true, ANSI escape codes are counted as 2 (wide) characters.
-     * 
-     * @default false
-     */
-    countAnsiEscapeCodes: boolean;
+    ambiguousIsNarrow: boolean;
 }>;
 
 export const DefaultUnicodeWidthOptions = Object.freeze({
-    ambigiousAreNarrow: false,
-    countAnsiEscapeCodes: false,
+    ambiguousIsNarrow: false,
 } as Required<UnicodeWidthOptions>)
 
 

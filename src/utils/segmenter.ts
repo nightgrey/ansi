@@ -1,5 +1,5 @@
 import { GraphemeCluster } from "../graphemes";
-import { isAscii, isWhitespace } from "../unicode";
+import { isAsciiOnly, isWhitespace } from "../unicode";
 import { runeWidth } from "../width";
 
 const REST_CACHE = new Map<string, string>();
@@ -107,7 +107,7 @@ export class Segmenter extends Intl.Segmenter {
     findSafeBreakPoint(input: string): number {
         // Work backwards from the end of the input
         for (let i = input.length - 1; i >= 0; i--) {
-            if (isWhitespace(input[i]) || isAscii(input[i])) {
+            if (isWhitespace(input[i]) || isAsciiOnly(input[i])) {
                 return i + 1;
             }
         }

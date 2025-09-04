@@ -1,3 +1,4 @@
+import { memoize1 } from "@thi.ng/memoize";
 import { runeWidth } from "./unicode";
 import { Segmenter } from "./utils/segmenter";
 
@@ -14,8 +15,8 @@ export type GraphemeCluster = {
  * ```ts
  * import { graphemes } from './graphemes';
  *
- * for (const grapheme of graphemes('👋 Hello World')) {
- *     console.log(grapheme);
+ * for (const g of grapheme('👋 Hello World')) {
+ *     console.log(g);
  * }
  *
  * // Output:
@@ -31,7 +32,7 @@ export const graphemeCluster = (string: string) => Segmenter.shared.graphemeClus
 /**
  * Splits a string into an array of grapheme clusters
  */
-export const graphemes = (string: string) => Segmenter.shared.graphemes(string);
+export const graphemes = memoize1((string: string) => Segmenter.shared.graphemes(string));
 
 /**
  * Returns the maximum display width of any graphemes in the string.

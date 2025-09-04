@@ -7,3 +7,13 @@ import type { Parser } from "./types";
 export const tokenizer = ansiToolsTokenizer as (
   text: string,
 ) => Generator<Parser.Raw>;
+
+export const tokenize = (text: string) => {
+  const out: Parser.Raw[] = [];
+
+  for (const raw of tokenizer(text)) {
+    out.push(raw);
+  }
+
+  return out;
+}

@@ -1,86 +1,78 @@
-import path from "path";
 import { UnicodeWidthOptions, CharacterWidth, DefaultUnicodeWidthOptions } from "../../src/unicode/types";
-import { CodepointMap, derivedEastAsianWidth, derivedGeneralCategory, Generator, parseRange } from "./utils";
+import { CodepointMap, derivedCoreProperties, derivedEastAsianWidth, derivedGeneralCategory, emojiData as getEmojiData, Generator, range, split, lines, parse, emojiData } from "./utils";
 import { Lookup } from "./utils";
 import { HashMap } from "@thi.ng/associative";
 import { memoizeAsync } from "@thi.ng/memoize";
+import { emojiSet} from "./emoji";
 
 async function getWidthMap() {
     const map: CodepointMap<CharacterWidth> = new Map();
 
     const eastAsianWidth = await derivedEastAsianWidth();
+    const generalCategory = await derivedGeneralCategory();
+    const coreProperties = await derivedCoreProperties();
+    const emojiData = await getEmojiData();
+    const emoji =  emojiSet
 
-    for await (const line of eastAsianWidth.split('\n')) {
-        if (line.length === 0) continue;
-
-        // @missing ranges
-        if (line.startsWith('# @missing: ')) {
-            const semiIndex = line.indexOf(';');
-            if (semiIndex === -1) continue;
-
-            const field = line.slice(12, semiIndex);
-            const dotsIndex = field.indexOf('..');
-            if (dotsIndex === -1) continue;
-
-            const from = parseInt(field.slice(0, dotsIndex), 16);
-            const to = parseInt(field.slice(dotsIndex + 2), 16);
-
-            if (from === 0 && to === 0x10ffff) continue;
-
-            for (let cp = from; cp <= to; cp++) {
-                map.set(cp, CharacterWidth.Double);
-            }
-            continue;
+    // East Asian Width: A
+    for (const [[start, end], prop] of parse(eastAsianWidth)) {
+        if (prop === "A") {
+            for (let cp = start; cp <= end; cp++) map.set(cp, CharacterWidth.Ambiguous);
         }
+    }
 
-        if (line[0] === '#') continue;
+    // Full-width ranges
+    for (const [start, end] of [
+        [0x3400, 0x4dbf],    // CJK Unified Ideographs Extension A
+        [0x4e00, 0x9fff],    // CJK Unified Ideographs
+        [0xf900, 0xfaff],    // CJK Compatibility Ideographs
+        [0x20000, 0x2fffd],  // Plane 2
+        [0x30000, 0x3fffd],  // Plane 3
+    ]) {
+        for (let cp = start; cp <= end; cp++) map.set(cp, CharacterWidth.Double);
+    }
 
-        const noComment = line.includes('#') ? line.slice(0, line.indexOf('#')) : line;
-        const fields = noComment.split(/[; ]+/).filter(f => f.length > 0);
+    // East Asian Width: F, W
+    for (const [[start, end], prop] of parse(eastAsianWidth)) {
+        if (prop === "F" || prop === "W") {
+            // console.log(start.toString(16), end.toString(16), prop);
+            for (let cp = start; cp <= end; cp++) map.set(cp, CharacterWidth.Double);
+        }
+    }
 
-        if (fields.length < 2) continue;
+     // HANGUL JUNGSEONG ranges (width 0)
+    for (let cp = 0x1160; cp <= 0x11ff; cp++) map.set(cp, 0);
+    for (let cp = 0xd7b0; cp <= 0xd7ff; cp++) map.set(cp, 0);
 
-        let currentCode = parseRange(fields[0]);
+    // Default_Ignorable_Code_Point
+    for (const [[start, end], property] of parse(coreProperties)) {
+        if (property === "Default_Ignorable_Code_Point") {
+            for (let cp = start; cp <= end; cp++) map.set(cp, 0);
+        }
+    }
 
-        const widthField = fields[1];
-        if (widthField === 'W' ||
-            widthField === 'F' ||
-            // (options?.ambigiousAreNarrow && widthField === 'A')) {
-            widthField === 'A') {
-            for (let cp = currentCode[0]; cp <= currentCode[1]; cp++) {
-                map.set(cp, CharacterWidth.Ambiguous);
+    // General Categories: Mn, Me, Zl, Zp, Cf (non-arabic)
+    for (const line of parse(generalCategory)) {
+        const [[start, end], cat] = line;
+       if (cat === "Mn" || cat === "Me" || cat === "Mc" || cat === "Zl" || cat === "Zp") {
+            for (let cp = start; cp <= end; cp++) map.set(cp, 0);
+        } else if (cat === "Cf") {
+            // ... exclude ARABIC characters
+            if (!line.join(";").includes("ARABIC")) {
+                for (let cp = start; cp <= end; cp++) map.set(cp, 0);
             }
         }
     }
 
-    // Process DerivedGeneralCategory.txt
-    const generalCategory = await derivedGeneralCategory();
-
-    for await (const line of generalCategory.split('\n')) {
-        if (line.length === 0 || line[0] === '#') continue;
-
-        const noComment = line.includes('#') ? line.slice(0, line.indexOf('#')) : line;
-        const fields = noComment.split(/[; ]+/).filter(f => f.length > 0);
-
-        if (fields.length < 2) continue;
-
-        let currentCode = parseRange(fields[0]);
-
-        // Parse general category
-        const categoryField = fields[1];
-        if (categoryField === 'Mn' ||  // Nonspacing_Mark
-            categoryField === 'Me' ||  // Enclosing_Mark
-            categoryField === 'Mc') {  // Spacing_Mark
-            for (let cp = currentCode[0]; cp <= currentCode[1]; cp++) {
-                map.set(cp, CharacterWidth.Zero);
-            }
-        } else if (categoryField === 'Cf') {
-            if (!line.includes('ARABIC')) {
-                // Format except Arabic
-                for (let cp = currentCode[0]; cp <= currentCode[1]; cp++) {
-                    map.set(cp, CharacterWidth.Zero);
-                }
-            }
+    // Emoji
+    for (const [[start, end]] of parse(emojiData)) {
+        for (let cp = start; cp <= end; cp++) {
+            if (emoji.component.has(cp)) map.set(cp, CharacterWidth.Zero);
+            if (emoji.modifier.has(cp)) map.set(cp, CharacterWidth.Zero);
+            if (emoji.has(cp)) map.set(cp, CharacterWidth.Single);
+            if (emoji.presentation.has(cp)) map.set(cp, CharacterWidth.Double);
+            if (emoji.extendedPictographic.has(cp)) map.set(cp, CharacterWidth.Double);
+            if (emoji.modifierBase.has(cp)) map.set(cp, CharacterWidth.Double);
         }
     }
 
@@ -95,60 +87,101 @@ export const WidthLookup = memoizeAsync(async (options?: UnicodeWidthOptions) =>
             let width = widths.get(codePoint);
 
             if (width === CharacterWidth.Ambiguous) {
-                width = options?.ambigiousAreNarrow ? 1 : 2;
+                width = (options?.ambiguousIsNarrow ?? false) ? 1 : 2;
             } else if (codePoint === 0x2e3b) {
                 // Three-em dash
-                // width = 3;
+                width = 3;
+            } else if (codePoint === 0x2e3a) {
+                // Two-em dash
+                width = 2
+            } else if (codePoint === 0xad) {
+                // Soft hyphen
+                width = 1
             } else if (codePoint >= 0x00 && codePoint <= 0x20) {
-                // C0 control codes
-                width = options?.countAnsiEscapeCodes ? 2 : 0;
+                // Zero-width C0 controls
+                if ((codePoint === 0x00 || codePoint === 0x05 || codePoint === 0x07 || codePoint === 0x0a ||
+                    codePoint === 0x0b || codePoint === 0x0c || codePoint === 0x0d || codePoint === 0x0e || codePoint === 0x0f)) {
+                    width = 0
+                } else if (codePoint === 0x08) {
+                    width = -1
+                } else  {
+                    // Other C0 controls
+                    width = options?.countAnsiEscapeCodes ? 2 : 0;
+                }
             } else if (codePoint >= 0x80 && codePoint <= 0x9f) {
                 // C1 control codes
                 width = options?.countAnsiEscapeCodes ? 2 : 0;
-            } else if (
-                codePoint === 0x2028 || // Line separator
-                codePoint === 0x2029 || // Paragraph separator
-                (codePoint >= 0x1160 && codePoint <= 0x11ff) || // Hangul syllable and ignorable
-                (codePoint >= 0xd7b0 && codePoint <= 0xd7ff) ||
-                (codePoint >= 0x2060 && codePoint <= 0x206f) ||
-                (codePoint >= 0xfff0 && codePoint <= 0xfff8) ||
-                (codePoint >= 0xe0000 && codePoint <= 0xe0fff)
-            ) {
-                width = 0;
-            } else if (
-                codePoint === 0x2e3a || // Two-em dash
-                (codePoint >= 0x1f1e6 && codePoint <= 0x1f200) || // Regional indicators
-                (codePoint >= 0x3400 && codePoint <= 0x4dbf) || // CJK Unified Ideographs Extension A
-                (codePoint >= 0x4e00 && codePoint <= 0x9fff) || // CJK Unified Ideographs
-                (codePoint >= 0xf900 && codePoint <= 0xfaff) || // CJK Compatibility Ideographs
-                (codePoint >= 0x20000 && codePoint <= 0x2fffd) || // Plane 2
-                (codePoint >= 0x30000 && codePoint <= 0x3fffd) // Plane 3
-            ) {
-                width = 2;
-            } else {
-                // Default case - will be overridden by specific checks below
-                width = 1; // Assuming default width of 1 for most characters
-            }
+            } else if (codePoint >= 0x20 && codePoint < 0x7f) {
+                // ASCII override
 
-            // ASCII override
-            if (codePoint >= 0x20 && codePoint < 0x7f) {
                 width = 1;
-            }
-
-            // Soft hyphen override
-            if (codePoint === 0xad) {
-                width = 1;
-            }
-
-            // Backspace and delete override
-            if (codePoint === 0x8 || codePoint === 0x7f) {
-                width = options?.countAnsiEscapeCodes ? -1 : 0;
             }
 
             return Number(width);
         },
     });
 }, new HashMap<UnicodeWidthOptions | undefined, Lookup<number>>([], {
-    hash: (options) => ((options?.ambigiousAreNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0),
-    equiv: (a, b) => a?.ambigiousAreNarrow === b?.ambigiousAreNarrow && a?.countAnsiEscapeCodes === b?.countAnsiEscapeCodes,
+    hash: (options) => ((options?.ambiguousIsNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0),
+    equiv: (a, b) => a?.ambiguousIsNarrow === b?.ambiguousIsNarrow && a?.countAnsiEscapeCodes === b?.countAnsiEscapeCodes,
 }));
+
+// Testing
+// import { isAsciiOnly } from "../../src/unicode";
+// import { runes, graphemes } from "../../src";
+// const lookup = await WidthLookup();
+//
+// export function runeWidth(codePoint: number): number {
+//     return lookup.get(codePoint) ?? 1;
+// }
+//
+// export function stringWidth(string: string, options?: UnicodeWidthOptions): number {
+//     if (!string) return 0;
+
+//     let width = 0;
+
+//     if (isAsciiOnly(string)) {
+//         const codePoints = runes(string);
+
+//         for (let i = 0; i < codePoints.length; i++) {
+//             width += runeWidth(codePoints[i]);
+//         }
+
+//         return width;
+//     }
+
+//     const g = graphemes(string);
+
+//     for (let i = 0; i < g.length; i++) {
+//         const codePoints = runes(g[i]);
+//         let graphemeClusterWidth = 0;
+
+//         for (let j = 0; j < codePoints.length; j++) {
+//             const codePoint = codePoints[j];
+//             let codePointWidth = runeWidth(codePoint);
+//             if (codePointWidth !== 0) {
+//                 const next = codePoints[j + 1];
+
+//                 if (next !== undefined) {
+//                     // Text presentation selector (U+FE0E) - force narrow width
+//                     if (next === 0xFE0E) {
+//                         codePointWidth = 1;
+//                         j++; // Skip the variation selector
+//                     }
+//                     // Emoji presentation selector (U+FE0F) - force wide width
+//                     else if (next === 0xFE0F) {
+//                         codePointWidth = 2;
+//                         j++; // Skip the variation selector
+//                     }
+//                 }
+
+//                 // Only use width of first non-zero-width code point in grapheme
+//                 graphemeClusterWidth = codePointWidth;
+//                 break;
+//             }
+//         }
+
+//         width += graphemeClusterWidth;
+//     }
+
+//     return width;
+// }

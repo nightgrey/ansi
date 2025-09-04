@@ -13,12 +13,13 @@ const unicode = path.resolve(src, "./unicode");
 const lookup = path.resolve(unicode, "./lookup");
 
 const OPTIONS: UnicodeWidthOptions[] = [
-    { ambigiousAreNarrow: false, countAnsiEscapeCodes: false },
-    { ambigiousAreNarrow: true, countAnsiEscapeCodes: false },
-    { ambigiousAreNarrow: false, countAnsiEscapeCodes: true },
-    { ambigiousAreNarrow: true, countAnsiEscapeCodes: true },
+    { ambiguousIsNarrow: false, countAnsiEscapeCodes: false },
+    { ambiguousIsNarrow: true, countAnsiEscapeCodes: false },
+    { ambiguousIsNarrow: false, countAnsiEscapeCodes: true },
+    { ambiguousIsNarrow: true, countAnsiEscapeCodes: true },
 ];
 
+console.log("Generating width lookup tables...");
 await Bun.write(path.resolve(lookup, "./width.ts"), `
 import { UnicodeWidthOptions} from "../types";
 
@@ -26,7 +27,7 @@ const TABLES = {
     ${(await Promise.all(OPTIONS.map(async (options) => {
     const lookup = (await WidthLookup(options));
 
-    return `${((options?.ambigiousAreNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0)}: {
+    return `${((options?.ambiguousIsNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0)}: {
             STAGE_1: new Uint16Array([${lookup.tables.STAGE_1.join(',')}]),
             STAGE_2: new Uint16Array([${lookup.tables.STAGE_2.join(',')}]),
             STAGE_3: [${lookup.tables.STAGE_3.map(v => JSON.stringify(v)).join(',')}]
@@ -35,7 +36,7 @@ const TABLES = {
 }
 
 function hash(options?: UnicodeWidthOptions) {
-    return (((options?.ambigiousAreNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0)) as keyof typeof TABLES
+    return (((options?.ambiguousIsNarrow ? 1 : 0) << 2) | (options?.countAnsiEscapeCodes ? 1 : 0)) as keyof typeof TABLES
 }
 
 /**
@@ -50,3 +51,6 @@ export function lookup(codePoint: number, options?: UnicodeWidthOptions) {
     return tables.STAGE_3[stage3Index] ?? 0;
 }
 `);
+
+
+console.log("Done!")

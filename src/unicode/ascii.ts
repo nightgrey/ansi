@@ -1,5 +1,5 @@
-export const ASCII_REGEX = /\p{ASCII}/gu;
+export const ASCII_REGEX = /\p{ASCII}/u;
 
-export function isAscii(string: string): boolean {
-    return ASCII_REGEX.test(string);
+export function isAsciiOnly(str: string): boolean {
+    return /^\p{ASCII}*$/u.test(str);
 }

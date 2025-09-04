@@ -65,3 +65,27 @@ export const derivedNumericType = memoizeAsyncJ(async () => {
 
   return await response.text();
 })
+
+export const derivedDefaultIgnorableCodePoints = memoizeAsyncJ(async () => {
+  const response = await fetch(
+    "https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedDefaultIgnorableCodePoints.txt",
+  );
+
+  return await response.text();
+})
+
+export const emojiZwjSequences = memoizeAsyncJ(async () => {
+    const response = await fetch(
+    "https://www.unicode.org/Public/emoji/latest/emoji-zwj-sequences.txt",
+  );
+
+  return await response.text();
+});
+
+export const emojiSequences = memoizeAsyncJ(async () => {
+    const response = await fetch(
+    "https://www.unicode.org/Public/emoji/latest/emoji-sequences.txt",
+  );
+
+  return await response.text();
+});

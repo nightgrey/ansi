@@ -53,3 +53,13 @@ import type { Parser } from "./types";
 export const parser = ansiToolsParser as (
   tokens: Iterable<Parser.Raw>,
 ) => Generator<Parser.Token>;
+
+export const parse = (tokens: Iterable<Parser.Raw>) => {
+  const out: Parser.Token[] = [];
+
+  for (const token of parser(tokens)) {
+    out.push(token);
+  }
+
+  return out;
+}

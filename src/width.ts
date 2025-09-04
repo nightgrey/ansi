@@ -1,8 +1,16 @@
 import { HashMap } from "@thi.ng/associative";
 import { memoize } from "@thi.ng/memoize";
 import { UnicodeWidthOptions, stringWidth as unicodeStringWidth } from "./unicode";
+import { strip } from "./strip";
 
-export type WidthOptions = UnicodeWidthOptions
+export type WidthOptions = UnicodeWidthOptions & {
+    /**
+     * If `true`, count ANSI escape codes as part of the string width.
+     * If `false`, ANSI escape codes are ignored when calculating the string width.
+     * @default false
+     */
+    countAnsiEscapeCodes?: boolean;
+}
 
 /**
  * Returns the width of a string in cells. This is the number of
@@ -24,8 +32,11 @@ export type WidthOptions = UnicodeWidthOptions
  * //=> 2
  * ```
  */
+export const stringWidth = typeof Bun !== 'undefined' ? Bun.stringWidth : (string: string, options?: WidthOptions) => {
+    return unicodeStringWidth((options?.countAnsiEscapeCodes ?? true) ? strip(string) : string, options);
+}
 
-export const stringWidth = Bun?.stringWidth ?? unicodeStringWidth;
+
 
 export { runeWidth } from "./unicode";
 
